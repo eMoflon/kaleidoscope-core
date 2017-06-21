@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="com.caleidoscope.extensionpoint.deltadiscover" name="DeltaDiscover" schema="schema/com.caleidoscope.extensionpoint.deltadiscover.exsd"/>
+   <extension-point id="com.caleidoscope.extensionpoint.artefactadapter" name="Artefact Adapter" schema="schema/com.caleidoscope.extensionpoint.artefactadapter.exsd"/>
+   <extension-point id="com.caleidoscope.extensionpoint.synchronizer" name="Synchronizer" schema="schema/com.caleidoscope.extensionpoint.synchronizer.exsd"/>
+   <extension-point id="com.caleidoscope.extensionpoint.correspondenceadapter" name="CorrespondenceAdapter" schema="schema/com.caleidoscope.extensionpoint.correspondenceadapter.exsd"/>
+   <extension-point id="com.caleidoscope.extensionpoint.bxtool" name="BXtool" schema="schema/com.caleidoscope.extensionpoint.bxtool.exsd"/>
+   <extension
+         point="com.caleidoscope.extensionpoint.deltadiscover">
+      <client
+            class="com.kaleidoscope.implementation.deltadiscovery.EMFcompareDeltaDiscover"
+            type="default">
+      </client>
+   </extension>
+   <extension
+         point="com.caleidoscope.extensionpoint.synchronizer">
+      <client
+            class="com.kaleidoscope.implementation.synchronizer.SynchronizerImpl"
+            type="default">
+      </client>
+   </extension>
+   <extension
+         point="com.caleidoscope.extensionpoint.artefactadapter">
+      <client
+            class="com.kaleidoscope.implementation.artefactadapter.JavaArtefactAdapter"
+            type="java">
+      </client>
+   </extension>
+   <extension
+         point="com.caleidoscope.extensionpoint.artefactadapter">
+      <client
+            class="com.kaleidoscope.implementation.artefactadapter.XMIArtefactAdapter"
+            type="xmi">
+      </client>
+   </extension>
+   <extension
+         point="com.caleidoscope.extensionpoint.bxtool">
+      <client
+            class="com.kaleidoscope.implementation.tool.BxtendTool"
+            type="bxtend">
+      </client>
+   </extension>
+
+</plugin>

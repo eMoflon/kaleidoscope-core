@@ -69,11 +69,13 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	private Path packageAbsPath;
 	ResourceSet resourceSet;
 	
+	
+	
 	//private IProgressMonitor monitor;
 	private static final Logger logger = Logger.getLogger(JavaArtefactAdapter.class);
 	
-	public JavaArtefactAdapter(){
-		resourceSet = new ResourceSetImpl();
+	public void initialize(ResourceSet set){
+		resourceSet = set;
 	}
 	
 	@Override

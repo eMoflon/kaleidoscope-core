@@ -3,13 +3,13 @@ package com.kaleidoscope.implementation.tool;
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 import org.moflon.tgg.runtime.AttributeDelta;
@@ -18,16 +18,12 @@ import org.moflon.tgg.runtime.EMoflonEdge;
 
 import com.caleidoscope.extensionpoint.BXtool;
 
+import BxtendCryptoImpl.Transformation;
 import BxtendCryptoImpl.rules.BxtendCryptoImplTransformation;
 import CryptoAPIConfig.Import;
 import CryptoAPIConfig.Task;
-import CryptoJava.JavaImport;
 
 public class BxtendTool  implements BXtool{
-	
-	private Resource sourceRes;
-	private Resource targetRes;
-	private Resource corrRes;
 	
 	private EObject source;
 	private EObject target;
@@ -42,11 +38,8 @@ public class BxtendTool  implements BXtool{
 	public BxtendTool(){
 	
 	}
-	public void initialize(Path persistanceDirectory) {
-		this.set = new ResourceSetImpl();
-		this.sourceRes = set.createResource(URI.createURI(persistanceDirectory.resolve(sourceModelFileName).toString()));
-		this.targetRes = set.createResource(URI.createURI(persistanceDirectory.resolve(targetModelFileName).toString()));
-		this.corrRes = set.createResource(URI.createURI(persistanceDirectory.resolve(corrModelFileName).toString()));
+	public void initialize(ResourceSet set, Path persistanceDirectory) {
+		this.set = set;
 		this.persistanceDirectory = persistanceDirectory;
 		
 		loadTriple();
@@ -55,15 +48,12 @@ public class BxtendTool  implements BXtool{
 	
 	private void loadTriple() {
 		try {
-			sourceRes =  loadModel(persistanceDirectory.resolve(sourceModelFileName).toString());
-			targetRes = loadModel(persistanceDirectory.resolve(targetModelFileName).toString());
-			corrRes = loadModel(persistanceDirectory.resolve(corrModelFileName).toString());
-			
-			source = sourceRes.getContents().get(0);
-			target = targetRes.getContents().get(0);
-			corr = corrRes.getContents().get(0);
-			
-			EcoreUtil.resolveAll(corrRes.getContents().get(0));
+			source =  loadModel(persistanceDirectory.resolve(sourceModelFileName).toString()).getContents().get(0);
+			target = loadModel(persistanceDirectory.resolve(targetModelFileName).toString()).getContents().get(0);;
+			corr = loadModel(persistanceDirectory.resolve(corrModelFileName).toString()).getContents().get(0);;
+			EcoreUtil.resolveAll(corr);
+			//source = ((Transformation) corr).getSourceModel();
+			//target = ((Transformation) corr).getTargetModel();
 			
 		} catch (IllegalArgumentException iae) {
 			System.err.println("Unable to load input triple");
@@ -98,13 +88,13 @@ public class BxtendTool  implements BXtool{
 	    		  performActionOnFeature(ae, (f, o) -> ((EList) ae.getSrc().eGet(f)).add(o), ae.getSrc()::eSet);
 	    	  
 	         // Edge deletion
-	         for (EMoflonEdge de : localDeltaSpec.getDeletedEdges())
-	            performActionOnFeature(de, (f, o) -> ((EList) de.getSrc().eGet(f)).remove(o), (f, o) -> de.getSrc().eUnset(f));
+	         //for (EMoflonEdge de : localDeltaSpec.getDeletedEdges())
+	          //  performActionOnFeature(de, (f, o) -> ((EList) de.getSrc().eGet(f)).remove(o), (f, o) -> de.getSrc().eUnset(f));
 
 	         // Node deletion
-	         for (EObject delObj : localDeltaSpec.getDeletedNodes())
-	            EcoreUtil.delete(delObj);
-
+	    	 while(localDeltaSpec.getDeletedNodes().size() != 0){
+	    		 EcoreUtil.delete(localDeltaSpec.getDeletedNodes().get(0));
+	    	 }	           
 	         // Attribute deltas
 	         for (AttributeDelta ac : localDeltaSpec.getAttributeChanges())
 	            ac.getAffectedNode().eSet(ac.getAffectedAttribute(), EcoreUtil.createFromString(ac.getAffectedAttribute().getEAttributeType(), ac.getNewValue()));
@@ -114,28 +104,38 @@ public class BxtendTool  implements BXtool{
 	public void syncForwardFromDelta(Path absPathToDeltaSpec){
 		loadTriple();
 		Consumer<EObject> change = executeDeltaSpec(absPathToDeltaSpec.toString());
-		//change.accept(sourceRes.getContents().get(0));
-		Task task = (Task)sourceRes.getContents().get(0);
-		Import imp = (Import)task.getAlgorithms().get(0).getImports().get(0);
-		task.getAlgorithms().get(0).getImports().remove(0);
+		change.accept(source);
 		
+		//set.getResourceFactoryRegistry().getExtensionToFactoryMap().put("family", new XMIResourceFactoryImpl());
+		//set.getResourceFactoryRegistry().getExtensionToFactoryMap().put("person", new XMIResourceFactoryImpl());
+		//set.getResourceFactoryRegistry().getExtensionToFactoryMap().put("corr", new XMIResourceFactoryImpl());		
+		
+		Resource sourceRes = set.createResource(URI.createURI("sourceModel.task"));
+		Resource  targetRes = set.createResource(URI.createURI("targetModel.package"));
+		Resource corrRes = set.createResource(URI.createURI("corrModel.corr"));
+		
+		sourceRes.getContents().add(source);
+		targetRes.getContents().add(target);
+		corrRes.getContents().add(corr);
 		
 		BxtendCryptoImplTransformation f2pt =  new BxtendCryptoImplTransformation(sourceRes, targetRes, corrRes);
-		f2pt.sourceToTarget();
-		source = sourceRes.getContents().get(0);
-		target = targetRes.getContents().get(0);
-		corr = corrRes.getContents().get(0);
+		f2pt.sourceToTarget();		
 	}
 	public void syncBackwardFromDelta(Path absPathToDeltaSpec){
 		loadTriple();
 		Consumer<EObject> change = executeDeltaSpec(absPathToDeltaSpec.toString());
-		change.accept(targetRes.getContents().get(0));
+		change.accept(target);
+		
+		Resource sourceRes = set.createResource(URI.createURI("sourceModel.task"));
+		Resource  targetRes = set.createResource(URI.createURI("targetModel.package"));
+		Resource corrRes = set.createResource(URI.createURI("corrModel.corr"));
+		
+		sourceRes.getContents().add(source);
+		targetRes.getContents().add(target);
+		corrRes.getContents().add(corr);
 		
 		BxtendCryptoImplTransformation f2pt =  new BxtendCryptoImplTransformation(sourceRes, targetRes, corrRes);
 		f2pt.targetToSource();
-		source = sourceRes.getContents().get(0);
-		target = targetRes.getContents().get(0);
-		corr = corrRes.getContents().get(0);
 	}	
 	public void persistModels() {  
 		corr.eResource().setURI(eMoflonEMFUtil.createFileURI(persistanceDirectory.resolve(corrModelFileName).toString(), false));
@@ -147,19 +147,35 @@ public class BxtendTool  implements BXtool{
 	    eMoflonEMFUtil.saveModel(set, target, persistanceDirectory.resolve(targetModelFileName).toString());	
 	}	
 	public void sourceToTargetTransformation(){
+		
+		Resource sourceRes = set.createResource(URI.createURI("sourceModel.task"));
+		Resource  targetRes = set.createResource(URI.createURI("targetModel.package"));
+		Resource corrRes = set.createResource(URI.createURI("corrModel.corr"));
+		sourceRes.getContents().add(source);
+		
 		BxtendCryptoImplTransformation f2pt =  new BxtendCryptoImplTransformation(sourceRes, targetRes, corrRes);
 		f2pt.sourceToTarget();
 		
-		source = sourceRes.getContents().get(0);
 		target = targetRes.getContents().get(0);
 		corr = corrRes.getContents().get(0);
+		
+		/*Transformation trans = (Transformation)corr;
+		trans.setSourceModel(source);
+		trans.setTargetModel(target);
+		*/
 	}
 	public void targetToSourceTransformation(){
+		
+		Resource sourceRes = set.createResource(URI.createURI("sourceModel.task"));
+		Resource  targetRes = set.createResource(URI.createURI("targetModel.package"));
+		Resource corrRes = set.createResource(URI.createURI("corrModel.corr"));
+	
+		sourceRes.getContents().add(target);
+		
 		BxtendCryptoImplTransformation f2pt =  new BxtendCryptoImplTransformation(sourceRes, targetRes, corrRes);
 		f2pt.targetToSource();		
 		
 		source = sourceRes.getContents().get(0);
-		target = targetRes.getContents().get(0);
 		corr = corrRes.getContents().get(0);
 	}
 	public EObject getSourceModel(){
@@ -171,11 +187,9 @@ public class BxtendTool  implements BXtool{
 	
 	public void setSourceModel(EObject sourceModel){
 		source = sourceModel;
-		sourceRes.getContents().add(0, sourceModel);
 	}
 	public void setTargetModel(EObject targetModel){
 		target = targetModel;
-		targetRes.getContents().add(0, targetModel);
 	}
 	public void setWorkingDirectory(Path persistanceDirectory){
 		this.persistanceDirectory = persistanceDirectory;

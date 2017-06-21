@@ -36,10 +36,10 @@ public class EMoflonTool implements BXtool{
 		
 		
 	}
-	public void initialize(String pathToTGGtransformationProjet, EPackage corrPack, Path persistanceDir){
+	public void initialize(ResourceSet set, String pathToTGGtransformationProjet, EPackage corrPack, Path persistanceDir){
 		
 		this.persistanceDirectory = persistanceDir;
-		this.set = new ResourceSetImpl();
+		this.set = set;
 		helper = new SynchronizationHelper(CryptoConfigToJavaPackage.eINSTANCE, pathToTGGtransformationProjet, set);		
 		loadTriple(persistanceDirectory.resolve(corrModelFileName));		
 	}

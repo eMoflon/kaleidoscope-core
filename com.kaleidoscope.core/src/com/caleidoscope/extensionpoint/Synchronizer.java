@@ -18,7 +18,7 @@ public interface Synchronizer {
 	
 	public void setSourceArtefactAdapter(ArtefactAdapter sourceEditor);
 	public void setTargetArtefactAdapter(ArtefactAdapter targetEditor);
-
+	
 	public Path getDeltaPath();
 	public void setDeltaPath(Path absDeltaPath);
 	public void initialize(BXtool tool, DeltaDiscovery deltaDiscover, ArtefactAdapter deltaArtefactAdapter);

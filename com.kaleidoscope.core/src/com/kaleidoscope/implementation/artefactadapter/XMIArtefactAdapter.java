@@ -19,8 +19,8 @@ public class XMIArtefactAdapter implements ArtefactAdapter {
 	private Path filePath;
 	private static final Logger logger = Logger.getLogger(XMIArtefactAdapter.class);
 	
-	public XMIArtefactAdapter(){
-		resourceSet = new ResourceSetImpl();
+	public void initialize(ResourceSet set){
+		this.resourceSet = set;
 	}
 	
 	@Override

@@ -40,6 +40,10 @@
             class="com.kaleidoscope.implementation.tool.BxtendTool"
             type="bxtend">
       </client>
+      <client
+            class="com.kaleidoscope.implementation.tool.EMoflonTool"
+            type="emoflon">
+      </client>
    </extension>
 
 </plugin>

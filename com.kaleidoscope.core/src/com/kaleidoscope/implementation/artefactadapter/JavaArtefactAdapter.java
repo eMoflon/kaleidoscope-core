@@ -104,7 +104,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		logger.info("Parsing " + absJavaFilePath + " into a java model!");		
 		String fieldDeclarations = "";
 		
-		Resource resource = resourceSet.createResource(URI.createFileURI(packageAbsPath.toString()));		
+		Resource resource = resourceSet.createResource(URI.createFileURI(javaFilePaths.toString()));		
 		JavaCompilationUnit jcu = CryptoJavaFactory.eINSTANCE.createJavaCompilationUnit();
 		resource.getContents().add(jcu);
 		

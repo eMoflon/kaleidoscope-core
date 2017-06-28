@@ -1,4 +1,4 @@
-package com.kaleidoscope.implementation.synchronizer;
+package com.kaleidoscope.implementation.controller;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -9,16 +9,16 @@ import org.moflon.tgg.runtime.DeltaSpecification;
 
 import com.caleidoscope.extensionpoint.ArtefactAdapter;
 import com.caleidoscope.extensionpoint.BXtool;
-import com.caleidoscope.extensionpoint.DeltaDiscovery;
-import com.caleidoscope.extensionpoint.Synchronizer;
+import com.caleidoscope.extensionpoint.DeltaDiscoverer;
+import com.caleidoscope.extensionpoint.Controller;
 
-public class SynchronizerImpl implements Synchronizer {
+public class ControllerImpl implements Controller {
 
 	private BXtool tool;
 	private ArtefactAdapter targetArtefactAdapter;
 	private ArtefactAdapter sourceArtefactAdapter;
 	private ArtefactAdapter deltaArtefactAdapter;
-	private DeltaDiscovery deltaDiscover;
+	private DeltaDiscoverer deltaDiscover;
 	
 	
 	private Path absDeltaPath;
@@ -29,11 +29,11 @@ public class SynchronizerImpl implements Synchronizer {
 	public void setDeltaPath(Path deltaPath) {
 		this.absDeltaPath = deltaPath;
 	}
-	public SynchronizerImpl(){	
+	public ControllerImpl(){	
 		
 	}
 	
-	public void initialize(BXtool tool, DeltaDiscovery deltaDiscover, ArtefactAdapter deltaArtefactAdapter){	
+	public void initialize(BXtool tool, DeltaDiscoverer deltaDiscover, ArtefactAdapter deltaArtefactAdapter){	
 		this.tool = tool;
 		this.deltaDiscover = deltaDiscover;
 		this.deltaArtefactAdapter = deltaArtefactAdapter;

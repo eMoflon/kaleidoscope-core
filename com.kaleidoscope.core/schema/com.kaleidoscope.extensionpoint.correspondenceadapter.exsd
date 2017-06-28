@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.caleidoscope.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.kaleidoscope.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="com.caleidoscope.core" id="com.caleidoscope.extensionpoint.synchronizer" name="Synchronizer"/>
+         <meta.schema plugin="com.kaleidoscope.core" id="com.kaleidoscope.extensionpoint.correspondenceadapter" name="CorrespondenceAdapter"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
@@ -17,9 +17,6 @@
          </appinfo>
       </annotation>
       <complexType>
-         <choice minOccurs="1" maxOccurs="unbounded">
-            <element ref="client"/>
-         </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -42,28 +39,6 @@
                <appinfo>
                   <meta.attribute translatable="true"/>
                </appinfo>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="client">
-      <complexType>
-         <attribute name="class" type="string">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn=":com.caleidoscope.extensionpoint.Synchronizer"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="type" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
             </annotation>
          </attribute>
       </complexType>

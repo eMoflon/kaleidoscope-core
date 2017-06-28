@@ -1,4 +1,4 @@
-package com.kaleidoscope.implementation.deltadiscovery;
+package com.kaleidoscope.implementation.deltadiscoverer;
 
 import java.util.List;
 
@@ -24,14 +24,14 @@ import org.moflon.tgg.runtime.DeltaSpecification;
 import org.moflon.tgg.runtime.EMoflonEdge;
 import org.moflon.tgg.runtime.RuntimeFactory;
 
-import com.caleidoscope.extensionpoint.DeltaDiscovery;
+import com.caleidoscope.extensionpoint.DeltaDiscoverer;
 
-public class EMFcompareDeltaDiscover implements DeltaDiscovery {
+public class EMFCompareDeltaDiscoverer implements DeltaDiscoverer {
 
 ResourceSet resourceSet = null;
 
 	
-	public EMFcompareDeltaDiscover() {
+	public EMFCompareDeltaDiscoverer() {
 		
 	}
 	/**

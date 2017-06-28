@@ -5,9 +5,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 
-public interface Synchronizer {
+public interface Controller {
 
 	public void sourceToTargetTransformation(Optional<Consumer<EObject>>targetModelPostProcessing);
 	public void targetToSourceTransformation();
@@ -21,5 +20,5 @@ public interface Synchronizer {
 	
 	public Path getDeltaPath();
 	public void setDeltaPath(Path absDeltaPath);
-	public void initialize(BXtool tool, DeltaDiscovery deltaDiscover, ArtefactAdapter deltaArtefactAdapter);
+	public void initialize(BXtool tool, DeltaDiscoverer deltaDiscover, ArtefactAdapter deltaArtefactAdapter);
 }

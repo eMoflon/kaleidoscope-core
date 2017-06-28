@@ -1,4 +1,4 @@
-package com.caleidoscope.extensionpoint;
+package com.kaleidoscope.extensionpoint;
 
 public interface ArtefactAdapter {
 

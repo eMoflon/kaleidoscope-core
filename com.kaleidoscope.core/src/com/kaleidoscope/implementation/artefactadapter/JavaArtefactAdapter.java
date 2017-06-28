@@ -43,7 +43,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
-import com.caleidoscope.extensionpoint.ArtefactAdapter;
+import com.kaleidoscope.extensionpoint.ArtefactAdapter;
 import com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser.JavaPackageToString;
 
 import CryptoJava.CryptoJavaFactory;

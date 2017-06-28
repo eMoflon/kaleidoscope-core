@@ -16,7 +16,7 @@ import org.moflon.tgg.runtime.AttributeDelta;
 import org.moflon.tgg.runtime.DeltaSpecification;
 import org.moflon.tgg.runtime.EMoflonEdge;
 
-import com.caleidoscope.extensionpoint.BXtool;
+import com.kaleidoscope.extensionpoint.BXtool;
 
 import BxtendCryptoImpl.Transformation;
 import BxtendCryptoImpl.rules.BxtendCryptoImplTransformation;

@@ -1,4 +1,4 @@
-package com.caleidoscope.extensionpoint;
+package com.kaleidoscope.extensionpoint;
 
 import org.eclipse.emf.ecore.EObject;
 import org.moflon.tgg.runtime.DeltaSpecification;

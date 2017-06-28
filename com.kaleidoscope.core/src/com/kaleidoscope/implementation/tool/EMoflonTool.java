@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.moflon.tgg.algorithm.synchronization.SynchronizationHelper;
 import org.moflon.tgg.runtime.CorrespondenceModel;
 
-import com.caleidoscope.extensionpoint.BXtool;
+import com.kaleidoscope.extensionpoint.BXtool;
 
 import CryptoConfigToJava.CryptoConfigToJavaPackage;
 

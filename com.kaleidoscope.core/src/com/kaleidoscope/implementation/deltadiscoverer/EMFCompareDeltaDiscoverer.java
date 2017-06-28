@@ -24,7 +24,7 @@ import org.moflon.tgg.runtime.DeltaSpecification;
 import org.moflon.tgg.runtime.EMoflonEdge;
 import org.moflon.tgg.runtime.RuntimeFactory;
 
-import com.caleidoscope.extensionpoint.DeltaDiscoverer;
+import com.kaleidoscope.extensionpoint.DeltaDiscoverer;
 
 public class EMFCompareDeltaDiscoverer implements DeltaDiscoverer {
 

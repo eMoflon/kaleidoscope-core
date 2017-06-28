@@ -7,10 +7,10 @@ import java.util.function.Consumer;
 import org.eclipse.emf.ecore.EObject;
 import org.moflon.tgg.runtime.DeltaSpecification;
 
-import com.caleidoscope.extensionpoint.ArtefactAdapter;
-import com.caleidoscope.extensionpoint.BXtool;
-import com.caleidoscope.extensionpoint.DeltaDiscoverer;
-import com.caleidoscope.extensionpoint.Controller;
+import com.kaleidoscope.extensionpoint.ArtefactAdapter;
+import com.kaleidoscope.extensionpoint.BXtool;
+import com.kaleidoscope.extensionpoint.Controller;
+import com.kaleidoscope.extensionpoint.DeltaDiscoverer;
 
 public class ControllerImpl implements Controller {
 

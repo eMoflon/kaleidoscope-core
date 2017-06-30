@@ -1,16 +1,18 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Core
+Bundle-Name: %pluginName
 Bundle-SymbolicName: com.kaleidoscope.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: CALEIDOSCOPE
+Bundle-ClassPath: .
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.eclipse.emf.ecore,
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
  org.moflon.tgg.runtime,
  org.eclipse.emf.compare,
  org.moflon.core.utilities,
  org.eclipse.jdt.core,
- CryptoJava,
  org.eclipse.equinox.registry,
  org.eclipse.core.resources,
  com.google.guava,
@@ -21,7 +23,9 @@ Require-Bundle: org.eclipse.emf.ecore,
  CryptoConfigToJava,
  BxtendCryptoImpl,
  org.eclipse.emf.ecore.xmi,
- CryptoAPIConfig
+ CryptoAPIConfig,
+ SimpleJava
+Bundle-ActivationPolicy: lazy
 Export-Package: com.kaleidoscope.extensionpoint,
  com.kaleidoscope.implementation.artefactadapter,
  com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser,

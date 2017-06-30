@@ -46,22 +46,22 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import com.kaleidoscope.extensionpoint.ArtefactAdapter;
 import com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser.JavaPackageToString;
 
-import CryptoJava.CryptoJavaFactory;
-import CryptoJava.JavaArrayInit;
-import CryptoJava.JavaAssignment;
-import CryptoJava.JavaCompilationUnit;
-import CryptoJava.JavaExpression;
-import CryptoJava.JavaImport;
-import CryptoJava.JavaLiteral;
-import CryptoJava.JavaMethod;
-import CryptoJava.JavaMethodInvocation;
-import CryptoJava.JavaName;
-import CryptoJava.JavaOpaqueMethod;
-import CryptoJava.JavaPackage;
-import CryptoJava.JavaStatement;
-import CryptoJava.JavaUnknownStatement;
-import CryptoJava.JavaVariableDeclaration;
-import CryptoJava.JavaWorkflowMethod;
+import SimpleJava.SimpleJavaFactory;
+import SimpleJava.JavaArrayInit;
+import SimpleJava.JavaAssignment;
+import SimpleJava.JavaCompilationUnit;
+import SimpleJava.JavaExpression;
+import SimpleJava.JavaImport;
+import SimpleJava.JavaLiteral;
+import SimpleJava.JavaMethod;
+import SimpleJava.JavaMethodInvocation;
+import SimpleJava.JavaName;
+import SimpleJava.JavaOpaqueMethod;
+import SimpleJava.JavaPackage;
+import SimpleJava.JavaStatement;
+import SimpleJava.JavaUnknownStatement;
+import SimpleJava.JavaVariableDeclaration;
+import SimpleJava.JavaWorkflowMethod;
 
 public class JavaArtefactAdapter implements ArtefactAdapter {
 	
@@ -92,7 +92,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	public EObject parse(){
 		
 		if(javaFilePaths != null){
-			JavaPackage pack = CryptoJavaFactory.eINSTANCE.createJavaPackage();
+			JavaPackage pack = SimpleJavaFactory.eINSTANCE.createJavaPackage();
 			for (Path filePath : javaFilePaths) {
 				 parseJavaFile(pack, filePath);
 			}
@@ -105,7 +105,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		String fieldDeclarations = "";
 		
 		Resource resource = resourceSet.createResource(URI.createFileURI(javaFilePaths.toString()));		
-		JavaCompilationUnit jcu = CryptoJavaFactory.eINSTANCE.createJavaCompilationUnit();
+		JavaCompilationUnit jcu = SimpleJavaFactory.eINSTANCE.createJavaCompilationUnit();
 		resource.getContents().add(jcu);
 		
 		Scanner scanner = null;
@@ -146,7 +146,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	    // add import to java compilation unit
 	    for(ImportDeclaration importDec:imports){
 	    		 
-	    	JavaImport javaImport = CryptoJavaFactory.eINSTANCE.createJavaImport();
+	    	JavaImport javaImport = SimpleJavaFactory.eINSTANCE.createJavaImport();
 	    	javaImport.setIndex(importIndex);
 	    	javaImport.setValue(importDec.getName().getFullyQualifiedName());
 	    	jcu.getImports().add(javaImport);
@@ -202,7 +202,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
         }
 	}
 	JavaMethod opaqueMethodHandler(MethodDeclaration method){
-		JavaOpaqueMethod javaMethod = CryptoJavaFactory.eINSTANCE.createJavaOpaqueMethod();
+		JavaOpaqueMethod javaMethod = SimpleJavaFactory.eINSTANCE.createJavaOpaqueMethod();
 		javaMethod.setName(method.getName().getFullyQualifiedName());
         javaMethod.setType(StringUtils.join(method.getReturnType2().toString(),' '));
         javaMethod.setModifier(StringUtils.join(method.modifiers(), ' '));
@@ -224,7 +224,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
         return javaMethod;
 	}
 	JavaMethod workflowMethodHandler(MethodDeclaration method){
-		JavaWorkflowMethod javaMethod = CryptoJavaFactory.eINSTANCE.createJavaWorkflowMethod();
+		JavaWorkflowMethod javaMethod = SimpleJavaFactory.eINSTANCE.createJavaWorkflowMethod();
         javaMethod.setName(method.getName().getFullyQualifiedName());
         javaMethod.setType(StringUtils.join(method.getReturnType2().toString(),' '));
         javaMethod.setModifier(StringUtils.join(method.modifiers(), ' '));
@@ -262,25 +262,25 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		}
 	}
 	JavaStatement unknownStatementHandler(Statement statement){
-		JavaUnknownStatement javaStatement = CryptoJavaFactory.eINSTANCE.createJavaUnknownStatement();
+		JavaUnknownStatement javaStatement = SimpleJavaFactory.eINSTANCE.createJavaUnknownStatement();
 		javaStatement.setBody(statement.toString());
 		return javaStatement;
 	}
 	JavaStatement returnStatementHandler(ReturnStatement statement){
-		JavaStatement javaStatement = CryptoJavaFactory.eINSTANCE.createJavaStatement();
+		JavaStatement javaStatement = SimpleJavaFactory.eINSTANCE.createJavaStatement();
 		javaStatement.setReturn(true);
 		javaStatement.setExpr(expressionHandler(statement.getExpression()));
 		
 		return javaStatement;
 	}
 	JavaStatement variableDeclarationStatementHandler(VariableDeclarationStatement statement){
-		JavaStatement javaStatement = CryptoJavaFactory.eINSTANCE.createJavaStatement();
-		JavaAssignment assignment = CryptoJavaFactory.eINSTANCE.createJavaAssignment();
+		JavaStatement javaStatement = SimpleJavaFactory.eINSTANCE.createJavaStatement();
+		JavaAssignment assignment = SimpleJavaFactory.eINSTANCE.createJavaAssignment();
 	
 		javaStatement.setExpr(assignment);
 		javaStatement.setReturn(false);
 		
-		JavaVariableDeclaration jvd = CryptoJavaFactory.eINSTANCE.createJavaVariableDeclaration();
+		JavaVariableDeclaration jvd = SimpleJavaFactory.eINSTANCE.createJavaVariableDeclaration();
 		jvd.setType(statement.getType().toString());
 		VariableDeclarationFragment frag = (VariableDeclarationFragment)statement.fragments().get(0);	            
 		jvd.setName(frag.getName().getIdentifier());
@@ -291,7 +291,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		return javaStatement;
 	}
 	JavaStatement expressionStatementHandler(ExpressionStatement statement){
-		JavaStatement javaStatement = CryptoJavaFactory.eINSTANCE.createJavaStatement();
+		JavaStatement javaStatement = SimpleJavaFactory.eINSTANCE.createJavaStatement();
 		javaStatement.setExpr(expressionHandler(statement.getExpression()));
 		
 		return javaStatement;
@@ -323,7 +323,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	}
 	private JavaVariableDeclaration variableDeclarationHandler(SingleVariableDeclaration varDec){
 		
-	    JavaVariableDeclaration javaVarDec = CryptoJavaFactory.eINSTANCE.createJavaVariableDeclaration();
+	    JavaVariableDeclaration javaVarDec = SimpleJavaFactory.eINSTANCE.createJavaVariableDeclaration();
 	    		
 	    SingleVariableDeclaration singleVarDec = (SingleVariableDeclaration)varDec;
 	    javaVarDec.setType(singleVarDec.getType().toString());
@@ -332,7 +332,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
     	return 	javaVarDec;
 	}
 	private JavaAssignment assignmentHandler(Assignment assignment){
-		JavaAssignment javaAssign = CryptoJavaFactory.eINSTANCE.createJavaAssignment();
+		JavaAssignment javaAssign = SimpleJavaFactory.eINSTANCE.createJavaAssignment();
 		
 		javaAssign.setLhs(expressionHandler(assignment.getLeftHandSide()));
 		javaAssign.setRhs(expressionHandler(assignment.getRightHandSide()));
@@ -340,17 +340,17 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		return javaAssign;
 	}
 	private JavaName nameHandler(Name name){
-		JavaName javaName = CryptoJavaFactory.eINSTANCE.createJavaName();
+		JavaName javaName = SimpleJavaFactory.eINSTANCE.createJavaName();
 		javaName.setIdentifier(name.toString());
 		return javaName;
 	}
 	private JavaLiteral literalHandler(Expression str){
-		JavaLiteral javaLiteral = CryptoJavaFactory.eINSTANCE.createJavaLiteral();
+		JavaLiteral javaLiteral = SimpleJavaFactory.eINSTANCE.createJavaLiteral();
 		javaLiteral.setValue(str.toString());
 		return javaLiteral;
 	}
 	private JavaArrayInit arrayCreationHandler(ArrayCreation arrayCreation){
-		JavaArrayInit arrayInit = CryptoJavaFactory.eINSTANCE.createJavaArrayInit();
+		JavaArrayInit arrayInit = SimpleJavaFactory.eINSTANCE.createJavaArrayInit();
 		String type = arrayCreation.getType().toString();
 		String dimension = arrayCreation.dimensions().get(0).toString();
 		
@@ -360,7 +360,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		return arrayInit;
 	}
 	private JavaMethodInvocation classInstanceCreationHandler(ClassInstanceCreation classInstance){
-		JavaMethodInvocation constructorInvocation = CryptoJavaFactory.eINSTANCE.createJavaMethodInvocation();
+		JavaMethodInvocation constructorInvocation = SimpleJavaFactory.eINSTANCE.createJavaMethodInvocation();
 		constructorInvocation.setInitialization(true);
 		constructorInvocation.setName(classInstance.getType().toString());
 		
@@ -372,7 +372,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	}
 	private JavaMethodInvocation methodInvocationHandler(MethodInvocation methodInv){
 		
-		JavaMethodInvocation javaMethodInv = CryptoJavaFactory.eINSTANCE.createJavaMethodInvocation();
+		JavaMethodInvocation javaMethodInv = SimpleJavaFactory.eINSTANCE.createJavaMethodInvocation();
 		javaMethodInv.setName(methodInv.getName().getIdentifier());
 		
 		int index = 0;

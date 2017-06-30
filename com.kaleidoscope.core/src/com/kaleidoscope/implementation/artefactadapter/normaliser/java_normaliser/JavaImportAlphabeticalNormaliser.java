@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 
-import CryptoJava.JavaImport;
+import SimpleJava.JavaImport;
 
 public class JavaImportAlphabeticalNormaliser implements Comparator<JavaImport>{
 	@Override

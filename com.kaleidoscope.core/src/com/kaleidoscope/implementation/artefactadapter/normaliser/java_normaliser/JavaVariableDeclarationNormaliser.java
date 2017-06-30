@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import CryptoJava.JavaExpression;
-import CryptoJava.JavaVariableDeclaration;
+import SimpleJava.JavaExpression;
+import SimpleJava.JavaVariableDeclaration;
 
 public class JavaVariableDeclarationNormaliser implements Comparator<JavaVariableDeclaration> {
 	@Override

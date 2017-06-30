@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import CryptoJava.JavaImport;
-import CryptoJava.JavaMethod;
+import SimpleJava.JavaImport;
+import SimpleJava.JavaMethod;
 
 
 public class JavaMethodNormaliser implements Comparator<JavaMethod> {

@@ -3,7 +3,7 @@ Bundle-SymbolicName: SimpleJava;singleton:=true
 Export-Package: SimpleJava.impl,
  SimpleJava.util,
  SimpleJava
-Bundle-Name: CryptoJava
+Bundle-Name: SimpleJava
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,

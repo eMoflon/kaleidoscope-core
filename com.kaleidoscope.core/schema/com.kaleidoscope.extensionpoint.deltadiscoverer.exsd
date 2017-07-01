@@ -59,7 +59,7 @@
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="type" type="string" use="required">
+         <attribute name="default" type="boolean" use="required">
             <annotation>
                <documentation>
                   

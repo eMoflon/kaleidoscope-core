@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -67,47 +68,31 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	
 	private List<Path> javaFilePaths;
 	private Path packageAbsPath;
-	ResourceSet resourceSet;
-	
 	
 	
 	//private IProgressMonitor monitor;
 	private static final Logger logger = Logger.getLogger(JavaArtefactAdapter.class);
 	
-	public void initialize(ResourceSet set){
-		resourceSet = set;
-	}
-	
 	@Override
-	public  <P>void setParseSource(P parseSource) {
-		this.javaFilePaths = (List<Path>)parseSource;
-	}
-	@Override
-	public <P> void setUnParseSource(P unparseSource) {
-		this.packageAbsPath = (Path)unparseSource;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public EObject parse(){
+	public EObject parse(Object parseSource){
 		
-		if(javaFilePaths != null){
+		try{
+			
+			javaFilePaths = (List<Path>)parseSource;
 			JavaPackage pack = SimpleJavaFactory.eINSTANCE.createJavaPackage();
 			for (Path filePath : javaFilePaths) {
 				 parseJavaFile(pack, filePath);
 			}
 			return pack;
+		
+		}catch (ClassCastException | NullPointerException e) {
+			return null;
 		}
-		return null;
 	}
 	public JavaCompilationUnit parseJavaFile(JavaPackage pack, Path absJavaFilePath){
 		logger.info("Parsing " + absJavaFilePath + " into a java model!");		
 		String fieldDeclarations = "";
-		
-		Resource resource = resourceSet.createResource(URI.createFileURI(javaFilePaths.toString()));		
 		JavaCompilationUnit jcu = SimpleJavaFactory.eINSTANCE.createJavaCompilationUnit();
-		resource.getContents().add(jcu);
-		
 		Scanner scanner = null;
 		
 		try {
@@ -388,18 +373,19 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		return javaMethodInv;
 	}
 	@Override
-	public <M> void unparse(M rootElementOfModel) {
+	public void unparse(Object unparseSource, Object content) {
 		
 		logger.info("Starting to unparse java model!");
 		
 		JavaPackageToString gcs = new JavaPackageToString();
-		JavaPackage jp = (JavaPackage)rootElementOfModel;
+		JavaPackage jp = (JavaPackage)content;
 		
 		for (JavaCompilationUnit jcu : jp.getCunits()) {
 			
 			String fileContent = gcs.unparseCompilationUnit(jp.getName(),jcu).toString();
 			
-			try {				
+			try {		
+				packageAbsPath = (Path)unparseSource;
 				Path javaPath = packageAbsPath.resolve(Paths.get("src", jp.getName().replace('.', File.separatorChar), jcu.getName() + ".java"));
 				File javaFile = javaPath.toFile();
 				FileUtils.writeStringToFile(javaFile, fileContent);
@@ -407,6 +393,10 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 				logger.error("There was a problem in executing addAllFoldersAndFile!", e);
 			}				
 		}
+		
+	}
+	@Override
+	public void setResourceSet(ResourceSet resourceSet) {
 		
 	}
 }

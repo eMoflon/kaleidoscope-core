@@ -20,14 +20,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
  org.moflon.tgg.language,
- CryptoConfigToJava,
- BxtendCryptoImpl,
  org.eclipse.emf.ecore.xmi,
  CryptoAPIConfig,
- SimpleJava
+ SimpleJava,
+ org.eclipse.ui.workbench
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kaleidoscope.extensionpoint,
  com.kaleidoscope.implementation.artefactadapter,
  com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser,
- com.kaleidoscope.implementation.tool
+ com.kaleidoscope.implementation.controller
 

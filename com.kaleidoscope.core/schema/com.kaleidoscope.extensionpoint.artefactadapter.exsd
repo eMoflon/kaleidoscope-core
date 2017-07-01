@@ -59,7 +59,14 @@
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="type" type="string" use="required">
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="extension" type="string">
             <annotation>
                <documentation>
                   

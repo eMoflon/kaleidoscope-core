@@ -6,7 +6,9 @@
          <meta.schema plugin="com.kaleidoscope.core" id="com.kaleidoscope.extensionpoint.bxtool" name="BXtool"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         BXtool implements transformation and synchronization of models in a specific technology.
+Controller relies on BXtool to perform named operation on the models parsed by 
+ArtefactAdapters.
       </documentation>
    </annotation>
 
@@ -62,7 +64,7 @@
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  Name is used to identify tool.
                </documentation>
             </annotation>
          </attribute>

@@ -6,7 +6,9 @@
          <meta.schema plugin="com.kaleidoscope.core" id="com.kaleidoscope.extensionpoint.componentbuilder" name="ComponentBuilder"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         ComponentBuilder is used for instantiating all the components used by kaleidscope.
+It requires certain data from this extension point 
+to identify needed components which need to be instantiated.
       </documentation>
    </annotation>
 
@@ -49,41 +51,31 @@
 
    <element name="client">
       <complexType>
-         <attribute name="class" type="string">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn=":com.caleidoscope.extensionpoint.Synchronizer"/>
-               </appinfo>
-            </annotation>
-         </attribute>
          <attribute name="sourceArtefactAdapterID" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  ID of the ArtefactAdapter to be used for parsing and unparsing source model.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="targetArtefactAdapterID" type="string">
             <annotation>
                <documentation>
-                  
+                  ID of the ArtefactAdapter to be used for parsing and unparsing target model.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="toolName" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  Name of the bx tool to be used.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="deltaArtefactAdapterID" type="string">
             <annotation>
                <documentation>
-                  
+                  ID of the ArtefactAdapter to be used for parsing and unparsing delta.
                </documentation>
             </annotation>
          </attribute>

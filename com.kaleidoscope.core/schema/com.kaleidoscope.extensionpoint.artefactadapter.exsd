@@ -6,7 +6,10 @@
          <meta.schema plugin="com.kaleidoscope.core" id="com.kaleidoscope.extensionpoint.artefactadapter" name="ArtefactAdapter"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         ArtefactAdapter is used for parsing and unparsing models from different sources.
+It defines through two methods how to parse a model from a given source and how
+to unparse/save the model to the given source.
+
       </documentation>
    </annotation>
 
@@ -69,7 +72,7 @@
          <attribute name="extension" type="string">
             <annotation>
                <documentation>
-                  
+                  Describes which extension this ArtefactAdapter supports.
                </documentation>
             </annotation>
          </attribute>

@@ -3,10 +3,14 @@
 <schema targetNamespace="com.kaleidoscope.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="com.kaleidoscope.core" id="com.kaleidoscope.extensionpoint.deltadiscoverer" name="DeltaDiscover"/>
+         <meta.schema plugin="com.kaleidoscope.core" id="com.kaleidoscope.extensionpoint.deltadiscoverer" name="DeltaDiscoverer"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         DeltaDiscoverer is used to generate Delta between two models of the same 
+metamodel.
+It expects generateDeltaSpecFromModels to be implemented which takes
+two models and return DeltaSpecification which represents differences
+between the models.
       </documentation>
    </annotation>
 

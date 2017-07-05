@@ -2,9 +2,7 @@ package com.kaleidoscope.implementation.artefactadapter;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.nio.file.Path;
-import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -23,7 +21,7 @@ public class XMIArtefactAdapter implements ArtefactAdapter {
 	@Override
 	public Object parse(Object parseSource) {	
 		
-		//logger.info("Parsing " + parsePath + " to XMI model is being performed!");
+		logger.info("Parsing to XMI model is being performed!");
 		try {
 			
 			Path parsePath = (Path)parseSource;
@@ -35,8 +33,13 @@ public class XMIArtefactAdapter implements ArtefactAdapter {
 			return resource.getContents().get(0);
 			
 			
-		} catch (IOException | ClassCastException e) {
-			//logger.error("Not able to load the XMI file from "+ parsePath, e);
+		} catch (IOException e) {
+			
+			logger.error("Not able to load the XMI file from the provided parseSource", e);
+			return null;
+			
+		}catch(ClassCastException e){
+			logger.error("Not able to cast parseSource into Path class", e);
 			return null;
 		}
 		

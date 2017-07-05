@@ -1,6 +1,5 @@
 package com.kaleidoscope.extensionpoint;
 
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 public interface ArtefactAdapter {

@@ -79,6 +79,13 @@ to identify needed components which need to be instantiated.
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="componentFactoryID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

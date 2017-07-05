@@ -31,14 +31,5 @@
       </client>
    </extension>
 
-   <extension
-         point="com.kaleidoscope.extensionpoint.componentbuilder">
-      <client
-            deltaArtefactAdapterID="com.kaleidoscope.implementation.artefactadapter.XMIArtefactAdapter"
-            sourceArtefactAdapterID="com.kaleidoscope.implementation.artefactadapter.XMIArtefactAdapter"
-            targetArtefactAdapterID="com.kaleidoscope.implementation.artefactadapter.JavaArtefactAdapter"
-            toolName="emoflon">
-      </client>
-   </extension>
 
 </plugin>

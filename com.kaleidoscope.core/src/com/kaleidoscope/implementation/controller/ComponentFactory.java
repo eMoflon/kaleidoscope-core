@@ -1,6 +1,5 @@
 package com.kaleidoscope.implementation.controller;
 
-import java.nio.file.Path;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.CoreException;
@@ -20,6 +19,7 @@ public class ComponentFactory {
 	static final String DELTA_DISCOVER_EXTENSON_ID = "com.kaleidoscope.extensionpoint.deltadiscoverer";
 	static final String COMPONENT_BUILDER_EXTENSON_ID = "com.kaleidoscope.extensionpoint.componentbuilder";
 	static final String BXTOOL_EXTENSON_ID = "com.kaleidoscope.extensionpoint.bxtool";
+	public static String COMPONENT_FACTORY_ID;
 	
 	private static String SOURCE_ARTEFACT_ADAPTER_ID;
 	private static String TARGET_ARTEFACT_ADAPTER_ID;
@@ -47,13 +47,13 @@ public class ComponentFactory {
 		this.deltaDiscoverer = deltaDiscoverer;
 	}
 
-	private static ComponentFactory instance = null;
+	//private static ComponentFactory instance = null;
 	
 	public static ComponentFactory getInstance() {
-	      if(instance == null) {
+	     
 	    	 resourceSet = createDefaultResourceSet();
 	    	 acquireDataFromExtension();
-	    	 instance = new ComponentFactory();
+	    	 ComponentFactory instance = new ComponentFactory();
 	    	 
 	    	 instance.setSourceArtefactAdapter(artefactAdapterFactory(SOURCE_ARTEFACT_ADAPTER_ID, null));
 	    	 instance.setTargetArtefactAdapter(artefactAdapterFactory(TARGET_ARTEFACT_ADAPTER_ID, null));
@@ -61,20 +61,23 @@ public class ComponentFactory {
 	    	 instance.setDeltaDiscoverer(deltaDiscoveryFactory());
 	    	 instance.setTool(bxToolFactory());	
 	    	 
-	    	 instance.sourceArtefactAdapter.get().setResourceSet(resourceSet);
-	    	 instance.targetArtefactAdapter.get().setResourceSet(resourceSet);
-	    	 instance.deltaArtefactAdapter.get().setResourceSet(resourceSet);
-	    	 instance.tool.get().setResourceSet(resourceSet);
-	      }
-	      return instance;
-	   }
-	
+	    	 instance.sourceArtefactAdapter.ifPresent(o -> o.setResourceSet(resourceSet));
+	    	 instance.targetArtefactAdapter.ifPresent(o -> o.setResourceSet(resourceSet));
+	    	 instance.deltaArtefactAdapter.ifPresent(o -> o.setResourceSet(resourceSet));
+	    	 instance.tool.ifPresent(o -> o.setResourceSet(resourceSet));
+	         return instance;
+	 }
 	
 	
 	private static void acquireDataFromExtension(){
 		 IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(COMPONENT_BUILDER_EXTENSON_ID);
 	        for (IConfigurationElement e : config) {
-				
+	        	
+	        	Optional<String> componentFactoryID = Optional.ofNullable(e.getAttribute("componentFactoryID"));
+	        	
+	        	if(!componentFactoryID.equals(Optional.of(COMPONENT_FACTORY_ID)))
+	        		continue;
+	        	
 				Optional<String> sourceArtefactAdapterID = Optional.ofNullable(e.getAttribute("sourceArtefactAdapterID"));
 				Optional<String> targetArtefactAdapterID = Optional.ofNullable(e.getAttribute("targetArtefactAdapterID"));
 				Optional<String> deltaArtefactAdapterID = Optional.ofNullable(e.getAttribute("deltaArtefactAdapterID"));

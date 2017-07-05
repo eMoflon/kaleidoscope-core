@@ -9,7 +9,6 @@ Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
- org.moflon.tgg.runtime,
  org.eclipse.emf.compare,
  org.moflon.core.utilities,
  org.eclipse.jdt.core,
@@ -19,11 +18,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
- org.moflon.tgg.language,
  org.eclipse.emf.ecore.xmi,
- CryptoAPIConfig,
  SimpleJava,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ com.kaleidoscope.core.delta.metamodel,
+ com.kaleidoscope.ui
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kaleidoscope.extensionpoint,
  com.kaleidoscope.implementation.artefactadapter,

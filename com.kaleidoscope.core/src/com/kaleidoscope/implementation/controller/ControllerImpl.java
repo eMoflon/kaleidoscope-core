@@ -5,23 +5,28 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.emf.ecore.EObject;
-import org.moflon.tgg.runtime.DeltaSpecification;
 
 import com.kaleidoscope.extensionpoint.ArtefactAdapter;
 import com.kaleidoscope.extensionpoint.BXtool;
 import com.kaleidoscope.extensionpoint.DeltaDiscoverer;
+import com.kaleidoscope.ui.delta.javabased.operational.OperationalJavaBasedDelta;
+
+import Deltameta.OperationalDelta;
 
 public  interface ControllerImpl {
 
+	
 	/**
 	 *  Transforms source model into the target model and unparses the newly generated target model.
 	 */
-	public default void sourceToTargetTransformation(Object sourceModelParseSource, Object targetModelUnparseSource,Path toolWorkingDirPath, Optional<Consumer<EObject>> targetModelPostProcessing){
+	public default void sourceToTargetTransformation(Object sourceModelParseSource, Object targetModelUnparseSource,Path toolWorkingDirPath, Optional<Consumer<EObject>> targetModelPostProcessing)throws NullPointerException{
 		
 		ComponentFactory factory = ComponentFactory.getInstance();
 		ArtefactAdapter sourceArtefactAdapter = factory.getSourceArtefactAdapter().get();
 		ArtefactAdapter targetArtefactAdapter = factory.getTargetArtefactAdapter().get();
 		BXtool tool = factory.getTool().get();
+		
+		
 		tool.setWorkingDirectory(toolWorkingDirPath);
 		
 		EObject sourceModel = sourceArtefactAdapter.parse(sourceModelParseSource);
@@ -73,10 +78,11 @@ public  interface ControllerImpl {
 		
 		
 		
-		DeltaSpecification deltaSpec = deltaDiscover.generateDeltaSpecFromModels(newSourceModel, oldSourceModel);
-		deltaArtefactAdapter.unparse(deltaSource, deltaSpec);
+		OperationalDelta operationalDelta = (OperationalDelta)deltaDiscover.generateDeltaSpecFromModels(newSourceModel, oldSourceModel);
+		deltaArtefactAdapter.unparse(deltaSource, operationalDelta);
 		
-		tool.syncForwardFromDelta((Path)deltaSource);	
+		OperationalJavaBasedDelta javaBasedOperationalDelta = new OperationalJavaBasedDelta(operationalDelta);
+		tool.syncForwardFromJavaBasedDelta(javaBasedOperationalDelta);	
 		targetArtefactAdapter.unparse(targetModelUnparseSource, tool.getTargetModel());
 		tool.persistModels();
 	}
@@ -100,10 +106,11 @@ public  interface ControllerImpl {
 		
 		
 		
-		DeltaSpecification deltaSpec = deltaDiscover.generateDeltaSpecFromModels(newTargetModel, oldTargetModel);
-		deltaArtefactAdapter.unparse(deltaSource, deltaSpec);
+		OperationalDelta operationalDelta = (OperationalDelta)deltaDiscover.generateDeltaSpecFromModels(newTargetModel, oldTargetModel);
+		deltaArtefactAdapter.unparse(deltaSource, operationalDelta);
 		
-		tool.syncBackwardFromDelta((Path)deltaSource);
+		OperationalJavaBasedDelta javaBasedOperationalDelta = new OperationalJavaBasedDelta(operationalDelta);
+		tool.syncBackwardFromJavaBasedDelta(javaBasedOperationalDelta);
 		sourceArtefactAdapter.unparse(sourceModelUnparseSource, tool.getSourceModel());
 	}
 }

@@ -16,9 +16,10 @@ import org.eclipse.emf.compare.scope.IComparisonScope;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import com.kaleidoscope.extensionpoint.DeltaDiscoverer;
+import com.kaleidoscope.extensionpoint.deltadiscoverer.OfflineDeltaDiscoverer;
+import com.kaleidoscope.ui.delta.javabased.JavaBasedDelta;
+import com.kaleidoscope.ui.delta.javabased.operational.OperationalJavaBasedDelta;
 
 import Deltameta.AddEdgeOP;
 import Deltameta.AddNodeOP;
@@ -29,7 +30,7 @@ import Deltameta.DeltametaFactory;
 import Deltameta.Edge;
 import Deltameta.OperationalDelta;
 
-public class EMFCompareDeltaDiscoverer implements DeltaDiscoverer {
+public class EMFCompareDeltaDiscoverer implements OfflineDeltaDiscoverer<EObject> {
 
 ResourceSet resourceSet = null;
 
@@ -45,7 +46,8 @@ ResourceSet resourceSet = null;
 	 * @param newModel
 	 * @return DeltaSpecification represents delta between the two models
 	 */
-	public OperationalDelta generateDeltaSpecFromModels(EObject oldModel, EObject newModel){
+	
+	public JavaBasedDelta generateDeltaSpecFromModels(EObject oldModel, EObject newModel){
 		//BasicConfigurator.configure();
 		
 		Comparison comparison = compareModels(oldModel, newModel);
@@ -118,7 +120,7 @@ ResourceSet resourceSet = null;
 			System.out.println("=========================================================");
 	    }
 		System.out.println("------------------Comparison finished--------------------");
-		return operationalDelta;
+		return new OperationalJavaBasedDelta(operationalDelta);
 	}	
 	/*
 	public DeltaSpecification old_generateDeltaSpecFromModels(EObject oldModel, EObject newModel){
@@ -193,5 +195,6 @@ ResourceSet resourceSet = null;
 		return comparison;
 				
 	}
+	
 
 }

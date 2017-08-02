@@ -59,7 +59,7 @@ between the models.
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":com.caleidoscope.extensionpoint.DeltaDiscovery"/>
+                  <meta.attribute kind="java" basedOn=":com.kaleidoscope.extensionpoint.deltadiscoverer.DeltaDiscoverer"/>
                </appinfo>
             </annotation>
          </attribute>

@@ -9,7 +9,6 @@
          ArtefactAdapter is used for parsing and unparsing models from different sources.
 It defines through two methods how to parse a model from a given source and how
 to unparse/save the model to the given source.
-
       </documentation>
    </annotation>
 
@@ -58,7 +57,7 @@ to unparse/save the model to the given source.
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":com.caleidoscope.extensionpoint.ArtefactAdapter"/>
+                  <meta.attribute kind="java" basedOn=":com.kaleidoscope.extensionpoint.ArtefactAdapter"/>
                </appinfo>
             </annotation>
          </attribute>

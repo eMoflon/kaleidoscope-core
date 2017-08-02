@@ -57,7 +57,7 @@ ArtefactAdapters.
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":com.caleidoscope.extensionpoint.BXtool"/>
+                  <meta.attribute kind="java" basedOn=":com.kaleidoscope.extensionpoint.bxtool.BXtool"/>
                </appinfo>
             </annotation>
          </attribute>

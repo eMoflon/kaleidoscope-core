@@ -6,6 +6,9 @@ import java.util.function.Consumer;
 
 import org.eclipse.emf.ecore.EObject;
 
+import com.kaleidoscope.extensionpoint.bxtool.BXtool;
+import com.kaleidoscope.extensionpoint.deltadiscoverer.DeltaDiscoverer;
+
 public interface Controller {
 
 	public void sourceToTargetTransformation(Optional<Consumer<EObject>>targetModelPostProcessing);

@@ -9,8 +9,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 
 import com.kaleidoscope.extensionpoint.ArtefactAdapter;
-import com.kaleidoscope.extensionpoint.BXtool;
-import com.kaleidoscope.extensionpoint.DeltaDiscoverer;
+import com.kaleidoscope.extensionpoint.bxtool.BXtool;
+import com.kaleidoscope.extensionpoint.deltadiscoverer.DeltaDiscoverer;
+
 
 public class ComponentFactory {
 	

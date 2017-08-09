@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: com.kaleidoscope.core;singleton:=true
+Bundle-SymbolicName: com.kaleidoscope.core.framework;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
@@ -23,7 +23,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench,
  com.kaleidoscope.core.delta.metamodel
 Bundle-ActivationPolicy: lazy
-Export-Package: com.kaleidoscope.extensionpoint,
+Export-Package: com.kaleidoscope.delta.javabased,
+ com.kaleidoscope.delta.javabased.operational,
+ com.kaleidoscope.extensionpoint,
  com.kaleidoscope.extensionpoint.bxtool,
  com.kaleidoscope.implementation.artefactadapter,
  com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser,

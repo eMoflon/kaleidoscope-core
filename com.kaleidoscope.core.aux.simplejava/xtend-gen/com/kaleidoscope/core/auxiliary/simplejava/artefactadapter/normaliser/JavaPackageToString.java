@@ -72,8 +72,9 @@ public class JavaPackageToString {
         } else {
           _builder.appendImmediate("\n", "");
         }
-        CharSequence _unparseCompilationUnit = this.unparseCompilationUnit(jPackage.getName(), cu);
-        _builder.append(_unparseCompilationUnit);
+        String _name = jPackage.getName();
+        CharSequence _unparseCompilationUnit = this.unparseCompilationUnit(_name, cu);
+        _builder.append(_unparseCompilationUnit, "");
         _builder.newLineIfNotEmpty();
       }
     }
@@ -85,7 +86,7 @@ public class JavaPackageToString {
   public CharSequence unparseCompilationUnit(final String javaPackage, final JavaCompilationUnit jCompilationUnit) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package ");
-    _builder.append(javaPackage);
+    _builder.append(javaPackage, "");
     _builder.append(";");
     _builder.newLineIfNotEmpty();
     EList<JavaImport> _imports = jCompilationUnit.getImports();
@@ -102,7 +103,7 @@ public class JavaPackageToString {
       for(final JavaImport i : sortedImports) {
         _builder.append("import ");
         String _value = i.getValue();
-        _builder.append(_value);
+        _builder.append(_value, "");
         _builder.append(";");
         _builder.newLineIfNotEmpty();
       }
@@ -110,7 +111,7 @@ public class JavaPackageToString {
     _builder.newLine();
     _builder.append("public class ");
     String _name = jCompilationUnit.getName();
-    _builder.append(_name);
+    _builder.append(_name, "");
     _builder.append("{\t\t");
     _builder.newLineIfNotEmpty();
     _builder.append("\t");
@@ -162,14 +163,14 @@ public class JavaPackageToString {
       if ((jMethod instanceof JavaWorkflowMethod)) {
         _builder.newLineIfNotEmpty();
         CharSequence _unparseWorkflowMethod = this.unparseWorkflowMethod(((JavaWorkflowMethod)jMethod));
-        _builder.append(_unparseWorkflowMethod);
+        _builder.append(_unparseWorkflowMethod, "");
         _builder.newLineIfNotEmpty();
       }
     }
     {
       if ((jMethod instanceof JavaOpaqueMethod)) {
         CharSequence _unparseOpaqueMethod = this.unparseOpaqueMethod(((JavaOpaqueMethod)jMethod));
-        _builder.append(_unparseOpaqueMethod);
+        _builder.append(_unparseOpaqueMethod, "");
         _builder.newLineIfNotEmpty();
       }
     }
@@ -184,13 +185,13 @@ public class JavaPackageToString {
     final List<JavaVariableDeclaration> sortedParameters = new ArrayList<JavaVariableDeclaration>(_params);
     this.javaVariableDeclarationNormaliser.normalize(sortedParameters);
     String _modifier = jMethod.getModifier();
-    _builder.append(_modifier);
+    _builder.append(_modifier, "");
     _builder.append(" ");
     String _type = jMethod.getType();
-    _builder.append(_type);
+    _builder.append(_type, "");
     _builder.append(" ");
     String _name = jMethod.getName();
-    _builder.append(_name);
+    _builder.append(_name, "");
     _builder.append("(");
     final Function1<JavaVariableDeclaration, String> _function = (JavaVariableDeclaration p) -> {
       String _type_1 = p.getType();
@@ -198,19 +199,21 @@ public class JavaPackageToString {
       String _name_1 = p.getName();
       return (_plus + _name_1);
     };
-    String _join = IterableExtensions.join(ListExtensions.<JavaVariableDeclaration, String>map(sortedParameters, _function), ",");
-    _builder.append(_join);
+    List<String> _map = ListExtensions.<JavaVariableDeclaration, String>map(sortedParameters, _function);
+    String _join = IterableExtensions.join(_map, ",");
+    _builder.append(_join, "");
     _builder.append(") ");
     {
-      int _length = jMethod.getThrows().length();
+      String _throws = jMethod.getThrows();
+      int _length = _throws.length();
       boolean _greaterThan = (_length > 1);
       if (_greaterThan) {
         _builder.append("throws");
       }
     }
     _builder.append(" ");
-    String _throws = jMethod.getThrows();
-    _builder.append(_throws);
+    String _throws_1 = jMethod.getThrows();
+    _builder.append(_throws_1, "");
     _builder.newLineIfNotEmpty();
     _builder.append("{");
     _builder.newLine();
@@ -232,36 +235,37 @@ public class JavaPackageToString {
   public CharSequence unparseOpaqueMethod(final JavaOpaqueMethod jMethod) {
     StringConcatenation _builder = new StringConcatenation();
     String _modifier = jMethod.getModifier();
-    _builder.append(_modifier);
+    _builder.append(_modifier, "");
     _builder.append(" ");
     String _type = jMethod.getType();
-    _builder.append(_type);
+    _builder.append(_type, "");
     _builder.append(" ");
     String _name = jMethod.getName();
-    _builder.append(_name);
+    _builder.append(_name, "");
     _builder.append("(");
     String _parameters = jMethod.getParameters();
-    _builder.append(_parameters);
+    _builder.append(_parameters, "");
     _builder.append(") ");
     {
       String _throws = jMethod.getThrows();
       boolean _notEquals = (!Objects.equal(_throws, null));
       if (_notEquals) {
         {
-          int _length = jMethod.getThrows().length();
+          String _throws_1 = jMethod.getThrows();
+          int _length = _throws_1.length();
           boolean _greaterThan = (_length > 1);
           if (_greaterThan) {
             _builder.append("throws");
           }
         }
         _builder.append(" ");
-        String _throws_1 = jMethod.getThrows();
-        _builder.append(_throws_1);
+        String _throws_2 = jMethod.getThrows();
+        _builder.append(_throws_2, "");
       }
     }
     _builder.newLineIfNotEmpty();
     String _body = jMethod.getBody();
-    _builder.append(_body);
+    _builder.append(_body, "");
     _builder.newLineIfNotEmpty();
     return _builder;
   }
@@ -271,20 +275,22 @@ public class JavaPackageToString {
     {
       if ((jStat instanceof JavaUnknownStatement)) {
         String _body = ((JavaUnknownStatement)jStat).getBody();
-        _builder.append(_body);
+        _builder.append(_body, "");
         _builder.newLineIfNotEmpty();
       } else {
         boolean _isReturn = jStat.isReturn();
         if (_isReturn) {
           _builder.append("return ");
-          CharSequence _unparseExpression = this.unparseExpression(jStat.getExpr());
-          _builder.append(_unparseExpression);
+          JavaExpression _expr = jStat.getExpr();
+          CharSequence _unparseExpression = this.unparseExpression(_expr);
+          _builder.append(_unparseExpression, "");
           _builder.append(";");
           _builder.newLineIfNotEmpty();
         } else {
-          CharSequence _unparseExpression_1 = this.unparseExpression(jStat.getExpr());
+          JavaExpression _expr_1 = jStat.getExpr();
+          CharSequence _unparseExpression_1 = this.unparseExpression(_expr_1);
           String _plus = (_unparseExpression_1 + ";");
-          _builder.append(_plus);
+          _builder.append(_plus, "");
           _builder.newLineIfNotEmpty();
         }
       }
@@ -333,24 +339,26 @@ public class JavaPackageToString {
   public CharSequence unparseName(final JavaName jName) {
     StringConcatenation _builder = new StringConcatenation();
     String _identifier = jName.getIdentifier();
-    _builder.append(_identifier);
+    _builder.append(_identifier, "");
     return _builder;
   }
   
   public CharSequence unparseLiteral(final JavaLiteral jLiteral) {
     StringConcatenation _builder = new StringConcatenation();
     String _value = jLiteral.getValue();
-    _builder.append(_value);
+    _builder.append(_value, "");
     return _builder;
   }
   
   public CharSequence unparseAssignment(final JavaAssignment jAssign) {
     StringConcatenation _builder = new StringConcatenation();
-    CharSequence _unparseExpression = this.unparseExpression(jAssign.getLhs());
-    _builder.append(_unparseExpression);
+    JavaExpression _lhs = jAssign.getLhs();
+    CharSequence _unparseExpression = this.unparseExpression(_lhs);
+    _builder.append(_unparseExpression, "");
     _builder.append(" = ");
-    CharSequence _unparseExpression_1 = this.unparseExpression(jAssign.getRhs());
-    _builder.append(_unparseExpression_1);
+    JavaExpression _rhs = jAssign.getRhs();
+    CharSequence _unparseExpression_1 = this.unparseExpression(_rhs);
+    _builder.append(_unparseExpression_1, "");
     return _builder;
   }
   
@@ -359,10 +367,13 @@ public class JavaPackageToString {
     _builder.append("new ");
     String _type = jArrayInit.getType();
     StringBuilder _stringBuilder = new StringBuilder(_type);
-    int _indexOf = jArrayInit.getType().indexOf("[]");
+    String _type_1 = jArrayInit.getType();
+    int _indexOf = _type_1.indexOf("[]");
     int _plus = (_indexOf + 1);
-    String _string = _stringBuilder.insert(_plus, jArrayInit.getDimension()).toString();
-    _builder.append(_string);
+    String _dimension = jArrayInit.getDimension();
+    StringBuilder _insert = _stringBuilder.insert(_plus, _dimension);
+    String _string = _insert.toString();
+    _builder.append(_string, "");
     return _builder;
   }
   
@@ -385,19 +396,21 @@ public class JavaPackageToString {
       boolean _notEquals = (!Objects.equal(_optionalExpression, null));
       if (_notEquals) {
         _builder.newLineIfNotEmpty();
-        CharSequence _unparseExpression = this.unparseExpression(jMethodInvocation.getOptionalExpression());
-        _builder.append(_unparseExpression);
+        JavaExpression _optionalExpression_1 = jMethodInvocation.getOptionalExpression();
+        CharSequence _unparseExpression = this.unparseExpression(_optionalExpression_1);
+        _builder.append(_unparseExpression, "");
         _builder.append(".");
       }
     }
     String _name = jMethodInvocation.getName();
-    _builder.append(_name);
+    _builder.append(_name, "");
     _builder.append("(");
     final Function1<JavaExpression, CharSequence> _function = (JavaExpression a) -> {
       return this.unparseExpression(a);
     };
-    String _join = IterableExtensions.join(ListExtensions.<JavaExpression, CharSequence>map(sortedArguments, _function), ",");
-    _builder.append(_join);
+    List<CharSequence> _map = ListExtensions.<JavaExpression, CharSequence>map(sortedArguments, _function);
+    String _join = IterableExtensions.join(_map, ",");
+    _builder.append(_join, "");
     _builder.append(")");
     return _builder;
   }
@@ -405,10 +418,10 @@ public class JavaPackageToString {
   public CharSequence unparseVariableDeclaration(final JavaVariableDeclaration jVarDec) {
     StringConcatenation _builder = new StringConcatenation();
     String _type = jVarDec.getType();
-    _builder.append(_type);
+    _builder.append(_type, "");
     _builder.append(" ");
     String _name = jVarDec.getName();
-    _builder.append(_name);
+    _builder.append(_name, "");
     return _builder;
   }
 }

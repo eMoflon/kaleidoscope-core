@@ -7,18 +7,14 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -45,12 +41,9 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-
 import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaPackageToString;
 import com.kaleidoscope.extensionpoint.ArtefactAdapter;
 
-import SimpleJava.SimpleJavaFactory;
 import SimpleJava.JavaArrayInit;
 import SimpleJava.JavaAssignment;
 import SimpleJava.JavaCompilationUnit;
@@ -66,14 +59,13 @@ import SimpleJava.JavaStatement;
 import SimpleJava.JavaUnknownStatement;
 import SimpleJava.JavaVariableDeclaration;
 import SimpleJava.JavaWorkflowMethod;
+import SimpleJava.SimpleJavaFactory;
 
 public class JavaArtefactAdapter implements ArtefactAdapter {
 	
 	private List<Path> javaFilePaths;
 	private Path packageAbsPath;
 	
-	
-	//private IProgressMonitor monitor;
 	private static final Logger logger = Logger.getLogger(JavaArtefactAdapter.class);
 	
 	@Override
@@ -97,14 +89,17 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		String fieldDeclarations = "";
 		JavaCompilationUnit jcu = SimpleJavaFactory.eINSTANCE.createJavaCompilationUnit();
 		Scanner scanner = null;
+		String fileContent = "";
 		
 		try {
-			scanner = new Scanner(absJavaFilePath.toFile(),"UTF-8").useDelimiter("\\A");
+			scanner = new Scanner(absJavaFilePath.toFile(),"UTF-8");
+			scanner.useDelimiter("\\A");
 		} catch (FileNotFoundException e) {
 			logger.error("Unable to load java file that needs to be parsed into a java model!", e);
+		} finally {
+			fileContent = scanner.hasNext() ? scanner.next() : "";
+			scanner.close();
 		}
-		String fileContent = scanner.hasNext() ? scanner.next() : "";
-		scanner.close();
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

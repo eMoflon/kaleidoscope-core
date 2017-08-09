@@ -36,7 +36,7 @@ public class MoveNodeOp extends Operation{
       return moveNodeOp;
    }
 	@Override
-	public void executeOperation(EObject model) {
+	public void executeOperation() {
 		// TODO Auto-generated method stub
 		
 	}

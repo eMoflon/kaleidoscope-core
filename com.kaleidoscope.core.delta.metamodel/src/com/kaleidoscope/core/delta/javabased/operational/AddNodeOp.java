@@ -30,7 +30,7 @@ public class AddNodeOp extends Operation{
       return addNodeOp;
    }
 	@Override
-	public void executeOperation(EObject model) {
+	public void executeOperation() {
 		// TODO Auto-generated method stub
 		
 	}

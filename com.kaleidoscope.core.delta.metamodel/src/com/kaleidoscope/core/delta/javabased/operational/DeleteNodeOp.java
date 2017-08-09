@@ -3,8 +3,6 @@ package com.kaleidoscope.core.delta.javabased.operational;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import com.kaleidoscope.core.delta.javabased.operational.Operation;
-
 import KaleidoscopeDelta.DeleteNodeOP;
 import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
@@ -34,7 +32,7 @@ public class DeleteNodeOp extends Operation{
       return deleteNodeOp;
    }
 	@Override
-	public void executeOperation(EObject model) {
+	public void executeOperation() {
 		EcoreUtil.delete(node);
 		
 	}

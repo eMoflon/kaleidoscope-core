@@ -1,7 +1,5 @@
 package com.kaleidoscope.core.delta.javabased.operational;
 
-import org.eclipse.emf.ecore.EObject;
-
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 
 import KaleidoscopeDelta.DeleteEdgeOP;
@@ -31,7 +29,7 @@ public class DeleteEdgeOp extends Operation{
       return deleteEdgeOp;
    }
 	@Override
-	public void executeOperation(EObject model) {		
+	public void executeOperation() {		
 		/*EStructuralFeature feature = edge.getType();
 		if(!feature.isDerived()){
 			if (feature.isMany()) {

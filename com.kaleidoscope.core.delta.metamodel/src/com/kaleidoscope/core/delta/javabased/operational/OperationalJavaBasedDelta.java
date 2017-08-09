@@ -128,10 +128,8 @@ public class OperationalJavaBasedDelta extends JavaBasedDelta {
 	   public Consumer<EObject> executeOperationalDelta(){
 		   Consumer<EObject> edit = (input) -> {
 			   
-			   operations.forEach((o) -> o.executeOperation(input));
+			   operations.forEach((o) -> o.executeOperation());
 			};
-			
-			
 			return edit;
 	   }
 	   public OperationalDelta transformIntoOperationalDelta(){

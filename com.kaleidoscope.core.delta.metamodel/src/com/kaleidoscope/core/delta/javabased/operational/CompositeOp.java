@@ -3,17 +3,6 @@ package com.kaleidoscope.core.delta.javabased.operational;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.ecore.EObject;
-
-import com.kaleidoscope.core.delta.javabased.operational.AddEdgeOp;
-import com.kaleidoscope.core.delta.javabased.operational.AddNodeOp;
-import com.kaleidoscope.core.delta.javabased.operational.AttributeChangeOp;
-import com.kaleidoscope.core.delta.javabased.operational.CompositeOp;
-import com.kaleidoscope.core.delta.javabased.operational.DeleteEdgeOp;
-import com.kaleidoscope.core.delta.javabased.operational.DeleteNodeOp;
-import com.kaleidoscope.core.delta.javabased.operational.MoveNodeOp;
-import com.kaleidoscope.core.delta.javabased.operational.Operation;
-
 import KaleidoscopeDelta.AddEdgeOP;
 import KaleidoscopeDelta.AddNodeOP;
 import KaleidoscopeDelta.AttributeChangeOP;
@@ -66,8 +55,8 @@ public class CompositeOp extends Operation{
 	}
 
 	@Override
-	public void executeOperation(EObject model) {
-		operations.forEach(o -> o.executeOperation(model));		
+	public void executeOperation() {
+		operations.forEach(o -> o.executeOperation());		
 	}
 
 	public void addOperation(Operation o){

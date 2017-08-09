@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Xmi
+Bundle-SymbolicName: com.kaleidoscope.core.aux.xmi
+Bundle-Version: 1.0.0.qualifier
+Export-Package: com.kaleidoscope.core.auxiliary.xmi.artefactadapter
+Require-Bundle: com.kaleidoscope.core.framework
+Import-Package: org.apache.log4j

@@ -1,4 +1,4 @@
-package com.kaleidoscope.implementation.artefactadapter;
+package com.kaleidoscope.core.auxiliary.xmi.artefactadapter;
 
 import java.io.File;
 import java.io.IOException;

@@ -9,7 +9,6 @@ Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
- org.eclipse.emf.compare,
  org.moflon.core.utilities,
  org.eclipse.jdt.core,
  org.eclipse.equinox.registry,
@@ -24,6 +23,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kaleidoscope.extensionpoint,
  com.kaleidoscope.extensionpoint.bxtool,
- com.kaleidoscope.implementation.artefactadapter,
+ com.kaleidoscope.extensionpoint.deltadiscoverer,
  com.kaleidoscope.implementation.controller
 

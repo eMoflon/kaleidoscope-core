@@ -1,32 +1,37 @@
-package com.kaleidoscope.delta.javabased.structural;
+package com.kaleidoscope.core.delta.javabased.operational;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 
-import com.kaleidoscope.delta.javabased.structural.AttributeJavaBasedDelta;
+import com.kaleidoscope.core.delta.javabased.operational.Operation;
 
 import KaleidoscopeDelta.AttributeChangeOP;
 import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
-public class AttributeJavaBasedDelta {
-	   private Object newValue;
-	   private Object oldValue;
+public class AttributeChangeOp extends Operation{
+	private Object newValue;
 	   private EAttribute affectedAttribute;
 	   private EObject affectedNode;
 	   
-	   public AttributeJavaBasedDelta(EAttribute affectedAttribute, Object newValue, EObject affectedNode){
+	   public AttributeChangeOp(EAttribute affectedAttribute, Object newValue, EObject affectedNode){
 	      
 	      this.newValue = newValue;
 	      this.affectedAttribute = affectedAttribute;
 	      this.affectedNode = affectedNode;
 	   }
-	   	   
+	   public AttributeChangeOp(AttributeChangeOP attributeChangeOP){
+		   this.newValue = attributeChangeOP.getNewValue();
+		   this.affectedAttribute = attributeChangeOP.getAttr();
+		   this.affectedNode = attributeChangeOP.getNode();
+	   }
 
 	   public Object getNewValue()
 	   {
 	      return newValue;
 	   }
-	   
+	   public void setAffecteNode(EObject node){
+		   affectedNode  = node;
+	   }
 	   public EAttribute getAffectedAttribute(){
 	      return affectedAttribute;
 	   }
@@ -35,7 +40,7 @@ public class AttributeJavaBasedDelta {
 		   return affectedNode;
 	   }
 
-	   public AttributeChangeOP toOperationalEMF()
+	   public KaleidoscopeDelta.Operation toOperationalEMF()
 	   {	      
 	      AttributeChangeOP attributeChangeOp = KaleidoscopeDeltaFactory.eINSTANCE.createAttributeChangeOP();
 	      attributeChangeOp.setAttr(affectedAttribute);
@@ -44,18 +49,11 @@ public class AttributeJavaBasedDelta {
 	      
 	      return attributeChangeOp;
 	   }
-	   
-	  /* private String getStringValue(Object value)
-	   {
-	      return EcoreUtil.convertToString(affectedAttribute.getEAttributeType(), value);
-	   }*/
 
-	   public static AttributeJavaBasedDelta fromOperationalEMF(AttributeChangeOP attDeltaEMF){
-	      return new AttributeJavaBasedDelta(attDeltaEMF.getAttr(), attDeltaEMF.getNewValue(), attDeltaEMF.getNode());
-	   }
 
-	   /*private static Object extractTypeFromString(String value, EAttribute attribute)
-	   {
-	      return EcoreUtil.createFromString(attribute.getEAttributeType(), value);
-	   }*/
+	@Override
+	public void executeOperation(EObject model) {
+		affectedNode.eSet(affectedAttribute, newValue);
+		
+	}
 }

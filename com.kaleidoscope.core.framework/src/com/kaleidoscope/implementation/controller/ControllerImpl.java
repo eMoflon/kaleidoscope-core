@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.emf.ecore.EObject;
 
-import com.kaleidoscope.delta.javabased.operational.OperationalJavaBasedDelta;
+import com.kaleidoscope.core.delta.javabased.operational.OperationalJavaBasedDelta;
 import com.kaleidoscope.extensionpoint.ArtefactAdapter;
 import com.kaleidoscope.extensionpoint.bxtool.BXtool;
 import com.kaleidoscope.extensionpoint.deltadiscoverer.OfflineDeltaDiscoverer;

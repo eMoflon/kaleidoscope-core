@@ -1,6 +1,6 @@
 package com.kaleidoscope.extensionpoint.deltadiscoverer;
 
-import com.kaleidoscope.delta.javabased.JavaBasedDelta;
+import com.kaleidoscope.core.delta.javabased.JavaBasedDelta;
 
 public interface OnlineDeltaDiscoverer {
 	

@@ -1,4 +1,4 @@
-package com.kaleidoscope.delta.javabased;
+package com.kaleidoscope.core.delta.javabased;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;

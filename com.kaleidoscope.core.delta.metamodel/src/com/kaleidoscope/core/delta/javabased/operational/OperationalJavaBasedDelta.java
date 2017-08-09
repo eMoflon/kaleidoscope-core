@@ -1,4 +1,4 @@
-package com.kaleidoscope.delta.javabased.operational;
+package com.kaleidoscope.core.delta.javabased.operational;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,16 +7,16 @@ import java.util.function.Consumer;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 
-import com.kaleidoscope.delta.javabased.JavaBasedDelta;
-import com.kaleidoscope.delta.javabased.JavaBasedEdge;
-import com.kaleidoscope.delta.javabased.operational.AddEdgeOp;
-import com.kaleidoscope.delta.javabased.operational.AddNodeOp;
-import com.kaleidoscope.delta.javabased.operational.AttributeChangeOp;
-import com.kaleidoscope.delta.javabased.operational.CompositeOp;
-import com.kaleidoscope.delta.javabased.operational.DeleteEdgeOp;
-import com.kaleidoscope.delta.javabased.operational.DeleteNodeOp;
-import com.kaleidoscope.delta.javabased.operational.MoveNodeOp;
-import com.kaleidoscope.delta.javabased.operational.Operation;
+import com.kaleidoscope.core.delta.javabased.JavaBasedDelta;
+import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
+import com.kaleidoscope.core.delta.javabased.operational.AddEdgeOp;
+import com.kaleidoscope.core.delta.javabased.operational.AddNodeOp;
+import com.kaleidoscope.core.delta.javabased.operational.AttributeChangeOp;
+import com.kaleidoscope.core.delta.javabased.operational.CompositeOp;
+import com.kaleidoscope.core.delta.javabased.operational.DeleteEdgeOp;
+import com.kaleidoscope.core.delta.javabased.operational.DeleteNodeOp;
+import com.kaleidoscope.core.delta.javabased.operational.MoveNodeOp;
+import com.kaleidoscope.core.delta.javabased.operational.Operation;
 
 import KaleidoscopeDelta.AddEdgeOP;
 import KaleidoscopeDelta.AddNodeOP;

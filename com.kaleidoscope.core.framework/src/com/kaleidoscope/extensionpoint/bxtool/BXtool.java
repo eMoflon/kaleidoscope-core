@@ -3,8 +3,9 @@ package com.kaleidoscope.extensionpoint.bxtool;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
+
+import com.kaleidoscope.core.delta.javabased.JavaBasedDelta;
 import com.kaleidoscope.extensionpoint.UpdatePolicy;
-import com.kaleidoscope.delta.javabased.JavaBasedDelta;
 
 public interface BXtool<S, T, D> {
 	

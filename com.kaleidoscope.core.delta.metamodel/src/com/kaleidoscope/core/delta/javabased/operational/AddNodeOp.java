@@ -1,8 +1,8 @@
-package com.kaleidoscope.delta.javabased.operational;
+package com.kaleidoscope.core.delta.javabased.operational;
 
 import org.eclipse.emf.ecore.EObject;
 
-import com.kaleidoscope.delta.javabased.operational.Operation;
+import com.kaleidoscope.core.delta.javabased.operational.Operation;
 
 import KaleidoscopeDelta.AddNodeOP;
 import KaleidoscopeDelta.KaleidoscopeDeltaFactory;

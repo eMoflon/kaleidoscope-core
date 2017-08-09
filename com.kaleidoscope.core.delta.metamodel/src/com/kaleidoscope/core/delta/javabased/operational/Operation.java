@@ -1,4 +1,4 @@
-package com.kaleidoscope.delta.javabased.operational;
+package com.kaleidoscope.core.delta.javabased.operational;
 
 import java.util.function.Consumer;
 

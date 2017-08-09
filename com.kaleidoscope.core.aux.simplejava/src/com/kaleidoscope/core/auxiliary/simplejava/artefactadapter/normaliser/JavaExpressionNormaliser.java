@@ -16,8 +16,6 @@ public class JavaExpressionNormaliser<T> implements Comparator<T> {
 	}
 
 	public void normalize(List<T> imports){
-		
-		Comparator<T> comparator = new JavaExpressionNormaliser();
-		Collections.sort(imports, comparator);
+		Collections.sort(imports, this);
 	}
 }

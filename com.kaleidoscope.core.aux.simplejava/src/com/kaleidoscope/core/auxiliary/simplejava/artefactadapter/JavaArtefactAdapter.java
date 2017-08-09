@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -61,7 +60,7 @@ import SimpleJava.JavaVariableDeclaration;
 import SimpleJava.JavaWorkflowMethod;
 import SimpleJava.SimpleJavaFactory;
 
-public class JavaArtefactAdapter implements ArtefactAdapter {
+public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Path>> {
 	
 	private List<Path> javaFilePaths;
 	private Path packageAbsPath;
@@ -69,21 +68,20 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	private static final Logger logger = Logger.getLogger(JavaArtefactAdapter.class);
 	
 	@Override
-	public EObject parse(Object parseSource){
-		
+	public JavaPackage parse(List<Path> parseSource){
 		try{
-			
-			javaFilePaths = (List<Path>)parseSource;
+			javaFilePaths = parseSource;
 			JavaPackage pack = SimpleJavaFactory.eINSTANCE.createJavaPackage();
 			for (Path filePath : javaFilePaths) {
 				 parseJavaFile(pack, filePath);
 			}
+			
 			return pack;
-		
 		}catch (ClassCastException | NullPointerException e) {
 			return null;
 		}
 	}
+	
 	public JavaCompilationUnit parseJavaFile(JavaPackage pack, Path absJavaFilePath){
 		logger.info("Parsing " + absJavaFilePath + " into a java model!");		
 		String fieldDeclarations = "";
@@ -122,8 +120,10 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		jcu.setName(classTypeName.getIdentifier());
 		
 		// to iterate through methods and imports
-	    List<AbstractTypeDeclaration> types = cu.types();
-	    List<ImportDeclaration>imports = cu.imports();
+	    @SuppressWarnings("unchecked")
+		List<AbstractTypeDeclaration> types = cu.types();
+	    @SuppressWarnings("unchecked")
+		List<ImportDeclaration> imports = cu.imports();
 	    
 	    int importIndex = 0;
 	    // add import to java compilation unit
@@ -146,7 +146,8 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	  
 	    	}
 	        if (type.getNodeType() == ASTNode.TYPE_DECLARATION) {	   
-	            List<BodyDeclaration> bodies = type.bodyDeclarations();
+	            @SuppressWarnings("unchecked")
+				List<BodyDeclaration> bodies = type.bodyDeclarations();
 	            
 	            for (BodyDeclaration body : bodies) {
 	            	if(body.getNodeType() == ASTNode.FIELD_DECLARATION){	      	            	
@@ -158,7 +159,13 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	                    MethodDeclaration method = (MethodDeclaration)body;	                    	        
 	                    JavaMethod javaMethod = methodHandler(method);
 	                    
-	                    String modifiers = (String) method.modifiers().stream().filter(x -> x instanceof Modifier).map(Object::toString).collect(Collectors.joining(" "));
+	                    @SuppressWarnings("unchecked")
+						String modifiers = (String) method.modifiers()
+	                    		.stream()
+	                    		.filter(Modifier.class::isInstance)
+	                    		.map(Object::toString)
+	                    		.collect(Collectors.joining(" "));
+	                    
 	                    javaMethod.setModifier(modifiers);
 	                    
 	                    javaMethod.setIndex(methodIndex);
@@ -187,29 +194,20 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 	JavaMethod opaqueMethodHandler(MethodDeclaration method){
 		JavaOpaqueMethod javaMethod = SimpleJavaFactory.eINSTANCE.createJavaOpaqueMethod();
 		javaMethod.setName(method.getName().getFullyQualifiedName());
-        javaMethod.setType(StringUtils.join(method.getReturnType2().toString(),' '));
+        javaMethod.setType(StringUtils.join(method.getReturnType2(), ' '));
         javaMethod.setModifier(StringUtils.join(method.modifiers(), ' '));
         javaMethod.setThrows(StringUtils.join(method.thrownExceptionTypes(),','));
         
         javaMethod.setBody(method.getBody().toString());
         javaMethod.setParameters(StringUtils.join(method.parameters(), ','));
-        /*
-        int index = 0;
-        for(Object varDec : method.parameters()){
-        	if(varDec instanceof SingleVariableDeclaration){
-        		JavaVariableDeclaration javaVarDec = variableDeclarationHandler((SingleVariableDeclaration)varDec);
-        		javaVarDec.setIndex(index);
-        		javaMethod.getParams().add(javaVarDec);
-        		index++;
-        	}	                
-        }
-        */
+        
         return javaMethod;
 	}
+
 	JavaMethod workflowMethodHandler(MethodDeclaration method){
 		JavaWorkflowMethod javaMethod = SimpleJavaFactory.eINSTANCE.createJavaWorkflowMethod();
         javaMethod.setName(method.getName().getFullyQualifiedName());
-        javaMethod.setType(StringUtils.join(method.getReturnType2().toString(),' '));
+        javaMethod.setType(StringUtils.join(method.getReturnType2(), ' '));
         javaMethod.setModifier(StringUtils.join(method.modifiers(), ' '));
         javaMethod.setThrows(StringUtils.join(method.thrownExceptionTypes(),','));
      	 
@@ -370,20 +368,21 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		}
 		return javaMethodInv;
 	}
+	
 	@Override
-	public void unparse(Object unparseSource, Object content) {
+	public void unparse(List<Path> unparseSource, JavaPackage content) {
 		
 		logger.info("Starting to unparse java model!");
 		
 		JavaPackageToString gcs = new JavaPackageToString();
-		JavaPackage jp = (JavaPackage)content;
+		JavaPackage jp = content;
 		
 		for (JavaCompilationUnit jcu : jp.getCunits()) {
 			
 			String fileContent = gcs.unparseCompilationUnit(jp.getName(),jcu).toString();
 			
 			try {		
-				packageAbsPath = (Path)unparseSource;
+				packageAbsPath = unparseSource.get(0);
 				Path javaPath = packageAbsPath.resolve(Paths.get("src", jp.getName().replace('.', File.separatorChar), jcu.getName() + ".java"));
 				File javaFile = javaPath.toFile();
 				FileUtils.writeStringToFile(javaFile, fileContent);
@@ -393,6 +392,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter {
 		}
 		
 	}
+	
 	@Override
 	public void setResourceSet(ResourceSet resourceSet) {
 		

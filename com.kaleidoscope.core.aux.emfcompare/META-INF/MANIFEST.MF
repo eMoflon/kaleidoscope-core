@@ -6,3 +6,4 @@ Bundle-Version: 1.0.0.qualifier
 Require-Bundle: com.kaleidoscope.core.framework,
  com.kaleidoscope.core.delta.metamodel,
  org.eclipse.emf.compare
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

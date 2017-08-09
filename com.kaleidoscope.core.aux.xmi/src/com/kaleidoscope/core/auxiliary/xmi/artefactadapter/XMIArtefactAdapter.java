@@ -12,27 +12,25 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import com.kaleidoscope.extensionpoint.ArtefactAdapter;
 
-public class XMIArtefactAdapter implements ArtefactAdapter {
+public class XMIArtefactAdapter implements ArtefactAdapter<EObject, Path> {
 
 	ResourceSet resourceSet;
 	
 	private static final Logger logger = Logger.getLogger(XMIArtefactAdapter.class);
 	
 	@Override
-	public Object parse(Object parseSource) {	
+	public EObject parse(Path parseSource) {	
 		
 		logger.info("Parsing to XMI model is being performed!");
 		try {
 			
-			Path parsePath = (Path)parseSource;
+			Path parsePath = parseSource;
 			File file = parsePath.toFile();
 			Resource resource = resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));
 			
 			resource.load(null);
 			
-			return resource.getContents().get(0);
-			
-			
+			return resource.getContents().get(0);	
 		} catch (IOException e) {
 			
 			logger.error("Not able to load the XMI file from the provided parseSource", e);
@@ -42,19 +40,17 @@ public class XMIArtefactAdapter implements ArtefactAdapter {
 			logger.error("Not able to cast parseSource into Path class", e);
 			return null;
 		}
-		
-	
 	}
+	
 	@Override
-	public void unparse(Object unparseSource, Object content) {
+	public void unparse(Path unparseSource, EObject content) {
 		logger.info("Starting to unparse XMI!");
 		
 		try {
-			
-			File file = ((Path) unparseSource).toFile();  
+			File file = unparseSource.toFile();  
 			Resource resource = resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));
 					
-			resource.getContents().add((EObject) content);
+			resource.getContents().add(content);
 			resource.save(null);
 			
 			logger.info("XMI Resource saved!");
@@ -63,6 +59,7 @@ public class XMIArtefactAdapter implements ArtefactAdapter {
 			logger.error("Not able to safe XMI Resource!", e);			
 		}		
 	}
+	
 	public void setResourceSet(ResourceSet resourceSet){
 		this.resourceSet = resourceSet;
 	}

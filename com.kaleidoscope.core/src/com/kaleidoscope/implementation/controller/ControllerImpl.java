@@ -11,7 +11,6 @@ import com.kaleidoscope.extensionpoint.bxtool.BXtool;
 import com.kaleidoscope.extensionpoint.deltadiscoverer.OfflineDeltaDiscoverer;
 import com.kaleidoscope.ui.delta.javabased.operational.OperationalJavaBasedDelta;
 
-import Deltameta.OperationalDelta;
 
 public  interface ControllerImpl {
 

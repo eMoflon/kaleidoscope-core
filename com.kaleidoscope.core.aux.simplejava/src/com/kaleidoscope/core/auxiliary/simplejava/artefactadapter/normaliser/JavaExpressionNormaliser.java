@@ -1,4 +1,4 @@
-package com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser;
+package com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser;
 
 import java.util.Collections;
 import java.util.Comparator;

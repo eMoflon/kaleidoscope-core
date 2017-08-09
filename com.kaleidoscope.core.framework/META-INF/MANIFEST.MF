@@ -19,7 +19,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
  org.eclipse.emf.ecore.xmi,
- SimpleJava,
  org.eclipse.ui.workbench,
  com.kaleidoscope.core.delta.metamodel
 Bundle-ActivationPolicy: lazy
@@ -28,6 +27,5 @@ Export-Package: com.kaleidoscope.delta.javabased,
  com.kaleidoscope.extensionpoint,
  com.kaleidoscope.extensionpoint.bxtool,
  com.kaleidoscope.implementation.artefactadapter,
- com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser,
  com.kaleidoscope.implementation.controller
 

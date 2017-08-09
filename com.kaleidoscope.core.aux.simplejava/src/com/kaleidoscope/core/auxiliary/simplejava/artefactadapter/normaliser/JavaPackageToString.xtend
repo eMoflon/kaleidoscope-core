@@ -1,4 +1,4 @@
-package com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser
+package com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser
 
 import SimpleJava.JavaArrayInit
 import SimpleJava.JavaAssignment
@@ -15,12 +15,12 @@ import SimpleJava.JavaStatement
 import SimpleJava.JavaUnknownStatement
 import SimpleJava.JavaVariableDeclaration
 import SimpleJava.JavaWorkflowMethod
-import com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser.JavaCompilationUnitNormaliser
-import com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser.JavaExpressionNormaliser
-import com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser.JavaImportNormaliser
-import com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser.JavaMethodNormaliser
 import java.util.ArrayList
 import java.util.List
+import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaImportNormaliser
+import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaExpressionNormaliser
+import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaCompilationUnitNormaliser
+import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaMethodNormaliser
 
 class JavaPackageToString {
 	private boolean sortMethods;

@@ -1,4 +1,5 @@
-package com.kaleidoscope.implementation.artefactadapter;
+package com.kaleidoscope.core.auxiliary.simplejava.artefactadapter;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,8 +45,10 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
+import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaPackageToString;
 import com.kaleidoscope.extensionpoint.ArtefactAdapter;
-import com.kaleidoscope.implementation.artefactadapter.normaliser.java_normaliser.JavaPackageToString;
 
 import SimpleJava.SimpleJavaFactory;
 import SimpleJava.JavaArrayInit;

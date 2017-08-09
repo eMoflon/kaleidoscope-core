@@ -1,29 +1,10 @@
 package com.kaleidoscope.core.delta.javabased.operational;
 
-import java.util.function.Consumer;
-
-import org.eclipse.emf.ecore.EObject;
-
-public abstract class Operation{
-	
-	private EObject model;
-	
+public abstract class Operation {
 	public abstract KaleidoscopeDelta.Operation toOperationalEMF();
-	public abstract void executeOperation(EObject model);
+	public abstract void executeOperation();
 	
-	public Consumer<EObject> toJavaConsumer(){
-		   Consumer<EObject> edit = (model) -> {
-			   this.setModel(model);
-			   this.executeOperation(model);		
-			};
-			return edit;
-	}
-	
-	private void setModel(EObject model){
-		this.model = model;
-	}
-	
-	private EObject getModel(){
-		return model;
+	public Runnable toJavaConsumer() {
+		return () -> this.executeOperation();
 	}
 }

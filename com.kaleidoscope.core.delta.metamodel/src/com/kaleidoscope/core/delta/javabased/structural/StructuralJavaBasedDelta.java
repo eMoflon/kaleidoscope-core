@@ -92,17 +92,6 @@ public class StructuralJavaBasedDelta extends JavaBasedDelta {
 	   public String toString()
 	   {
 		   return "";
-	    /*  return "Added Nodes       (" + addedNodes.size()       + "):" + Graph.displayNodes(addedNodes)   + "\n" + 
-	             "Added Edges       (" + addedEdges.size()       + "):" + Graph.displayEdges(addedEdges)   + "\n" + 
-	             "Deleted Nodes     (" + deletedNodes.size()     + "):" + Graph.displayNodes(deletedNodes) + "\n" + 
-	             "Deleted Edges     (" + deletedEdges.size()     + "):" + Graph.displayEdges(deletedEdges) + "\n" + 
-	             "Attribute Changes (" + attributeChanges.size() + "):" + displayAttrChanges(attributeChanges);*/
-	   }
-
-	   private String displayAttrChanges(Collection<AttributeJavaBasedDelta> changes)
-	   {
-	      return changes.stream().map(chg -> chg.getAffectedAttribute().getEContainingClass().getName() + "." + chg.getAffectedAttribute().getName() + 
-	                  ": " + "[ OLD VALUE ]" + " -> " + "[" + chg.getNewValue() + "]").collect(Collectors.joining(", "));
 	   }
 
 	   public boolean isChangeDetected() {

@@ -10,7 +10,6 @@ import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
 public class AttributeJavaBasedDelta {
 	   private Object newValue;
-	   private Object oldValue;
 	   private EAttribute affectedAttribute;
 	   private EObject affectedNode;
 	   
@@ -44,18 +43,8 @@ public class AttributeJavaBasedDelta {
 	      
 	      return attributeChangeOp;
 	   }
-	   
-	  /* private String getStringValue(Object value)
-	   {
-	      return EcoreUtil.convertToString(affectedAttribute.getEAttributeType(), value);
-	   }*/
 
 	   public static AttributeJavaBasedDelta fromOperationalEMF(AttributeChangeOP attDeltaEMF){
 	      return new AttributeJavaBasedDelta(attDeltaEMF.getAttr(), attDeltaEMF.getNewValue(), attDeltaEMF.getNode());
 	   }
-
-	   /*private static Object extractTypeFromString(String value, EAttribute attribute)
-	   {
-	      return EcoreUtil.createFromString(attribute.getEAttributeType(), value);
-	   }*/
 }

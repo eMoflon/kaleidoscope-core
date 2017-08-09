@@ -10,7 +10,7 @@ import com.kaleidoscope.core.delta.javabased.operational.Operation;
 import KaleidoscopeDelta.AddEdgeOP;
 import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
-public class AddEdgeOp extends Operation{
+public class AddEdgeOp extends Operation {
 	private JavaBasedEdge edge;
 	
 	public AddEdgeOp(JavaBasedEdge edge){
@@ -32,16 +32,15 @@ public class AddEdgeOp extends Operation{
    }
    
 	
-   public void executeOperation(EObject model){
+   @Override
+   @SuppressWarnings("unchecked")
+   public void executeOperation(){
 	   EStructuralFeature feature = edge.getType();
 		if(!feature.isDerived()){
 			if (feature.isMany()) {
-				((EList) edge.getSrc().eGet(feature)).add(edge.getTrg());
+				((EList<EObject>) edge.getSrc().eGet(feature)).add(edge.getTrg());
 			} else
 				edge.getSrc().eSet(feature, edge.getTrg());
 		}
    }
-   
-   
-   
 }

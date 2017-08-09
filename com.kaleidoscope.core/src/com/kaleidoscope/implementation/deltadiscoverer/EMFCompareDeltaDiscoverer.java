@@ -17,9 +17,9 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
+import com.kaleidoscope.delta.javabased.operational.OperationalJavaBasedDelta;
 import com.kaleidoscope.extensionpoint.deltadiscoverer.OfflineDeltaDiscoverer;
-import com.kaleidoscope.ui.delta.javabased.JavaBasedDelta;
-import com.kaleidoscope.ui.delta.javabased.operational.OperationalJavaBasedDelta;
+import com.kaleidoscope.delta.javabased.JavaBasedDelta;
 
 import Deltameta.AddEdgeOP;
 import Deltameta.AddNodeOP;

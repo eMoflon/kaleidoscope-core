@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import com.kaleidoscope.extensionpoint.UpdatePolicy;
-import com.kaleidoscope.ui.delta.javabased.JavaBasedDelta;
+import com.kaleidoscope.delta.javabased.JavaBasedDelta;
 
 public interface BXtool<S, T, D> {
 	

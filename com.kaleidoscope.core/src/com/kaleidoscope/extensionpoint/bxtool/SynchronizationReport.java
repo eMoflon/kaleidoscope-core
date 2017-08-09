@@ -3,7 +3,7 @@ package com.kaleidoscope.extensionpoint.bxtool;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kaleidoscope.ui.delta.javabased.operational.Operation;
+import com.kaleidoscope.delta.javabased.operational.Operation;
 
 public class SynchronizationReport{
 	

@@ -21,8 +21,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xmi,
  SimpleJava,
  org.eclipse.ui.workbench,
- com.kaleidoscope.core.delta.metamodel,
- com.kaleidoscope.ui
+ com.kaleidoscope.core.delta.metamodel
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kaleidoscope.extensionpoint,
  com.kaleidoscope.extensionpoint.bxtool,

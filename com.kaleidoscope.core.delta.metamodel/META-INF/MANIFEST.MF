@@ -1,10 +1,9 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: com.kaleidoscope.core.delta.metamodel;singleton:=
  true
-Export-Package: 
- Deltameta.util,
- Deltameta,
- Deltameta.impl
+Export-Package: KaleidoscopeDelta.util,
+ KaleidoscopeDelta,
+ KaleidoscopeDelta.impl
 Bundle-Name: com.kaleidoscope.core.delta.metamodel
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore,

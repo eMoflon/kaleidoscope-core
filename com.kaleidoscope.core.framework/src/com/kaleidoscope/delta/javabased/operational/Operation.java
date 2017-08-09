@@ -8,7 +8,7 @@ public abstract class Operation{
 	
 	private EObject model;
 	
-	public abstract Deltameta.Operation toOperationalEMF();
+	public abstract KaleidoscopeDelta.Operation toOperationalEMF();
 	public abstract void executeOperation(EObject model);
 	
 	public Consumer<EObject> toJavaConsumer(){

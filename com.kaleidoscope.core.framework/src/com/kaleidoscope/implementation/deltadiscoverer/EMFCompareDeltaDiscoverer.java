@@ -21,14 +21,14 @@ import com.kaleidoscope.delta.javabased.operational.OperationalJavaBasedDelta;
 import com.kaleidoscope.extensionpoint.deltadiscoverer.OfflineDeltaDiscoverer;
 import com.kaleidoscope.delta.javabased.JavaBasedDelta;
 
-import Deltameta.AddEdgeOP;
-import Deltameta.AddNodeOP;
-import Deltameta.AttributeChangeOP;
-import Deltameta.DeleteEdgeOP;
-import Deltameta.DeleteNodeOP;
-import Deltameta.DeltametaFactory;
-import Deltameta.Edge;
-import Deltameta.OperationalDelta;
+import KaleidoscopeDelta.AddEdgeOP;
+import KaleidoscopeDelta.AddNodeOP;
+import KaleidoscopeDelta.AttributeChangeOP;
+import KaleidoscopeDelta.DeleteEdgeOP;
+import KaleidoscopeDelta.DeleteNodeOP;
+import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
+import KaleidoscopeDelta.Edge;
+import KaleidoscopeDelta.OperationalDelta;
 
 public class EMFCompareDeltaDiscoverer implements OfflineDeltaDiscoverer<EObject> {
 
@@ -53,7 +53,7 @@ ResourceSet resourceSet = null;
 		Comparison comparison = compareModels(oldModel, newModel);
 		List<Diff> differences = comparison.getDifferences();
 		
-		OperationalDelta operationalDelta = DeltametaFactory.eINSTANCE.createOperationalDelta();
+		OperationalDelta operationalDelta = KaleidoscopeDeltaFactory.eINSTANCE.createOperationalDelta();
 		
 		System.out.println("------------------Doing comparison of models--------------------");
 		for(Diff diff: differences)
@@ -66,7 +66,7 @@ ResourceSet resourceSet = null;
 					Match match = diff.getMatch();										
 					//oldValue = match.getRight().eGet(((AttributeChangeImpl) diff).getAttribute());
 					
-					AttributeChangeOP attributeDelta = DeltametaFactory.eINSTANCE.createAttributeChangeOP();
+					AttributeChangeOP attributeDelta = KaleidoscopeDeltaFactory.eINSTANCE.createAttributeChangeOP();
 					attributeDelta.setAttr(affectedAttribute);
 					attributeDelta.setNode(match.getRight());	
 					attributeDelta.setNewValue(newValue);
@@ -78,10 +78,10 @@ ResourceSet resourceSet = null;
 				if(diff.getKind() == DifferenceKind.ADD){
 					ReferenceChangeImpl refChgSpec = (ReferenceChangeImpl)diff;
 					
-					AddNodeOP addNodeOp = DeltametaFactory.eINSTANCE.createAddNodeOP();
-					AddEdgeOP addEdgeOp = DeltametaFactory.eINSTANCE.createAddEdgeOP();
+					AddNodeOP addNodeOp = KaleidoscopeDeltaFactory.eINSTANCE.createAddNodeOP();
+					AddEdgeOP addEdgeOp = KaleidoscopeDeltaFactory.eINSTANCE.createAddEdgeOP();
 					
-					Edge edge = DeltametaFactory.eINSTANCE.createEdge();														
+					Edge edge = KaleidoscopeDeltaFactory.eINSTANCE.createEdge();														
 				    edge.setType(refChgSpec.getReference());					
 				    edge.setSrc(refChgSpec.getMatch().getRight());				    			
 					edge.setTrg(refChgSpec.getValue());
@@ -94,9 +94,9 @@ ResourceSet resourceSet = null;
 					
 				}else if(diff.getKind().equals(DifferenceKind.DELETE)){	
 					
-					DeleteNodeOP removeNodeOp = DeltametaFactory.eINSTANCE.createDeleteNodeOP();
-					DeleteEdgeOP removeEdgeOp = DeltametaFactory.eINSTANCE.createDeleteEdgeOP();
-					Edge edgeRemove = DeltametaFactory.eINSTANCE.createEdge();
+					DeleteNodeOP removeNodeOp = KaleidoscopeDeltaFactory.eINSTANCE.createDeleteNodeOP();
+					DeleteEdgeOP removeEdgeOp = KaleidoscopeDeltaFactory.eINSTANCE.createDeleteEdgeOP();
+					Edge edgeRemove = KaleidoscopeDeltaFactory.eINSTANCE.createEdge();
 					
 					edgeRemove.setType(((ReferenceChangeImpl) diff).getReference());					
 				    edgeRemove.setSrc(((ReferenceChangeImpl) diff).getValue().eContainer());

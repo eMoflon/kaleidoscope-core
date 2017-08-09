@@ -4,8 +4,8 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.kaleidoscope.delta.javabased.JavaBasedEdge;
 
-import Deltameta.DeleteEdgeOP;
-import Deltameta.DeltametaFactory;
+import KaleidoscopeDelta.DeleteEdgeOP;
+import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
 public class DeleteEdgeOp extends Operation{
 	private JavaBasedEdge edge;
@@ -13,7 +13,7 @@ public class DeleteEdgeOp extends Operation{
 	public DeleteEdgeOp(JavaBasedEdge edge){
 		this.edge = edge;
 	}
-	public DeleteEdgeOp(Deltameta.DeleteEdgeOP deleteEdgeOp){
+	public DeleteEdgeOp(KaleidoscopeDelta.DeleteEdgeOP deleteEdgeOp){
 		   this.edge = new JavaBasedEdge(deleteEdgeOp.getEdge());	   
 	}
 	
@@ -23,9 +23,9 @@ public class DeleteEdgeOp extends Operation{
 		return edge;
 	}
 	
-	public Deltameta.Operation toOperationalEMF()
+	public KaleidoscopeDelta.Operation toOperationalEMF()
    {	      
-	  DeleteEdgeOP deleteEdgeOp = DeltametaFactory.eINSTANCE.createDeleteEdgeOP();      
+	  DeleteEdgeOP deleteEdgeOp = KaleidoscopeDeltaFactory.eINSTANCE.createDeleteEdgeOP();      
 	  deleteEdgeOp.setEdge(edge.toEMF());
       
       return deleteEdgeOp;

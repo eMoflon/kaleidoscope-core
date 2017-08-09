@@ -3,8 +3,8 @@ package com.kaleidoscope.delta.javabased;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 
-import Deltameta.DeltametaFactory;
-import Deltameta.Edge;
+import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
+import KaleidoscopeDelta.Edge;
 
 public class JavaBasedEdge {
 	EObject src;
@@ -16,7 +16,7 @@ public class JavaBasedEdge {
 		this.trg = trg;
 		this.type = type;
 	}
-	public  JavaBasedEdge(Deltameta.Edge edgeEMF){
+	public  JavaBasedEdge(KaleidoscopeDelta.Edge edgeEMF){
 		this.src = edgeEMF.getSrc();
 		this.trg = edgeEMF.getTrg();
 		this.type = edgeEMF.getType();
@@ -41,14 +41,14 @@ public class JavaBasedEdge {
 	}
 	
 	public Edge toEMF(){	      
-		Edge edge = DeltametaFactory.eINSTANCE.createEdge();
+		Edge edge = KaleidoscopeDeltaFactory.eINSTANCE.createEdge();
 		edge.setType(type);
 		edge.setSrc(src);
 		edge.setTrg(trg);
 	      
 	    return edge;
 	}
-	public void fromEMF(Deltameta.Edge edgeEMF){
+	public void fromEMF(KaleidoscopeDelta.Edge edgeEMF){
 		this.src = edgeEMF.getSrc();
 		this.trg = edgeEMF.getTrg();
 		this.type = edgeEMF.getType();

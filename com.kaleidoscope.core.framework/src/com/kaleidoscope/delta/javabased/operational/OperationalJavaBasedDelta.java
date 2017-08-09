@@ -18,15 +18,15 @@ import com.kaleidoscope.delta.javabased.operational.DeleteNodeOp;
 import com.kaleidoscope.delta.javabased.operational.MoveNodeOp;
 import com.kaleidoscope.delta.javabased.operational.Operation;
 
-import Deltameta.AddEdgeOP;
-import Deltameta.AddNodeOP;
-import Deltameta.AttributeChangeOP;
-import Deltameta.CompositeOP;
-import Deltameta.DeleteEdgeOP;
-import Deltameta.DeleteNodeOP;
-import Deltameta.DeltametaFactory;
-import Deltameta.MoveNodeOP;
-import Deltameta.OperationalDelta;
+import KaleidoscopeDelta.AddEdgeOP;
+import KaleidoscopeDelta.AddNodeOP;
+import KaleidoscopeDelta.AttributeChangeOP;
+import KaleidoscopeDelta.CompositeOP;
+import KaleidoscopeDelta.DeleteEdgeOP;
+import KaleidoscopeDelta.DeleteNodeOP;
+import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
+import KaleidoscopeDelta.MoveNodeOP;
+import KaleidoscopeDelta.OperationalDelta;
 
 
 
@@ -42,7 +42,7 @@ public class OperationalJavaBasedDelta extends JavaBasedDelta {
 	   public void createFromEMFOperationalDelta(OperationalDelta operationalDelta){
 		   
 		   operations = new ArrayList<>();
-		   for (Deltameta.Operation operation : operationalDelta.getOperations()) {
+		   for (KaleidoscopeDelta.Operation operation : operationalDelta.getOperations()) {
 			   if(operation instanceof AddEdgeOP){
 				   operations.add(new AddEdgeOp((AddEdgeOP)operation));
 			   }
@@ -70,7 +70,7 @@ public class OperationalJavaBasedDelta extends JavaBasedDelta {
 
 	   public OperationalJavaBasedDelta(OperationalDelta operationalDelta){
 		   
-		   for (Deltameta.Operation operation : operationalDelta.getOperations()) {
+		   for (KaleidoscopeDelta.Operation operation : operationalDelta.getOperations()) {
 			   if(operation instanceof AddEdgeOP){
 				   operations.add(new AddEdgeOp((AddEdgeOP)operation));
 			   }
@@ -135,7 +135,7 @@ public class OperationalJavaBasedDelta extends JavaBasedDelta {
 			return edit;
 	   }
 	   public OperationalDelta transformIntoOperationalDelta(){
-		   OperationalDelta operationalDelta = DeltametaFactory.eINSTANCE.createOperationalDelta();
+		   OperationalDelta operationalDelta = KaleidoscopeDeltaFactory.eINSTANCE.createOperationalDelta();
 		   operations.stream().forEach(o -> operationalDelta.getOperations().add(o.toOperationalEMF()));
 		   return operationalDelta;
 	   }

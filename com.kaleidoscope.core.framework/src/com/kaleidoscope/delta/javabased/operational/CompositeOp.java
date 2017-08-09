@@ -14,14 +14,14 @@ import com.kaleidoscope.delta.javabased.operational.DeleteNodeOp;
 import com.kaleidoscope.delta.javabased.operational.MoveNodeOp;
 import com.kaleidoscope.delta.javabased.operational.Operation;
 
-import Deltameta.AddEdgeOP;
-import Deltameta.AddNodeOP;
-import Deltameta.AttributeChangeOP;
-import Deltameta.CompositeOP;
-import Deltameta.DeleteEdgeOP;
-import Deltameta.DeleteNodeOP;
-import Deltameta.DeltametaFactory;
-import Deltameta.MoveNodeOP;
+import KaleidoscopeDelta.AddEdgeOP;
+import KaleidoscopeDelta.AddNodeOP;
+import KaleidoscopeDelta.AttributeChangeOP;
+import KaleidoscopeDelta.CompositeOP;
+import KaleidoscopeDelta.DeleteEdgeOP;
+import KaleidoscopeDelta.DeleteNodeOP;
+import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
+import KaleidoscopeDelta.MoveNodeOP;
 
 public class CompositeOp extends Operation{
 
@@ -32,7 +32,7 @@ public class CompositeOp extends Operation{
 	}
 	public CompositeOp(CompositeOP compositeOP) {
 		
-		for (Deltameta.Operation operation : compositeOP.getOperations()) {
+		for (KaleidoscopeDelta.Operation operation : compositeOP.getOperations()) {
 			 if(operation instanceof AddEdgeOP){
 				   operations.add(new AddEdgeOp((AddEdgeOP)operation));
 			   }
@@ -58,8 +58,8 @@ public class CompositeOp extends Operation{
 	}
 
 	@Override
-	public Deltameta.Operation toOperationalEMF() {
-		 Deltameta.CompositeOP compositeOperation = DeltametaFactory.eINSTANCE.createCompositeOP();      
+	public KaleidoscopeDelta.Operation toOperationalEMF() {
+		 KaleidoscopeDelta.CompositeOP compositeOperation = KaleidoscopeDeltaFactory.eINSTANCE.createCompositeOP();      
 		 operations.forEach(o -> compositeOperation.getOperations().add(o.toOperationalEMF()));
 		       
 	     return compositeOperation;

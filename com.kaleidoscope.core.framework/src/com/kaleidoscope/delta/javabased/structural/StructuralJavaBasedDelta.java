@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.EObject;
 import com.kaleidoscope.delta.javabased.JavaBasedDelta;
 import com.kaleidoscope.delta.javabased.structural.AttributeJavaBasedDelta;
 
-import Deltameta.Edge;
+import KaleidoscopeDelta.Edge;
 
 
 

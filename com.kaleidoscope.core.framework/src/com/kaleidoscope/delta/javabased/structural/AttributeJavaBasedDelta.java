@@ -5,8 +5,8 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.kaleidoscope.delta.javabased.structural.AttributeJavaBasedDelta;
 
-import Deltameta.AttributeChangeOP;
-import Deltameta.DeltametaFactory;
+import KaleidoscopeDelta.AttributeChangeOP;
+import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
 public class AttributeJavaBasedDelta {
 	   private Object newValue;
@@ -37,7 +37,7 @@ public class AttributeJavaBasedDelta {
 
 	   public AttributeChangeOP toOperationalEMF()
 	   {	      
-	      AttributeChangeOP attributeChangeOp = DeltametaFactory.eINSTANCE.createAttributeChangeOP();
+	      AttributeChangeOP attributeChangeOp = KaleidoscopeDeltaFactory.eINSTANCE.createAttributeChangeOP();
 	      attributeChangeOp.setAttr(affectedAttribute);
 	      attributeChangeOp.setNewValue(newValue);
 	      attributeChangeOp.setNode(affectedNode);

@@ -1,4 +1,4 @@
-package com.kaleidoscope.implementation.deltadiscoverer;
+package com.kaleidoscope.core.auxiliary.emfcompare;
 
 import java.util.List;
 
@@ -122,68 +122,7 @@ ResourceSet resourceSet = null;
 		System.out.println("------------------Comparison finished--------------------");
 		return new OperationalJavaBasedDelta(operationalDelta);
 	}	
-	/*
-	public DeltaSpecification old_generateDeltaSpecFromModels(EObject oldModel, EObject newModel){
-		//BasicConfigurator.configure();
-		
-		Comparison comparison = compareModels(oldModel, newModel);
-		List<Diff> differences = comparison.getDifferences();
-		
-		DeltaSpecification deltaSpec = RuntimeFactory.eINSTANCE.createDeltaSpecification();
-		
-		System.out.println("------------------Doing comparison of models--------------------");
-		for(Diff diff: differences)
-	    {
-			if(diff instanceof AttributeChangeSpec){
-				if(diff.getKind().equals(DifferenceKind.CHANGE)){
-					EAttribute affectedAttribute = ((AttributeChangeSpec) diff).getAttribute(); 
-					Object newValue =  ((AttributeChangeSpec) diff).getValue();
-					Object oldValue = null;	
-			
-					Match match = diff.getMatch();										
-					oldValue = match.getRight().eGet(((AttributeChangeImpl) diff).getAttribute());
-					
-					AttributeDelta attributeDelta = RuntimeFactory.eINSTANCE.createAttributeDelta();
-					attributeDelta.setAffectedAttribute(affectedAttribute);
-					attributeDelta.setAffectedNode(match.getRight());
-					attributeDelta.setOldValue(EcoreUtil.convertToString(affectedAttribute.getEAttributeType(), oldValue));
-					attributeDelta.setNewValue(EcoreUtil.convertToString(affectedAttribute.getEAttributeType(), newValue));
-									
-					deltaSpec.getAttributeChanges().add(attributeDelta);										
-				}
-			}else if(diff instanceof ReferenceChangeSpec){
-				if(diff.getKind() == DifferenceKind.ADD){
-					ReferenceChangeSpec refChgSpec = (ReferenceChangeSpec)diff;
-					EMoflonEdge edge = org.moflon.tgg.runtime.RuntimeFactory.eINSTANCE.createEMoflonEdge();														
-				    edge.setName(refChgSpec.getReference().getName());					
-				    edge.setSrc(refChgSpec.getMatch().getRight());				    			
-					edge.setTrg(refChgSpec.getValue());
-										
-					deltaSpec.getAddedEdges().add(edge);
-				    deltaSpec.getAddedNodes().add(((ReferenceChangeImpl) diff).getValue());				    				    					
-				}else if(diff.getKind().equals(DifferenceKind.DELETE)){					
-					EMoflonEdge edgeRemove = org.moflon.tgg.runtime.RuntimeFactory.eINSTANCE.createEMoflonEdge();
-					edgeRemove.setName(((ReferenceChangeImpl) diff).getReference().getName());					
-				    edgeRemove.setSrc(((ReferenceChangeImpl) diff).getValue().eContainer());
-				    edgeRemove.setTrg(((ReferenceChangeImpl) diff).getValue());
-
-				    deltaSpec.getDeletedEdges().add(edgeRemove);
-				    deltaSpec.getDeletedNodes().add(((ReferenceChangeImpl) diff).getValue());				    					
-				}else if(diff.getKind().equals(DifferenceKind.MOVE)){
-					// TODO Move operation in EMFCompare
-		
-				}
-			}
-			
-			System.out.println("d.toString():"  +diff);
-			System.out.println("d.getKind(): "+diff.getKind());
-			System.out.println("d.getMatch(): " + diff.getMatch());
-
-			System.out.println("=========================================================");
-	    }
-		System.out.println("------------------Comparison finished--------------------");
-		return deltaSpec;
-	}	*/
+	
 	private Comparison compareModels(EObject model1, EObject model2) {
 		
 		IComparisonScope scope = new DefaultComparisonScope(model1, model2,null);	

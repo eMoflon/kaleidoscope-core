@@ -40,7 +40,7 @@ public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDelt
 	 * 
 	 * @param oldModel
 	 * @param newModel
-	 * @return DeltaSpecification represents delta between the two models
+	 * @return OperationalDelta representing o-delta between the two models
 	 */
 	public OperationalDelta discoverDelta(M oldModel, M newModel) {
 		

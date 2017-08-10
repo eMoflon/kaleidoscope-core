@@ -28,6 +28,14 @@ import KaleidoscopeDelta.DeleteNodeOP;
 import KaleidoscopeDelta.Edge;
 import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
+/**
+ * An offline delta discoverer based on the EMFCompare framework.
+ * 
+ * @author Anthony Anjorin, Dusko Gataric
+ *
+ * @param <M>
+ *            The type of models to discover deltas between.
+ */
 public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDeltaDiscoverer<M, OperationalDelta> {
 
 	private static final Logger logger = Logger.getLogger(EMFCompareDeltaDiscoverer.class);
@@ -98,7 +106,7 @@ public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDelt
 					operationalDelta.getOperations().add(removeEdgeOp);
 					operationalDelta.getOperations().add(removeNodeOp);
 				} else if (diff.getKind().equals(DifferenceKind.MOVE)) {
-					//TODO[Dusko] Handle move operation detected by EMFCompare
+					//FIXME[Dusko] Handle move operation detected by EMFCompare
 				}
 			}
 

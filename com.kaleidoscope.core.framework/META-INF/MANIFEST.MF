@@ -19,10 +19,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib.macro,
  org.eclipse.emf.ecore.xmi,
  org.eclipse.ui.workbench,
- com.kaleidoscope.core.delta.metamodel
+ com.kaleidoscope.core.delta,
+ com.google.inject;bundle-version="3.0.0"
 Bundle-ActivationPolicy: lazy
-Export-Package: com.kaleidoscope.extensionpoint,
- com.kaleidoscope.extensionpoint.bxtool,
- com.kaleidoscope.extensionpoint.deltadiscoverer,
- com.kaleidoscope.implementation.controller
+Export-Package: com.kaleidoscope.core.framework.annotations,
+ com.kaleidoscope.core.framework.synchronisation,
+ com.kaleidoscope.core.framework.workflow.adapters,
+ com.kaleidoscope.core.framework.workflow.controllers
 

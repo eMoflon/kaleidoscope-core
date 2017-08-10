@@ -4,63 +4,66 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
-import com.kaleidoscope.extensionpoint.ArtefactAdapter;
+import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
-public class XMIArtefactAdapter implements ArtefactAdapter<EObject, Path> {
 
-	ResourceSet resourceSet;
+public class XMIArtefactAdapter<M extends EObject> implements ArtefactAdapter<M, Path> {
+
+	private ResourceSet resourceSet;
+	private Path path;
 	
-	private static final Logger logger = Logger.getLogger(XMIArtefactAdapter.class);
+	public XMIArtefactAdapter(ResourceSet resourceSet, Path path) {
+		this.resourceSet = resourceSet;
+		this.path  = path;
+	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public EObject parse(Path parseSource) {	
+	public M parse(Path parseSource) {	
 		
-		logger.info("Parsing to XMI model is being performed!");
+		System.out.println("Parsing to XMI model is being performed!");
 		try {
-			
-			Path parsePath = parseSource;
-			File file = parsePath.toFile();
+						
+			File file = path.toFile();
 			Resource resource = resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));
 			
 			resource.load(null);
 			
-			return resource.getContents().get(0);	
+			return (M)resource.getContents().get(0);	
+			
 		} catch (IOException e) {
 			
-			logger.error("Not able to load the XMI file from the provided parseSource", e);
+			System.out.println("Not able to load the XMI file from the provided parseSource");			
 			return null;
 			
-		}catch(ClassCastException e){
-			logger.error("Not able to cast parseSource into Path class", e);
+		}catch(ClassCastException e){			
+			System.out.println("Not able to cast parseSource into Path class");
 			return null;
 		}
 	}
 	
 	@Override
-	public void unparse(Path unparseSource, EObject content) {
-		logger.info("Starting to unparse XMI!");
+	public Path unparse(M content) {
+		System.out.println("Starting to unparse XMI!");
 		
 		try {
-			File file = unparseSource.toFile();  
+			
+			File file = path.toFile();  
 			Resource resource = resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));
 					
 			resource.getContents().add(content);
 			resource.save(null);
 			
-			logger.info("XMI Resource saved!");
-			
+			System.out.println("XMI Resource saved!");
+		
 		} catch (IOException | ClassCastException e) {
-			logger.error("Not able to safe XMI Resource!", e);			
+			System.out.println("Not able to safe XMI Resource!");					
 		}		
-	}
-	
-	public void setResourceSet(ResourceSet resourceSet){
-		this.resourceSet = resourceSet;
+		return path;
 	}
 }

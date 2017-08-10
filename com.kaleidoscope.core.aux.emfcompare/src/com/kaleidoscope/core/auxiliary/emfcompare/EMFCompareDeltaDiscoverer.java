@@ -17,20 +17,18 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
-import com.kaleidoscope.core.delta.javabased.JavaBasedDelta;
-import com.kaleidoscope.core.delta.javabased.operational.OperationalJavaBasedDelta;
-import com.kaleidoscope.extensionpoint.deltadiscoverer.OfflineDeltaDiscoverer;
+import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;
+import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 
 import KaleidoscopeDelta.AddEdgeOP;
 import KaleidoscopeDelta.AddNodeOP;
 import KaleidoscopeDelta.AttributeChangeOP;
 import KaleidoscopeDelta.DeleteEdgeOP;
 import KaleidoscopeDelta.DeleteNodeOP;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 import KaleidoscopeDelta.Edge;
-import KaleidoscopeDelta.OperationalDelta;
+import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
-public class EMFCompareDeltaDiscoverer implements OfflineDeltaDiscoverer<EObject> {
+public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDeltaDiscoverer<M, OperationalDelta> {
 
 ResourceSet resourceSet = null;
 
@@ -47,13 +45,13 @@ ResourceSet resourceSet = null;
 	 * @return DeltaSpecification represents delta between the two models
 	 */
 	
-	public JavaBasedDelta generateDeltaSpecFromModels(EObject oldModel, EObject newModel){
+	public OperationalDelta discoverDelta(M oldModel, M newModel){
 		//BasicConfigurator.configure();
 		
 		Comparison comparison = compareModels(oldModel, newModel);
 		List<Diff> differences = comparison.getDifferences();
 		
-		OperationalDelta operationalDelta = KaleidoscopeDeltaFactory.eINSTANCE.createOperationalDelta();
+		KaleidoscopeDelta.OperationalDelta operationalDelta = KaleidoscopeDeltaFactory.eINSTANCE.createOperationalDelta();
 		
 		System.out.println("------------------Doing comparison of models--------------------");
 		for(Diff diff: differences)
@@ -120,10 +118,10 @@ ResourceSet resourceSet = null;
 			System.out.println("=========================================================");
 	    }
 		System.out.println("------------------Comparison finished--------------------");
-		return new OperationalJavaBasedDelta(operationalDelta);
+		return new OperationalDelta(operationalDelta);
 	}	
 	
-	private Comparison compareModels(EObject model1, EObject model2) {
+	private Comparison compareModels(M model1, M model2) {
 		
 		IComparisonScope scope = new DefaultComparisonScope(model1, model2,null);	
 
@@ -134,6 +132,7 @@ ResourceSet resourceSet = null;
 		return comparison;
 				
 	}
+	
 	
 
 }

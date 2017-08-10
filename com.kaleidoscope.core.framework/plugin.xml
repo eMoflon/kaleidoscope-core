@@ -1,35 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="com.kaleidoscope.extensionpoint.deltadiscoverer" name="DeltaDiscoverer" schema="schema/com.kaleidoscope.extensionpoint.deltadiscoverer.exsd"/>
-   <extension-point id="com.kaleidoscope.extensionpoint.artefactadapter" name="Artefact Adapter" schema="schema/com.kaleidoscope.extensionpoint.artefactadapter.exsd"/>
-   <extension-point id="com.kaleidoscope.extensionpoint.controller" name="Controller" schema="schema/com.kaleidoscope.extensionpoint.synchronizer.exsd"/>
-   <extension-point id="com.kaleidoscope.extensionpoint.componentbuilder" name="ComponentBuilder" schema="schema/com.kaleidoscope.extensionpoint.componentbuilder.exsd"/>
-   <extension-point id="com.kaleidoscope.extensionpoint.bxtool" name="BXtool" schema="schema/com.kaleidoscope.extensionpoint.bxtool.exsd"/>
-   <extension
-         point="com.kaleidoscope.extensionpoint.deltadiscoverer">
-      <client
-            class="com.kaleidoscope.implementation.deltadiscoverer.EMFCompareDeltaDiscoverer"
-            default="false"
-            type="default">
-      </client>
-   </extension>
-   <extension
-         point="com.kaleidoscope.extensionpoint.artefactadapter">
-      <client
-            class="com.kaleidoscope.implementation.artefactadapter.JavaArtefactAdapter"
-            id="com.kaleidoscope.implementation.artefactadapter.JavaArtefactAdapter"
-            type="java">
-      </client>
-   </extension>
-   <extension
-         point="com.kaleidoscope.extensionpoint.artefactadapter">
-      <client
-            class="com.kaleidoscope.implementation.artefactadapter.XMIArtefactAdapter"
-            id="com.kaleidoscope.implementation.artefactadapter.XMIArtefactAdapter"
-            type="xmi">
-      </client>
-   </extension>
 
 
 </plugin>

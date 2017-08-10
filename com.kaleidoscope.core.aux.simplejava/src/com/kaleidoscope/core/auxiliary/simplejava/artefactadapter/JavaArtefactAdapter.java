@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -41,7 +40,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaPackageToString;
-import com.kaleidoscope.extensionpoint.ArtefactAdapter;
+import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
 import SimpleJava.JavaArrayInit;
 import SimpleJava.JavaAssignment;
@@ -64,8 +63,13 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 	
 	private List<Path> javaFilePaths;
 	private Path packageAbsPath;
-	
+	private List<Path> unparseSource;
 	private static final Logger logger = Logger.getLogger(JavaArtefactAdapter.class);
+	
+	public JavaArtefactAdapter(List<Path> unparseSource) {
+		this.unparseSource = unparseSource;
+		
+	}
 	
 	@Override
 	public JavaPackage parse(List<Path> parseSource){
@@ -370,7 +374,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 	}
 	
 	@Override
-	public void unparse(List<Path> unparseSource, JavaPackage content) {
+	public List<Path> unparse(JavaPackage content) {
 		
 		logger.info("Starting to unparse java model!");
 		
@@ -390,11 +394,8 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 				logger.error("There was a problem in executing addAllFoldersAndFile!", e);
 			}				
 		}
-		
+		return unparseSource;
 	}
+
 	
-	@Override
-	public void setResourceSet(ResourceSet resourceSet) {
-		
-	}
 }

@@ -4,6 +4,7 @@ Bundle-Name: Xmi
 Bundle-SymbolicName: com.kaleidoscope.core.aux.xmi
 Bundle-Version: 1.0.0.qualifier
 Export-Package: com.kaleidoscope.core.auxiliary.xmi.artefactadapter
-Require-Bundle: com.kaleidoscope.core.framework
+Require-Bundle: com.kaleidoscope.core.framework,
+ javax.inject
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

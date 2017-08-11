@@ -33,12 +33,15 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 	}	
 	
 	public TargetArtefact syncForward(SourceArtefactDelta artefactDelta){
-						
 		D delta = sourceDeltaAdapter.parse(artefactDelta, synchroniser.getSourceModel());
 		synchroniser.syncForward(delta);	
 		
 		TargetModel targetModel = synchroniser.getTargetModel();
-		return targetArtefactAdapter.unparse(targetModel);
+		targetArtefactAdapter.setModel(targetModel);
+		targetArtefactAdapter.unparse();
+		return targetArtefactAdapter
+				.getArtefact()
+				.orElseThrow(() -> new IllegalStateException("Unable to create target artefact."));
 	}
 	
 	public SourceArtefact syncBackward(TargetArtefactDelta artefactDelta) {
@@ -47,6 +50,10 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 		synchroniser.syncBackward(delta);	
 		
 		SourceModel sourceModel = synchroniser.getSourceModel();
-		return sourceArtefactAdapter.unparse(sourceModel);
+		sourceArtefactAdapter.setModel(sourceModel);
+		sourceArtefactAdapter.unparse();
+		return sourceArtefactAdapter
+				.getArtefact()
+				.orElseThrow(() -> new IllegalStateException("Unable to create source artefact."));
 	}
 }

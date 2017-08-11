@@ -14,8 +14,8 @@ public class DeltaBasedController<
 		TargetModel, 
 		TargetArtefact, 
 		UpdatePolicy, 
-		D extends Delta, 
-		F extends Delta, 
+		ModelDelta extends Delta, 
+		Failed extends Delta, 
 		SourceArtefactDelta, 
 		TargetArtefactDelta
 	> 
@@ -27,17 +27,17 @@ public class DeltaBasedController<
 	>{
 	protected final ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
 	protected final ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
-	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser;
-	protected final DeltaAdapter<D, SourceArtefactDelta, SourceModel> sourceDeltaAdapter;
-	protected final DeltaAdapter<D, TargetArtefactDelta, TargetModel> targetDeltaAdapter;
+	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> synchroniser;
+	protected final DeltaAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter;
+	protected final DeltaAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter;
 	
 	@Inject
 	public DeltaBasedController(
 			@Src ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter, 
 			@Trg ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
-				 Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser,
-			@Src DeltaAdapter<D, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
-			@Trg DeltaAdapter<D, TargetArtefactDelta, TargetModel> targetDeltaAdapter
+				 Synchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> synchroniser,
+			@Src DeltaAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
+			@Trg DeltaAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter
 		) {
 		this.sourceArtefactAdapter = sourceArtefactAdapter;
 		this.targetArtefactAdapter = targetArtefactAdapter;
@@ -47,7 +47,7 @@ public class DeltaBasedController<
 	}	
 	
 	public TargetArtefact syncForward(SourceArtefactDelta artefactDelta){
-		D delta = sourceDeltaAdapter.parse(artefactDelta, synchroniser.getSourceModel());
+		ModelDelta delta = sourceDeltaAdapter.parse(artefactDelta, synchroniser.getSourceModel());
 		synchroniser.syncForward(delta);	
 		
 		TargetModel targetModel = synchroniser.getTargetModel();
@@ -59,7 +59,7 @@ public class DeltaBasedController<
 	}
 	
 	public SourceArtefact syncBackward(TargetArtefactDelta artefactDelta) {
-		D delta = targetDeltaAdapter.parse(artefactDelta, synchroniser.getTargetModel());
+		ModelDelta delta = targetDeltaAdapter.parse(artefactDelta, synchroniser.getTargetModel());
 		synchroniser.syncBackward(delta);	
 		
 		SourceModel sourceModel = synchroniser.getSourceModel();

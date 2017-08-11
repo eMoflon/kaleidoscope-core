@@ -13,9 +13,9 @@ public class StateBasedController <
 		SourceArtefact, 
 		TargetModel, 
 		TargetArtefact, 
-		D extends Delta, 
+		ModelDelta extends Delta, 
 		UpdatePolicy, 
-		F extends Delta
+		Failed extends Delta
 	> 
 	implements StateBased<
 		SourceArtefact,
@@ -24,17 +24,17 @@ public class StateBasedController <
 	{
 	protected final ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
 	protected final ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
-	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser;
-	protected final OfflineDeltaDiscoverer<SourceModel, D> sourceDeltaDiscoverer;
-	protected final OfflineDeltaDiscoverer<TargetModel, D> targetDeltaDiscoverer;
+	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> synchroniser;
+	protected final OfflineDeltaDiscoverer<SourceModel, ModelDelta> sourceDeltaDiscoverer;
+	protected final OfflineDeltaDiscoverer<TargetModel, ModelDelta> targetDeltaDiscoverer;
 	
 	@Inject
 	public StateBasedController(
 			@Src ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter, 
 			@Trg ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
-			     Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser, 
-			@Src OfflineDeltaDiscoverer<SourceModel, D> sourceDeltaDiscoverer,
-			@Trg OfflineDeltaDiscoverer<TargetModel, D> targetDeltaDiscoverer
+			     Synchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> synchroniser, 
+			@Src OfflineDeltaDiscoverer<SourceModel, ModelDelta> sourceDeltaDiscoverer,
+			@Trg OfflineDeltaDiscoverer<TargetModel, ModelDelta> targetDeltaDiscoverer
 		){
 		this.sourceArtefactAdapter = sourceArtefactAdapter;
 		this.targetArtefactAdapter = targetArtefactAdapter;
@@ -51,7 +51,7 @@ public class StateBasedController <
 				.orElseThrow(() -> new IllegalStateException("Unable to create source model."));
 		SourceModel oldSourceModel = synchroniser.getSourceModel();
 		
-		D delta = sourceDeltaDiscoverer.discoverDelta(newSourceModel, oldSourceModel);
+		ModelDelta delta = sourceDeltaDiscoverer.discoverDelta(newSourceModel, oldSourceModel);
 		synchroniser.syncForward(delta);	
 		
 		TargetModel targetModel = synchroniser.getTargetModel();
@@ -70,7 +70,7 @@ public class StateBasedController <
 				.orElseThrow(() -> new IllegalStateException("Unable to create target model."));
 		TargetModel oldTargetModel = synchroniser.getTargetModel();
 		
-		D delta = targetDeltaDiscoverer.discoverDelta(newTargetModel, oldTargetModel);
+		ModelDelta delta = targetDeltaDiscoverer.discoverDelta(newTargetModel, oldTargetModel);
 		synchroniser.syncBackward(delta);
 		
 		SourceModel sourceModel = synchroniser.getSourceModel();

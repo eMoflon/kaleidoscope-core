@@ -15,8 +15,8 @@ public class PersistentDeltaBasedController<
 		TargetModel, 
 		TargetArtefact, 
 		UpdatePolicy, 
-		D extends Delta, 
-		F extends Delta, 
+		ModelDelta extends Delta, 
+		Failed extends Delta, 
 		SourceArtefactDelta, 
 		TargetArtefactDelta, 
 		Destination
@@ -27,21 +27,21 @@ public class PersistentDeltaBasedController<
 		TargetModel, 
 		TargetArtefact, 
 		UpdatePolicy, 
-		D, 
-		F, 
+		ModelDelta, 
+		Failed, 
 		SourceArtefactDelta, 
 		TargetArtefactDelta
 	>{
 	protected final Destination destination;
-	protected final PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, D, F, Destination>synchroniser;
+	protected final PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed, Destination>synchroniser;
 	
 	@Inject
 	public PersistentDeltaBasedController(
 			@Src  ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter,
 			@Trg  ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
-				  PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, D, F, Destination> synchroniser,  
-			@Src  DeltaAdapter<D, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
-			@Trg  DeltaAdapter<D, TargetArtefactDelta, TargetModel> targetDeltaAdapter, 
+				  PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed, Destination> synchroniser,  
+			@Src  DeltaAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
+			@Trg  DeltaAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter, 
 			@Dest Destination destination
 		) {
 		super(sourceArtefactAdapter, targetArtefactAdapter, synchroniser, sourceDeltaAdapter, targetDeltaAdapter);

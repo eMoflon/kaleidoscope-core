@@ -1,8 +1,9 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: SimpleJava;singleton:=true
+Bundle-SymbolicName: com.kaleidoscope.core.aux.simplejava;singleton:=true
 Export-Package: SimpleJava,
  SimpleJava.impl,
  SimpleJava.util,
+ com.kaleidoscope.core.auxiliary.simplejava.artefactadapter,
  com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser
 Bundle-Name: SimpleJava
 Bundle-Version: 1.0

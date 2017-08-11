@@ -3,25 +3,26 @@ package com.kaleidoscope.core.framework.workflow.controllers;
 import com.google.inject.Inject;
 import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;
 import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.framework.annotations.Dest;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.PersistentSynchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
-public class PersistentStateBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, D extends Delta, F extends Delta,Destination>
+public class PersistentStateBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, D extends Delta, F extends Delta, Destination>
 						extends StateBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, D, UpdatePolicy, F>{
 
 	Destination destination;
-	PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, Destination, D, F>synchroniser;
+	PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, D, F, Destination>synchroniser;
 	
 	@Inject
 	public PersistentStateBasedController(
 			@Src ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter, 
 			@Trg ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
-			PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, Destination, D, F> synchroniser, 
+			PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, D, F, Destination> synchroniser, 
 			@Src OfflineDeltaDiscoverer<SourceModel, D> sourceDeltaDiscoverer,
 			@Trg OfflineDeltaDiscoverer<TargetModel, D> targetDeltaDiscoverer, 
-			Destination destination) {
+			@Dest Destination destination) {
 		
 		super(sourceArtefactAdapter, targetArtefactAdapter, synchroniser, sourceDeltaDiscoverer, targetDeltaDiscoverer);
 		this.destination = destination; 

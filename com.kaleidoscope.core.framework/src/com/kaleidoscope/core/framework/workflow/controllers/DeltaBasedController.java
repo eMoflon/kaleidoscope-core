@@ -8,7 +8,7 @@ import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
 
-public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, D extends Delta,  UpdatePolicy, F extends Delta, SourceArtefactDelta, TargetArtefactDelta> {
+public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, D extends Delta, F extends Delta, SourceArtefactDelta, TargetArtefactDelta> {
 
 	protected ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
 	protected ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;

@@ -22,8 +22,10 @@ Require-Bundle: org.eclipse.core.runtime,
  com.kaleidoscope.core.delta,
  com.google.inject;bundle-version="3.0.0"
 Bundle-ActivationPolicy: lazy
-Export-Package: com.kaleidoscope.core.framework.annotations,
+Export-Package: com.google.inject.assistedinject;uses:="com.google.inject,com.google.inject.spi",
+ com.kaleidoscope.core.framework.annotations,
  com.kaleidoscope.core.framework.synchronisation,
  com.kaleidoscope.core.framework.workflow.adapters,
- com.kaleidoscope.core.framework.workflow.controllers
-
+ com.kaleidoscope.core.framework.workflow.controllers;uses:="com.kaleidoscope.core.framework.workflow.adapters,com.kaleidoscope.core.delta.discovery,com.kaleidoscope.core.framework.synchronisation",
+ com.kaleidoscope.core.framework.workflow.factories;uses:="com.kaleidoscope.core.framework.workflow.controllers"
+Bundle-NativeCode: /lib/guice-assistedinject-3.0.jar

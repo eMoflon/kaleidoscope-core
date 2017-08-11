@@ -8,23 +8,29 @@ import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
-public class StateBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, D extends Delta,  UpdatePolicy, F extends Delta> {
-
-	protected ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
-	protected ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
-
-	protected Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser;
-	protected OfflineDeltaDiscoverer<SourceModel, D> sourceDeltaDiscoverer;
-	protected OfflineDeltaDiscoverer<TargetModel, D> targetDeltaDiscoverer;
+public class StateBasedController<
+		SourceModel, 
+		SourceArtefact, 
+		TargetModel, 
+		TargetArtefact, 
+		D extends Delta, 
+		UpdatePolicy, 
+		F extends Delta
+	>{
+	protected final ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
+	protected final ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
+	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser;
+	protected final OfflineDeltaDiscoverer<SourceModel, D> sourceDeltaDiscoverer;
+	protected final OfflineDeltaDiscoverer<TargetModel, D> targetDeltaDiscoverer;
 	
 	@Inject
 	public StateBasedController(
 			@Src ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter, 
 			@Trg ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
-			Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser, 
+			     Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser, 
 			@Src OfflineDeltaDiscoverer<SourceModel, D> sourceDeltaDiscoverer,
-			@Trg OfflineDeltaDiscoverer<TargetModel, D> targetDeltaDiscoverer) {
-		
+			@Trg OfflineDeltaDiscoverer<TargetModel, D> targetDeltaDiscoverer
+		){
 		this.sourceArtefactAdapter = sourceArtefactAdapter;
 		this.targetArtefactAdapter = targetArtefactAdapter;
 		this.synchroniser = synchroniser;

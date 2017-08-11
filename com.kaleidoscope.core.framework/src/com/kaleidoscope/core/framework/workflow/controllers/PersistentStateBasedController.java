@@ -9,11 +9,27 @@ import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.PersistentSynchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
-public class PersistentStateBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, D extends Delta, F extends Delta, Destination>
-						extends StateBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, D, UpdatePolicy, F>{
-
-	Destination destination;
-	PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, D, F, Destination>synchroniser;
+public class PersistentStateBasedController<
+		SourceModel, 
+		SourceArtefact, 
+		TargetModel, 
+		TargetArtefact, 
+		UpdatePolicy, 
+		D extends Delta, 
+		F extends Delta, 
+		Destination
+	>
+	extends StateBasedController<
+		SourceModel, 
+		SourceArtefact, 
+		TargetModel, 
+		TargetArtefact, 
+		D, 
+		UpdatePolicy, 
+		F
+	>{
+	protected final Destination destination;
+	protected final PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, D, F, Destination> synchroniser;
 	
 	@Inject
 	public PersistentStateBasedController(
@@ -31,22 +47,18 @@ public class PersistentStateBasedController<SourceModel, SourceArtefact, TargetM
 	}	
 
 	public TargetArtefact syncForward(SourceArtefact sourceArtefact){
-	
 		synchroniser.restoreState(destination);
 		TargetArtefact targetArtefact = super.syncForward(sourceArtefact);
 		synchroniser.persistState(destination);		
 		
 		return targetArtefact;
-		
 	}
 	
 	public SourceArtefact syncBackward(TargetArtefact targetArtefact) {
-		
 		synchroniser.restoreState(destination);
 		SourceArtefact sourceArtefact = super.syncBackward(targetArtefact);
 		synchroniser.persistState(destination);		
 		
 		return sourceArtefact;
-		
 	}
 }

@@ -2,7 +2,10 @@ package com.kaleidoscope.core.framework.workflow.adapters;
 
 import java.util.Optional;
 
-public interface ArtefactAdapter<Model, Artefact> {
+public interface ArtefactAdapter<
+		Model, 
+		Artefact
+	> {
 	
 	public void parse();
 	public void unparse();

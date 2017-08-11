@@ -2,7 +2,13 @@ package com.kaleidoscope.core.framework.synchronisation;
 
 import com.kaleidoscope.core.delta.javabased.Delta;
 
-public interface Synchroniser<SourceModel, TargetModel, UpdatePolicy, D extends Delta, F extends Delta> {
+public interface Synchroniser<
+		SourceModel, 
+		TargetModel, 
+		UpdatePolicy, 
+		D extends Delta, 
+		F extends Delta
+	> {
 	
 	public  SourceModel getSourceModel();
 	public  TargetModel getTargetModel();

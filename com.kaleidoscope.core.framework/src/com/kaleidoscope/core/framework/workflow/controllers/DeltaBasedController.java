@@ -8,14 +8,22 @@ import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
 
-public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, D extends Delta, F extends Delta, SourceArtefactDelta, TargetArtefactDelta> {
-
-	protected ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
-	protected ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
-
-	protected Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser;
-	protected DeltaAdapter<D, SourceArtefactDelta, SourceModel> sourceDeltaAdapter;
-	protected DeltaAdapter<D, TargetArtefactDelta, TargetModel> targetDeltaAdapter;
+public class DeltaBasedController<
+		SourceModel, 
+		SourceArtefact, 
+		TargetModel, 
+		TargetArtefact, 
+		UpdatePolicy, 
+		D extends Delta, 
+		F extends Delta, 
+		SourceArtefactDelta, 
+		TargetArtefactDelta
+	> {
+	protected final ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
+	protected final ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
+	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser;
+	protected final DeltaAdapter<D, SourceArtefactDelta, SourceModel> sourceDeltaAdapter;
+	protected final DeltaAdapter<D, TargetArtefactDelta, TargetModel> targetDeltaAdapter;
 	
 	@Inject
 	public DeltaBasedController(
@@ -23,8 +31,8 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 			@Trg ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
 				 Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser,
 			@Src DeltaAdapter<D, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
-			@Trg DeltaAdapter<D, TargetArtefactDelta, TargetModel> targetDeltaAdapter) {
-		
+			@Trg DeltaAdapter<D, TargetArtefactDelta, TargetModel> targetDeltaAdapter
+		) {
 		this.sourceArtefactAdapter = sourceArtefactAdapter;
 		this.targetArtefactAdapter = targetArtefactAdapter;
 		this.synchroniser = synchroniser;
@@ -45,7 +53,6 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 	}
 	
 	public SourceArtefact syncBackward(TargetArtefactDelta artefactDelta) {
-		
 		D delta = targetDeltaAdapter.parse(artefactDelta, synchroniser.getTargetModel());
 		synchroniser.syncBackward(delta);	
 		

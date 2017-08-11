@@ -33,26 +33,40 @@ public class StateBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 	}	
 	
 	public TargetArtefact syncForward(SourceArtefact sourceArtefact){
-				
-		SourceModel newSourceModel = sourceArtefactAdapter.parse(sourceArtefact);
+		sourceArtefactAdapter.setArtefact(sourceArtefact);
+		sourceArtefactAdapter.parse();
+		SourceModel newSourceModel = sourceArtefactAdapter
+				.getModel()
+				.orElseThrow(() -> new IllegalStateException("Unable to create source model."));
 		SourceModel oldSourceModel = synchroniser.getSourceModel();
 		
 		D delta = sourceDeltaDiscoverer.discoverDelta(newSourceModel, oldSourceModel);
 		synchroniser.syncForward(delta);	
 		
 		TargetModel targetModel = synchroniser.getTargetModel();
-		return targetArtefactAdapter.unparse(targetModel);
+		targetArtefactAdapter.setModel(targetModel);
+		targetArtefactAdapter.unparse();
+		return targetArtefactAdapter
+				.getArtefact()
+				.orElseThrow(() -> new IllegalStateException("Unable to create target artefact."));
 	}
 	
 	public SourceArtefact syncBackward(TargetArtefact targetArtefact) {
-		
-		TargetModel newTargetModel = targetArtefactAdapter.parse(targetArtefact);
+		targetArtefactAdapter.setArtefact(targetArtefact);
+		targetArtefactAdapter.parse();
+		TargetModel newTargetModel = targetArtefactAdapter
+				.getModel()
+				.orElseThrow(() -> new IllegalStateException("Unable to create target model."));
 		TargetModel oldTargetModel = synchroniser.getTargetModel();
 		
 		D delta = targetDeltaDiscoverer.discoverDelta(newTargetModel, oldTargetModel);
 		synchroniser.syncBackward(delta);
 		
 		SourceModel sourceModel = synchroniser.getSourceModel();
-		return sourceArtefactAdapter.unparse(sourceModel);
+		sourceArtefactAdapter.setModel(sourceModel);
+		sourceArtefactAdapter.unparse();
+		return sourceArtefactAdapter
+				.getArtefact()
+				.orElseThrow(() -> new IllegalStateException("Unable to create source artefact."));
 	}
 }

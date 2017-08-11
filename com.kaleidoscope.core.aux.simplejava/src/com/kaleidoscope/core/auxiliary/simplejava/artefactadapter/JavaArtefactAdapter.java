@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -61,32 +63,33 @@ import SimpleJava.SimpleJavaFactory;
 
 public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Path>> {
 	
-	private List<Path> javaFilePaths;
-	private Path packageAbsPath;
-	private List<Path> unparseSource;
 	private static final Logger logger = Logger.getLogger(JavaArtefactAdapter.class);
 	
-	public JavaArtefactAdapter(List<Path> unparseSource) {
-		this.unparseSource = unparseSource;
-		
+	private Optional<List<Path>> artefact;
+	private Optional<JavaPackage> model;
+	private Path rootPath;
+	
+	public JavaArtefactAdapter(Path rootPath) {
+		this.rootPath = rootPath;
 	}
 	
 	@Override
-	public JavaPackage parse(List<Path> parseSource){
+	public void parse(){
 		try{
-			javaFilePaths = parseSource;
-			JavaPackage pack = SimpleJavaFactory.eINSTANCE.createJavaPackage();
-			for (Path filePath : javaFilePaths) {
-				 parseJavaFile(pack, filePath);
-			}
-			
-			return pack;
+			artefact.ifPresent(paths -> {
+				JavaPackage pack = SimpleJavaFactory.eINSTANCE.createJavaPackage();
+				for (Path filePath : paths) {
+					parseJavaFile(pack, filePath);
+				}
+				
+				model = Optional.of(pack);
+			});
 		}catch (ClassCastException | NullPointerException e) {
-			return null;
-		}
+			logger.error("Unable to parse: " + artefact);
+		}		
 	}
 	
-	public JavaCompilationUnit parseJavaFile(JavaPackage pack, Path absJavaFilePath){
+	private void parseJavaFile(JavaPackage pack, Path absJavaFilePath){
 		logger.info("Parsing " + absJavaFilePath + " into a java model!");		
 		String fieldDeclarations = "";
 		JavaCompilationUnit jcu = SimpleJavaFactory.eINSTANCE.createJavaCompilationUnit();
@@ -184,18 +187,17 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 	    }
 	    jcu.setFieldDeclarations(fieldDeclarations);
 	    logger.info("Parsing of a " + absJavaFilePath + "is finished!");
-	    return jcu;
 	}
-	JavaMethod methodHandler(MethodDeclaration method){	       
-		
-		
+	
+	private JavaMethod methodHandler(MethodDeclaration method){	       
         if(!method.modifiers().toString().contains("@Generated(value={\"Crypto\"})")){
         	return opaqueMethodHandler(method);
         }else{
         	return workflowMethodHandler(method);
         }
 	}
-	JavaMethod opaqueMethodHandler(MethodDeclaration method){
+	
+	private JavaMethod opaqueMethodHandler(MethodDeclaration method){
 		JavaOpaqueMethod javaMethod = SimpleJavaFactory.eINSTANCE.createJavaOpaqueMethod();
 		javaMethod.setName(method.getName().getFullyQualifiedName());
         javaMethod.setType(StringUtils.join(method.getReturnType2(), ' '));
@@ -208,7 +210,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
         return javaMethod;
 	}
 
-	JavaMethod workflowMethodHandler(MethodDeclaration method){
+	private JavaMethod workflowMethodHandler(MethodDeclaration method){
 		JavaWorkflowMethod javaMethod = SimpleJavaFactory.eINSTANCE.createJavaWorkflowMethod();
         javaMethod.setName(method.getName().getFullyQualifiedName());
         javaMethod.setType(StringUtils.join(method.getReturnType2(), ' '));
@@ -230,9 +232,8 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
         }
         return javaMethod;
 	}
-	JavaStatement statementHandler(Statement statement){
-		
-		
+	
+	private JavaStatement statementHandler(Statement statement){
 		if(statement instanceof ReturnStatement){
 			return returnStatementHandler((ReturnStatement)statement);
 		}
@@ -246,19 +247,22 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 			return unknownStatementHandler(statement);
 		}
 	}
-	JavaStatement unknownStatementHandler(Statement statement){
+	
+	private JavaStatement unknownStatementHandler(Statement statement){
 		JavaUnknownStatement javaStatement = SimpleJavaFactory.eINSTANCE.createJavaUnknownStatement();
 		javaStatement.setBody(statement.toString());
 		return javaStatement;
 	}
-	JavaStatement returnStatementHandler(ReturnStatement statement){
+	
+	private JavaStatement returnStatementHandler(ReturnStatement statement){
 		JavaStatement javaStatement = SimpleJavaFactory.eINSTANCE.createJavaStatement();
 		javaStatement.setReturn(true);
 		javaStatement.setExpr(expressionHandler(statement.getExpression()));
 		
 		return javaStatement;
 	}
-	JavaStatement variableDeclarationStatementHandler(VariableDeclarationStatement statement){
+	
+	private JavaStatement variableDeclarationStatementHandler(VariableDeclarationStatement statement){
 		JavaStatement javaStatement = SimpleJavaFactory.eINSTANCE.createJavaStatement();
 		JavaAssignment assignment = SimpleJavaFactory.eINSTANCE.createJavaAssignment();
 	
@@ -275,14 +279,15 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 		
 		return javaStatement;
 	}
-	JavaStatement expressionStatementHandler(ExpressionStatement statement){
+	
+	private JavaStatement expressionStatementHandler(ExpressionStatement statement){
 		JavaStatement javaStatement = SimpleJavaFactory.eINSTANCE.createJavaStatement();
 		javaStatement.setExpr(expressionHandler(statement.getExpression()));
 		
 		return javaStatement;
 	}
-	JavaExpression expressionHandler(Expression expression){
-		
+	
+	private JavaExpression expressionHandler(Expression expression){
 		if(expression instanceof MethodInvocation){
 			return methodInvocationHandler((MethodInvocation)expression);
 		}
@@ -306,8 +311,8 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 		}
 		
 	}
-	private JavaVariableDeclaration variableDeclarationHandler(SingleVariableDeclaration varDec){
-		
+	
+	private JavaVariableDeclaration variableDeclarationHandler(SingleVariableDeclaration varDec){	
 	    JavaVariableDeclaration javaVarDec = SimpleJavaFactory.eINSTANCE.createJavaVariableDeclaration();
 	    		
 	    SingleVariableDeclaration singleVarDec = (SingleVariableDeclaration)varDec;
@@ -316,6 +321,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 	    		
     	return 	javaVarDec;
 	}
+	
 	private JavaAssignment assignmentHandler(Assignment assignment){
 		JavaAssignment javaAssign = SimpleJavaFactory.eINSTANCE.createJavaAssignment();
 		
@@ -324,16 +330,19 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 		
 		return javaAssign;
 	}
+	
 	private JavaName nameHandler(Name name){
 		JavaName javaName = SimpleJavaFactory.eINSTANCE.createJavaName();
 		javaName.setIdentifier(name.toString());
 		return javaName;
 	}
+	
 	private JavaLiteral literalHandler(Expression str){
 		JavaLiteral javaLiteral = SimpleJavaFactory.eINSTANCE.createJavaLiteral();
 		javaLiteral.setValue(str.toString());
 		return javaLiteral;
 	}
+	
 	private JavaArrayInit arrayCreationHandler(ArrayCreation arrayCreation){
 		JavaArrayInit arrayInit = SimpleJavaFactory.eINSTANCE.createJavaArrayInit();
 		String type = arrayCreation.getType().toString();
@@ -344,6 +353,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 		
 		return arrayInit;
 	}
+	
 	private JavaMethodInvocation classInstanceCreationHandler(ClassInstanceCreation classInstance){
 		JavaMethodInvocation constructorInvocation = SimpleJavaFactory.eINSTANCE.createJavaMethodInvocation();
 		constructorInvocation.setInitialization(true);
@@ -355,8 +365,8 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 		}
 		return constructorInvocation;
 	}
-	private JavaMethodInvocation methodInvocationHandler(MethodInvocation methodInv){
-		
+	
+	private JavaMethodInvocation methodInvocationHandler(MethodInvocation methodInv){	
 		JavaMethodInvocation javaMethodInv = SimpleJavaFactory.eINSTANCE.createJavaMethodInvocation();
 		javaMethodInv.setName(methodInv.getName().getIdentifier());
 		
@@ -374,28 +384,47 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 	}
 	
 	@Override
-	public List<Path> unparse(JavaPackage content) {
-		
+	public void unparse() {
 		logger.info("Starting to unparse java model!");
 		
-		JavaPackageToString gcs = new JavaPackageToString();
-		JavaPackage jp = content;
-		
-		for (JavaCompilationUnit jcu : jp.getCunits()) {
+		model.ifPresent(jp -> {
+			JavaPackageToString gcs = new JavaPackageToString();
+
+			List<Path> paths = new ArrayList<>();
+			for (JavaCompilationUnit jcu : jp.getCunits()) {
+				String fileContent = gcs.unparseCompilationUnit(jp.getName(), jcu).toString();
+
+				try {
+					Path javaPath = rootPath.resolve(Paths.get("src", jp.getName().replace('.', File.separatorChar), jcu.getName() + ".java"));
+					paths.add(javaPath);
+					File javaFile = javaPath.toFile();
+					FileUtils.writeStringToFile(javaFile, fileContent);
+				} catch (IOException e) {
+					logger.error("There was a problem in executing addAllFoldersAndFile!", e);
+				}
+			}
 			
-			String fileContent = gcs.unparseCompilationUnit(jp.getName(),jcu).toString();
-			
-			try {		
-				packageAbsPath = unparseSource.get(0);
-				Path javaPath = packageAbsPath.resolve(Paths.get("src", jp.getName().replace('.', File.separatorChar), jcu.getName() + ".java"));
-				File javaFile = javaPath.toFile();
-				FileUtils.writeStringToFile(javaFile, fileContent);
-			} catch (IOException e) {		
-				logger.error("There was a problem in executing addAllFoldersAndFile!", e);
-			}				
-		}
-		return unparseSource;
+			artefact = Optional.of(paths);
+		});
 	}
 
-	
+	@Override
+	public void setModel(JavaPackage m) {
+		model = Optional.of(m);
+	}
+
+	@Override
+	public void setArtefact(List<Path> a) {
+		artefact = Optional.of(a);
+	}
+
+	@Override
+	public Optional<JavaPackage> getModel() {
+		return model;
+	}
+
+	@Override
+	public Optional<List<Path>> getArtefact() {
+		return artefact;
+	}
 }

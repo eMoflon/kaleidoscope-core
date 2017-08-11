@@ -15,8 +15,8 @@ public class PersistentStateBasedController<
 		TargetModel, 
 		TargetArtefact, 
 		UpdatePolicy, 
-		D extends Delta, 
-		F extends Delta, 
+		ModelDelta extends Delta, 
+		Failed extends Delta, 
 		Destination
 	>
 	extends StateBasedController<
@@ -24,20 +24,20 @@ public class PersistentStateBasedController<
 		SourceArtefact, 
 		TargetModel, 
 		TargetArtefact, 
-		D, 
+		ModelDelta, 
 		UpdatePolicy, 
-		F
+		Failed
 	>{
 	protected final Destination destination;
-	protected final PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, D, F, Destination> synchroniser;
+	protected final PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed, Destination> synchroniser;
 	
 	@Inject
 	public PersistentStateBasedController(
 			@Src ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter, 
 			@Trg ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
-			PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, D, F, Destination> synchroniser, 
-			@Src OfflineDeltaDiscoverer<SourceModel, D> sourceDeltaDiscoverer,
-			@Trg OfflineDeltaDiscoverer<TargetModel, D> targetDeltaDiscoverer, 
+			PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed, Destination> synchroniser, 
+			@Src OfflineDeltaDiscoverer<SourceModel, ModelDelta> sourceDeltaDiscoverer,
+			@Trg OfflineDeltaDiscoverer<TargetModel, ModelDelta> targetDeltaDiscoverer, 
 			@Dest Destination destination) {
 		
 		super(sourceArtefactAdapter, targetArtefactAdapter, synchroniser, sourceDeltaDiscoverer, targetDeltaDiscoverer);

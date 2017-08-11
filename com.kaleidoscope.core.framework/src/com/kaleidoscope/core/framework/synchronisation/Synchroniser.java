@@ -6,17 +6,17 @@ public interface Synchroniser<
 		SourceModel, 
 		TargetModel, 
 		UpdatePolicy, 
-		D extends Delta, 
-		F extends Delta
+		Input extends Delta, 
+		Failed extends Delta
 	> {
 	
 	public  SourceModel getSourceModel();
 	public  TargetModel getTargetModel();
 	
-	public void syncForward(D srcDelta);
-	public void syncBackward(D trgDelta);
+	public void syncForward(Input srcDelta);
+	public void syncBackward(Input trgDelta);
 	
-	public F getFailedDelta();
+	public Failed getFailedDelta();
 	public void setUpdatePolicy(UpdatePolicy updatePolicy);
 	
 	public void initialize();

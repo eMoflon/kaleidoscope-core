@@ -1,4 +1,4 @@
-package com.kaleidoscope.core.framework.workflow.controllers;
+package com.kaleidoscope.core.framework.workflow.controllers.statebased;
 
 import com.google.inject.Inject;
 import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;

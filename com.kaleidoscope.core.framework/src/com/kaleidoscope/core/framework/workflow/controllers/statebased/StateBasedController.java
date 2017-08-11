@@ -1,4 +1,4 @@
-package com.kaleidoscope.core.framework.workflow.controllers;
+package com.kaleidoscope.core.framework.workflow.controllers.statebased;
 
 import com.google.inject.Inject;
 import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;
@@ -8,7 +8,7 @@ import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
-public class StateBasedController<
+public class StateBasedController <
 		SourceModel, 
 		SourceArtefact, 
 		TargetModel, 
@@ -16,7 +16,12 @@ public class StateBasedController<
 		D extends Delta, 
 		UpdatePolicy, 
 		F extends Delta
-	>{
+	> 
+	implements StateBased<
+		SourceArtefact,
+		TargetArtefact
+	>
+	{
 	protected final ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
 	protected final ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
 	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser;

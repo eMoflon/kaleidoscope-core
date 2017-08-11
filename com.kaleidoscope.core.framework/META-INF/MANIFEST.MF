@@ -24,6 +24,4 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kaleidoscope.core.framework.annotations,
  com.kaleidoscope.core.framework.synchronisation,
- com.kaleidoscope.core.framework.workflow.adapters,
- com.kaleidoscope.core.framework.workflow.controllers;uses:="com.kaleidoscope.core.framework.workflow.adapters,com.kaleidoscope.core.delta.discovery,com.kaleidoscope.core.framework.synchronisation"
-Bundle-NativeCode: /lib/guice-assistedinject-3.0.jar
+ com.kaleidoscope.core.framework.workflow.adapters

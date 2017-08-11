@@ -1,4 +1,4 @@
-package com.kaleidoscope.core.framework.workflow.controllers;
+package com.kaleidoscope.core.framework.workflow.controllers.deltabased;
 
 import com.google.inject.Inject;
 import com.kaleidoscope.core.delta.javabased.Delta;
@@ -18,7 +18,13 @@ public class DeltaBasedController<
 		F extends Delta, 
 		SourceArtefactDelta, 
 		TargetArtefactDelta
-	> {
+	> 
+	implements DeltaBased<
+		SourceArtefact, 
+		TargetArtefact, 
+		SourceArtefactDelta, 
+		TargetArtefactDelta
+	>{
 	protected final ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
 	protected final ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
 	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, D, F> synchroniser;

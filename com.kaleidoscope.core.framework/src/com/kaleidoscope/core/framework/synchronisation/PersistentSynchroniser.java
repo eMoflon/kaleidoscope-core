@@ -6,16 +6,16 @@ public interface PersistentSynchroniser<
 		SourceModel, 
 		TargetModel, 
 		UpdatePolicy,  
-		D extends Delta, 
-		F extends Delta, 
+		Input extends Delta, 
+		Failed extends Delta, 
 		Destination
 	> 
 	extends Synchroniser<
 		SourceModel, 
 		TargetModel, 
 		UpdatePolicy, 
-		D, 
-		F
+		Input, 
+		Failed
 	> {
 	
 	public void persistState(Destination toDestination);

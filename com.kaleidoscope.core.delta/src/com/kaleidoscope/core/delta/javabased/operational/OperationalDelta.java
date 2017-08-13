@@ -31,7 +31,7 @@ import KaleidoscopeDelta.MoveNodeOP;
 
 public class OperationalDelta implements Delta {
 	
-	   private List<Operation> operations = new ArrayList<>();
+	   private List<Operation> operations= new ArrayList<>();
 
 	
 	   public OperationalDelta(){

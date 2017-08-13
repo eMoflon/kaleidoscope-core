@@ -19,5 +19,6 @@ public interface ContinuableSynchroniser<
 
 	public boolean hasContinuation();
 	public void continueSync();
+	public UpdatePolicy getContinuationPolicy();
 	
 }

@@ -61,7 +61,7 @@ class JavaPackageToString {
 		«ENDFOR»
 		
 		public class «jCompilationUnit.name»{		
-			«IF jCompilationUnit.fieldDeclarations != null»«jCompilationUnit.fieldDeclarations»«ENDIF»	
+			«IF jCompilationUnit.fieldDeclarations !== null»«jCompilationUnit.fieldDeclarations»«ENDIF»	
 			
 			«val List<JavaMethod> sortedMethods = new ArrayList<JavaMethod>(jCompilationUnit.methods)»
 			«IF sortMethods»«javaMethodNormaliser.normalize(sortedMethods)»«ENDIF»
@@ -92,7 +92,7 @@ class JavaPackageToString {
 	'''
 	
 	def unparseOpaqueMethod(JavaOpaqueMethod jMethod)
-	'''«jMethod.modifier» «jMethod.type» «jMethod.name»(«jMethod.parameters») «IF jMethod.throws != null»«IF jMethod.throws.length > 1»throws«ENDIF» «jMethod.throws»«ENDIF»
+	'''«jMethod.modifier» «jMethod.type» «jMethod.name»(«jMethod.parameters») «IF jMethod.throws !== null»«IF jMethod.throws.length > 1»throws«ENDIF» «jMethod.throws»«ENDIF»
 «jMethod.body»
 	'''
 	def unparseStatement(JavaStatement jStat)'''
@@ -144,7 +144,7 @@ class JavaPackageToString {
 	'''
 	«val List<JavaExpression> sortedArguments = new ArrayList<JavaExpression>(jMethodInvocation.arguments)»
 		«javaExpressionNormaliser.normalize(sortedArguments)»
-	«IF jMethodInvocation.initialization»new «ENDIF»«IF jMethodInvocation.optionalExpression != null»
+	«IF jMethodInvocation.initialization»new «ENDIF»«IF jMethodInvocation.optionalExpression !== null»
 «unparseExpression(jMethodInvocation.optionalExpression)».«ENDIF»«jMethodInvocation.name»(«sortedArguments.map[a|unparseExpression(a)].join(",")»)'''
 	
 	def unparseVariableDeclaration(JavaVariableDeclaration jVarDec)

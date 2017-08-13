@@ -10,6 +10,8 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
@@ -23,7 +25,10 @@ public class XMIArtefactAdapter<Model extends EObject> implements ArtefactAdapte
 	private Path path;
 	
 	public XMIArtefactAdapter(ResourceSet resourceSet, Path path) {
-		this.resourceSet = resourceSet;
+		
+		ResourceSet set = new ResourceSetImpl();
+		set.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+		this.resourceSet = set;
 		this.path = path;
 		this.model = Optional.empty();
 	}

@@ -5,7 +5,9 @@ Export-Package: KaleidoscopeDelta,
  KaleidoscopeDelta.util,
  com.kaleidoscope.core.delta.discovery,
  com.kaleidoscope.core.delta.javabased,
- com.kaleidoscope.core.delta.javabased.operational
+ com.kaleidoscope.core.delta.javabased.opaque,
+ com.kaleidoscope.core.delta.javabased.operational,
+ com.kaleidoscope.core.delta.javabased.structural
 Bundle-Name: com.kaleidoscope.core.delta.metamodel
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore,

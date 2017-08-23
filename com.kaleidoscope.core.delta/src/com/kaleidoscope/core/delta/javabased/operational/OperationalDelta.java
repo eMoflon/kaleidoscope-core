@@ -136,4 +136,9 @@ public class OperationalDelta implements Delta {
 		   operations.stream().forEach(o -> operationalDelta.getOperations().add(o.toOperationalEMF()));
 		   return operationalDelta;
 	   }
+	   
+	   public boolean isChangeDetected() {
+		   return !operations.isEmpty();
+		  
+	   }
 }

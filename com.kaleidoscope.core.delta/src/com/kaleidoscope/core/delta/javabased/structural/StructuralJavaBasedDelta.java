@@ -2,16 +2,17 @@ package com.kaleidoscope.core.delta.javabased.structural;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 
 import com.kaleidoscope.core.delta.javabased.Delta;
-import com.kaleidoscope.core.delta.javabased.structural.AttributeJavaBasedDelta;
-
-import KaleidoscopeDelta.Edge;
+import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
+import com.kaleidoscope.core.delta.javabased.operational.AddEdgeOp;
+import com.kaleidoscope.core.delta.javabased.operational.AddNodeOp;
+import com.kaleidoscope.core.delta.javabased.operational.DeleteEdgeOp;
+import com.kaleidoscope.core.delta.javabased.operational.DeleteNodeOp;
+import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 
 
 
@@ -21,12 +22,40 @@ public class StructuralJavaBasedDelta implements Delta {
 
 	   private Collection<EObject> deletedNodes = new HashSet<>();
 
-	   private Collection<Edge> addedEdges = new HashSet<>();
+	   private Collection<JavaBasedEdge> addedEdges = new HashSet<>();
 
-	   private Collection<Edge> deletedEdges = new HashSet<>();
+	   private Collection<JavaBasedEdge> deletedEdges = new HashSet<>();
 	   
 	   private Collection<AttributeJavaBasedDelta> attributeChanges = new HashSet<>();
 	   	   	 
+	   
+	   public OperationalDelta transformIntoOpDelta() {
+		   
+		   OperationalDelta operationalDelta = new OperationalDelta();
+		   
+		   addedNodes.forEach(n -> {
+			   AddNodeOp operation = new AddNodeOp(n);
+			   operationalDelta.addOperation(operation);
+			   
+		   });
+		   
+		   addedEdges.forEach(n -> {
+			   AddEdgeOp operation = new AddEdgeOp(n);
+			   operationalDelta.addOperation(operation);
+		   });
+		   
+		   deletedEdges.forEach(n -> {
+			   DeleteEdgeOp operation = new DeleteEdgeOp(n);
+			   operationalDelta.addOperation(operation);
+		   });
+		   
+		   deletedNodes.forEach(n -> {
+			   DeleteNodeOp operation = new DeleteNodeOp(n);
+			   operationalDelta.addOperation(operation);
+			   
+		   });
+		   return operationalDelta;
+	   }
 	   
 	   
 	   public void addNode(EObject node)
@@ -34,7 +63,7 @@ public class StructuralJavaBasedDelta implements Delta {
 	      addedNodes.add(node);
 	   }  
 
-	   public void addEdge(Edge edge)
+	   public void addEdge(JavaBasedEdge edge)
 	   {
 	      addedEdges.add(edge);
 	   }
@@ -48,7 +77,7 @@ public class StructuralJavaBasedDelta implements Delta {
 	      deletedNodes.add(node);
 	   }
 
-	   public void deleteEdge(Edge edge)
+	   public void deleteEdge(JavaBasedEdge edge)
 	   {
 	      deletedEdges.add(edge);
 	   }
@@ -63,13 +92,13 @@ public class StructuralJavaBasedDelta implements Delta {
 	      return deletedNodes;
 	   }
 
-	   public Collection<Edge> getAddedEdges()
+	   public Collection<JavaBasedEdge> getAddedEdges()
 	   {
 	      return addedEdges;
 	   }
 	   
 
-	   public Collection<Edge> getDeletedEdges()
+	   public Collection<JavaBasedEdge> getDeletedEdges()
 	   {
 	      return deletedEdges;
 	   }
@@ -78,32 +107,8 @@ public class StructuralJavaBasedDelta implements Delta {
 		   return attributeChanges;
 	   }
 
-	   public Collection<EObject> getAllAddedElements()
-	   {
-	      return Stream.concat(addedNodes.stream(), addedEdges.stream()).collect(Collectors.toSet());
-	   }
-
-	   public Collection<EObject> getAllDeletedElements()
-	   {
-	      return Stream.concat(deletedNodes.stream(), deletedEdges.stream()).collect(Collectors.toSet());
-	   }
-
-	   @Override
-	   public String toString()
-	   {
-		   return "";
-	   }
-
 	   public boolean isChangeDetected() {
 		   return !(addedNodes.isEmpty() && addedEdges.isEmpty() && deletedNodes.isEmpty() && deletedEdges.isEmpty() && attributeChanges.isEmpty());
 	   }
 
-	   public void clear()
-	   {
-	      addedEdges.clear();
-	      addedNodes.clear();
-	      attributeChanges.clear();
-	      deletedEdges.clear();
-	      deletedNodes.clear();
-	   }
 }

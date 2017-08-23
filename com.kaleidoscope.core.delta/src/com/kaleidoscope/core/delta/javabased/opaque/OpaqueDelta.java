@@ -6,5 +6,4 @@ import com.kaleidoscope.core.delta.javabased.Delta;
 public interface OpaqueDelta<Model> extends Delta {
 
 	void execute(Model model);
-	
 }

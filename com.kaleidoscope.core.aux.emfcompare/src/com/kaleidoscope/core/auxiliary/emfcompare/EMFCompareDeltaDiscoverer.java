@@ -17,16 +17,15 @@ import org.eclipse.emf.compare.scope.IComparisonScope;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 
+import com.google.common.collect.Lists;
 import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;
+import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
+import com.kaleidoscope.core.delta.javabased.operational.AddEdgeOp;
+import com.kaleidoscope.core.delta.javabased.operational.AddNodeOp;
+import com.kaleidoscope.core.delta.javabased.operational.AttributeChangeOp;
+import com.kaleidoscope.core.delta.javabased.operational.DeleteEdgeOp;
+import com.kaleidoscope.core.delta.javabased.operational.DeleteNodeOp;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
-
-import KaleidoscopeDelta.AddEdgeOP;
-import KaleidoscopeDelta.AddNodeOP;
-import KaleidoscopeDelta.AttributeChangeOP;
-import KaleidoscopeDelta.DeleteEdgeOP;
-import KaleidoscopeDelta.DeleteNodeOP;
-import KaleidoscopeDelta.Edge;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
 /**
  * An offline delta discoverer based on the EMFCompare framework.
@@ -55,53 +54,36 @@ public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDelt
 		Comparison comparison = compareModels(oldModel, newModel);
 		List<Diff> differences = comparison.getDifferences();
 
-		KaleidoscopeDelta.OperationalDelta operationalDelta = KaleidoscopeDeltaFactory.eINSTANCE.createOperationalDelta();
+		OperationalDelta operationalDelta = new OperationalDelta();
 
 		logger.debug("------------------ Performing Comparison of Models --------------------");
 		
-		for (Diff diff : differences) {
+		for (Diff diff : Lists.reverse(differences)) {
 			if (diff instanceof AttributeChangeImpl) {
 				if (diff.getKind().equals(DifferenceKind.CHANGE)) {
 					EAttribute affectedAttribute = ((AttributeChangeImpl) diff).getAttribute();
 					Object newValue = ((AttributeChangeImpl) diff).getValue();
-
 					Match match = diff.getMatch();
-					
-					AttributeChangeOP attributeDelta = KaleidoscopeDeltaFactory.eINSTANCE.createAttributeChangeOP();
-					attributeDelta.setAttr(affectedAttribute);
-					attributeDelta.setNode(match.getRight());
-					attributeDelta.setNewValue(newValue);
 
+					AttributeChangeOp attributeDelta = new AttributeChangeOp(affectedAttribute, newValue, match.getRight() );
 					operationalDelta.getOperations().add(attributeDelta);
 				}
 			} else if (diff instanceof ReferenceChangeImpl) {
 				if (diff.getKind() == DifferenceKind.ADD) {
 					ReferenceChangeImpl refChgSpec = (ReferenceChangeImpl) diff;
+			
 
-					AddNodeOP addNodeOp = KaleidoscopeDeltaFactory.eINSTANCE.createAddNodeOP();
-					AddEdgeOP addEdgeOp = KaleidoscopeDeltaFactory.eINSTANCE.createAddEdgeOP();
-
-					Edge edge = KaleidoscopeDeltaFactory.eINSTANCE.createEdge();
-					edge.setType(refChgSpec.getReference());
-					edge.setSrc(refChgSpec.getMatch().getRight());
-					edge.setTrg(refChgSpec.getValue());
-
-					addEdgeOp.setEdge(edge);
-					addNodeOp.setNode(((ReferenceChangeImpl) diff).getValue());
+					JavaBasedEdge edge = new JavaBasedEdge(refChgSpec.getMatch().getRight(), refChgSpec.getValue(), refChgSpec.getReference()); 
+					AddEdgeOp addEdgeOp = new AddEdgeOp(edge);
+					AddNodeOp addNodeOp = new AddNodeOp(((ReferenceChangeImpl) diff).getValue());
 
 					operationalDelta.getOperations().add(addEdgeOp);
 					operationalDelta.getOperations().add(addNodeOp);
 				} else if (diff.getKind().equals(DifferenceKind.DELETE)) {
-					DeleteNodeOP removeNodeOp = KaleidoscopeDeltaFactory.eINSTANCE.createDeleteNodeOP();
-					DeleteEdgeOP removeEdgeOp = KaleidoscopeDeltaFactory.eINSTANCE.createDeleteEdgeOP();
-					Edge edgeRemove = KaleidoscopeDeltaFactory.eINSTANCE.createEdge();
-
-					edgeRemove.setType(((ReferenceChangeImpl) diff).getReference());
-					edgeRemove.setSrc(((ReferenceChangeImpl) diff).getValue().eContainer());
-					edgeRemove.setTrg(((ReferenceChangeImpl) diff).getValue());
-
-					removeEdgeOp.setEdge(edgeRemove);
-					removeNodeOp.setNode(((ReferenceChangeImpl) diff).getValue());
+					
+					JavaBasedEdge edge = new JavaBasedEdge(((ReferenceChangeImpl) diff).getValue().eContainer(), ((ReferenceChangeImpl) diff).getValue(), ((ReferenceChangeImpl) diff).getReference()); 
+					DeleteEdgeOp removeEdgeOp = new DeleteEdgeOp(edge);
+					DeleteNodeOp removeNodeOp = new DeleteNodeOp(((ReferenceChangeImpl) diff).getValue());
 
 					operationalDelta.getOperations().add(removeEdgeOp);
 					operationalDelta.getOperations().add(removeNodeOp);
@@ -119,7 +101,7 @@ public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDelt
 		
 		logger.debug("------------------ Comparison Complete --------------------");
 		
-		return new OperationalDelta(operationalDelta);
+		return operationalDelta;
 	}
 
 	private Comparison compareModels(M model1, M model2) {

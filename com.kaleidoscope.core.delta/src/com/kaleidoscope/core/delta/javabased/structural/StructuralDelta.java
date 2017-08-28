@@ -16,7 +16,7 @@ import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 
 
 
-public class StructuralJavaBasedDelta implements Delta {
+public class StructuralDelta implements Delta {
 	
 	   private Collection<EObject> addedNodes = new HashSet<>();
 

@@ -25,4 +25,6 @@ Bundle-ActivationPolicy: lazy
 Export-Package: com.kaleidoscope.core.framework.annotations,
  com.kaleidoscope.core.framework.synchronisation,
  com.kaleidoscope.core.framework.workflow.adapters,
+ com.kaleidoscope.core.framework.workflow.controllers,
+ com.kaleidoscope.core.framework.workflow.controllers.deltabased,
  com.kaleidoscope.core.framework.workflow.controllers.statebased

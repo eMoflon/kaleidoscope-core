@@ -9,3 +9,4 @@ Require-Bundle: com.kaleidoscope.core.framework,
  org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.kaleidoscope.core.auxiliary.emfcompare
+Import-Package: com.google.common.collect

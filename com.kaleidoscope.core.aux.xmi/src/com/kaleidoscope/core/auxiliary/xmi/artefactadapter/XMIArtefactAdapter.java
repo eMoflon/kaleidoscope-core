@@ -24,7 +24,7 @@ public class XMIArtefactAdapter<Model extends EObject> implements ArtefactAdapte
 	private Optional<Model> model;
 	private Path path;
 	
-	public XMIArtefactAdapter(ResourceSet resourceSet, Path path) {
+	public XMIArtefactAdapter(Path path) {
 		
 		ResourceSet set = new ResourceSetImpl();
 		set.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
@@ -41,7 +41,12 @@ public class XMIArtefactAdapter<Model extends EObject> implements ArtefactAdapte
 			File file = path.toFile();
 			Resource resource = resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));
 			resource.load(null);
-			model = Optional.of((Model)resource.getContents().get(0));
+			
+			if(resource.getContents().isEmpty()) 
+				model =  Optional.empty();
+			else
+				model = Optional.of((Model)resource.getContents().get(0));
+			
 		} catch (IOException e) {	
 			logger.error("Not able to load the XMI file from " + path);			
 		}catch(ClassCastException e){			

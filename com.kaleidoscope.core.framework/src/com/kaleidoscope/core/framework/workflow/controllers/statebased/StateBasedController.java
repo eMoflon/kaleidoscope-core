@@ -53,7 +53,7 @@ public class StateBasedController <
 		
 		ModelDelta delta = sourceDeltaDiscoverer.discoverDelta(newSourceModel, oldSourceModel);
 		synchroniser.syncForward(delta);	
-		
+	
 		TargetModel targetModel = synchroniser.getTargetModel();
 		targetArtefactAdapter.setModel(targetModel);
 		targetArtefactAdapter.unparse();

@@ -1,5 +1,7 @@
 package com.kaleidoscope.core.framework.workflow.controllers.deltabased;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.kaleidoscope.core.framework.workflow.controllers.Controller;
 
 public interface DeltaBased <
@@ -11,6 +13,6 @@ public interface DeltaBased <
 		SourceArtefact, 
 		TargetArtefact
 	> {
-	public TargetArtefact syncForward(SourceArtefactDelta artefactDelta);
-	public SourceArtefact syncBackward(TargetArtefactDelta artefactDelta);
+	public Pair<SourceArtefact, TargetArtefact> syncForward(SourceArtefactDelta artefactDelta);
+	public Pair<SourceArtefact, TargetArtefact> syncBackward(TargetArtefactDelta artefactDelta);
 }

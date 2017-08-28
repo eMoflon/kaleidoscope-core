@@ -1,5 +1,7 @@
 package com.kaleidoscope.core.framework.workflow.controllers.deltabased;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.inject.Inject;
 import com.kaleidoscope.core.delta.javabased.Delta;
 import com.kaleidoscope.core.framework.annotations.Src;
@@ -46,27 +48,37 @@ public class DeltaBasedController<
 		this.targetDeltaAdapter = targetDeltaAdapter;
 	}	
 	
-	public TargetArtefact syncForward(SourceArtefactDelta artefactDelta){
+	public Pair<SourceArtefact, TargetArtefact> syncForward(SourceArtefactDelta artefactDelta){
 		ModelDelta delta = sourceDeltaAdapter.parse(artefactDelta, synchroniser.getSourceModel());
 		synchroniser.syncForward(delta);	
+		
+		SourceModel sourceModel = synchroniser.getSourceModel();
+		sourceArtefactAdapter.setModel(sourceModel);
+		sourceArtefactAdapter.unparse();
 		
 		TargetModel targetModel = synchroniser.getTargetModel();
 		targetArtefactAdapter.setModel(targetModel);
 		targetArtefactAdapter.unparse();
-		return targetArtefactAdapter
-				.getArtefact()
-				.orElseThrow(() -> new IllegalStateException("Unable to create target artefact."));
+		
+		return Pair.of(sourceArtefactAdapter.getArtefact().orElseThrow(() -> new IllegalStateException("Unable to create target artefact.")), 
+					   targetArtefactAdapter.getArtefact().orElseThrow(() -> new IllegalStateException("Unable to create target artefact."))
+				);
 	}
 	
-	public SourceArtefact syncBackward(TargetArtefactDelta artefactDelta) {
+	public  Pair<SourceArtefact, TargetArtefact> syncBackward(TargetArtefactDelta artefactDelta) {
 		ModelDelta delta = targetDeltaAdapter.parse(artefactDelta, synchroniser.getTargetModel());
 		synchroniser.syncBackward(delta);	
 		
 		SourceModel sourceModel = synchroniser.getSourceModel();
 		sourceArtefactAdapter.setModel(sourceModel);
 		sourceArtefactAdapter.unparse();
-		return sourceArtefactAdapter
-				.getArtefact()
-				.orElseThrow(() -> new IllegalStateException("Unable to create source artefact."));
+		
+		TargetModel targetModel = synchroniser.getTargetModel();
+		targetArtefactAdapter.setModel(targetModel);
+		targetArtefactAdapter.unparse();
+		
+		return Pair.of(sourceArtefactAdapter.getArtefact().orElseThrow(() -> new IllegalStateException("Unable to create target artefact.")), 
+				   targetArtefactAdapter.getArtefact().orElseThrow(() -> new IllegalStateException("Unable to create target artefact."))
+				);
 	}
 }

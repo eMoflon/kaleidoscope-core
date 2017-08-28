@@ -1,5 +1,7 @@
 package com.kaleidoscope.core.framework.workflow.controllers.deltabased;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.inject.Inject;
 import com.kaleidoscope.core.delta.javabased.Delta;
 import com.kaleidoscope.core.framework.annotations.Dest;
@@ -49,19 +51,19 @@ public class PersistentDeltaBasedController<
 		this.synchroniser = synchroniser;
 	}	
 	
-	public TargetArtefact syncForward(SourceArtefactDelta artefactDelta){
+	public Pair<SourceArtefact, TargetArtefact> syncForward(SourceArtefactDelta artefactDelta){
 		synchroniser.restoreState(destination);
-		TargetArtefact targetArtefact = super.syncForward(artefactDelta);
+		Pair<SourceArtefact, TargetArtefact> artefactPair = super.syncForward(artefactDelta);
 		synchroniser.persistState(destination);		
 		
-		return targetArtefact;
+		return artefactPair;
 	}
 	
-	public SourceArtefact syncBackward(TargetArtefactDelta artefactDelta) {
+	public Pair<SourceArtefact, TargetArtefact> syncBackward(TargetArtefactDelta artefactDelta) {
 		synchroniser.restoreState(destination);
-		SourceArtefact sourceArtefact = super.syncBackward(artefactDelta);
+		Pair<SourceArtefact, TargetArtefact> artefactPair = super.syncBackward(artefactDelta);
 		synchroniser.persistState(destination);		
 		
-		return sourceArtefact;
+		return artefactPair;
 	}
 }

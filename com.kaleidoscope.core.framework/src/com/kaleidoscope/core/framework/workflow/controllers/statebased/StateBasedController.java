@@ -5,22 +5,18 @@ import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;
 import com.kaleidoscope.core.delta.javabased.Delta;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
+import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
 public class StateBasedController <
-		SourceModel, 
-		SourceArtefact, 
-		TargetModel, 
-		TargetArtefact, 
-		ModelDelta extends Delta, 
-		UpdatePolicy, 
-		Failed extends Delta
-	> 
+		SourceModel, SourceArtefact, 
+		TargetModel, TargetArtefact, 
+		ModelDelta extends Delta, UpdatePolicy, 
+		Failed extends Delta> 
 	implements StateBased<
-		SourceArtefact,
-		TargetArtefact
-	>
+		SourceModel, SourceArtefact,TargetModel, TargetArtefact,
+		UpdatePolicy,Failed>
 	{
 	protected final ArtefactAdapter<SourceModel,SourceArtefact> sourceArtefactAdapter;
 	protected final ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
@@ -43,7 +39,7 @@ public class StateBasedController <
 		this.targetDeltaDiscoverer = targetDeltaDiscoverer;
 	}	
 	
-	public TargetArtefact syncForward(SourceArtefact sourceArtefact){
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefact sourceArtefact){
 		sourceArtefactAdapter.setArtefact(sourceArtefact);
 		sourceArtefactAdapter.parse();
 		SourceModel newSourceModel = sourceArtefactAdapter
@@ -57,12 +53,16 @@ public class StateBasedController <
 		TargetModel targetModel = synchroniser.getTargetModel();
 		targetArtefactAdapter.setModel(targetModel);
 		targetArtefactAdapter.unparse();
-		return targetArtefactAdapter
-				.getArtefact()
-				.orElseThrow(() -> new IllegalStateException("Unable to create target artefact."));
+
+		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = new SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed>(
+				sourceArtefactAdapter, 
+				targetArtefactAdapter,
+				synchroniser.getFailedDelta());
+		
+		return syncResult;		
 	}
 	
-	public SourceArtefact syncBackward(TargetArtefact targetArtefact) {
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefact targetArtefact) {
 		targetArtefactAdapter.setArtefact(targetArtefact);
 		targetArtefactAdapter.parse();
 		TargetModel newTargetModel = targetArtefactAdapter
@@ -76,8 +76,19 @@ public class StateBasedController <
 		SourceModel sourceModel = synchroniser.getSourceModel();
 		sourceArtefactAdapter.setModel(sourceModel);
 		sourceArtefactAdapter.unparse();
-		return sourceArtefactAdapter
-				.getArtefact()
-				.orElseThrow(() -> new IllegalStateException("Unable to create source artefact."));
+		
+		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = new SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed>(
+				sourceArtefactAdapter, 
+				targetArtefactAdapter,
+				synchroniser.getFailedDelta());
+		
+		return syncResult;		
 	}
+
+	@Override
+	public void setUpdatePolicy(UpdatePolicy updatePolicy) {
+		synchroniser.setUpdatePolicy(updatePolicy);
+		
+	}
+
 }

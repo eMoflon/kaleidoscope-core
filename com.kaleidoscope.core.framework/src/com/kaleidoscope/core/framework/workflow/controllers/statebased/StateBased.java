@@ -1,9 +1,14 @@
 package com.kaleidoscope.core.framework.workflow.controllers.statebased;
 
+import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.workflow.controllers.Controller;
 
-public interface StateBased<SourceArtefact, TargetArtefact> extends 
-			     Controller<SourceArtefact, TargetArtefact> {
-	public TargetArtefact syncForward(SourceArtefact sourceArtefact);
-	public SourceArtefact syncBackward(TargetArtefact targetArtefact);
+public interface StateBased<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, Failed extends Delta> extends 
+			     Controller<SourceArtefact, TargetArtefact, UpdatePolicy> {
+	
+	
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefact sourceArtefact);
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefact targetArtefact);
+	
 }

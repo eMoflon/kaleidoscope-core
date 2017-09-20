@@ -1,18 +1,14 @@
 package com.kaleidoscope.core.framework.workflow.controllers.deltabased;
 
-import org.apache.commons.lang3.tuple.Pair;
-
+import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.workflow.controllers.Controller;
 
-public interface DeltaBased <
-		SourceArtefact, 
-		TargetArtefact,
-		SourceArtefactDelta,
-		TargetArtefactDelta
-	> extends Controller<
-		SourceArtefact, 
-		TargetArtefact
-	> {
-	public Pair<SourceArtefact, TargetArtefact> syncForward(SourceArtefactDelta artefactDelta);
-	public Pair<SourceArtefact, TargetArtefact> syncBackward(TargetArtefactDelta artefactDelta);
+public interface DeltaBased<SourceModel, SourceArtefact, TargetModel, TargetArtefact, SourceArtefactDelta, TargetArtefactDelta, UpdatePolicy, Failed extends Delta>
+		extends Controller<SourceArtefact, TargetArtefact,  UpdatePolicy> {
+	
+	public SynchronisationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed> syncForward(SourceArtefactDelta artefactDelta);
+	public SynchronisationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefactDelta artefactDelta);
+	
+	
 }

@@ -7,6 +7,7 @@ import com.kaleidoscope.core.framework.annotations.Dest;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.PersistentSynchroniser;
+import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
 public class PersistentStateBasedController<
@@ -46,19 +47,20 @@ public class PersistentStateBasedController<
 		
 	}	
 
-	public TargetArtefact syncForward(SourceArtefact sourceArtefact){
+	@Override
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefact sourceArtefact){
 		synchroniser.restoreState(destination);
-		TargetArtefact targetArtefact = super.syncForward(sourceArtefact);
+		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = super.syncForward(sourceArtefact);
 		synchroniser.persistState(destination);		
 		
-		return targetArtefact;
+		return syncResult;
 	}
-	
-	public SourceArtefact syncBackward(TargetArtefact targetArtefact) {
+	@Override
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefact targetArtefact) {
 		synchroniser.restoreState(destination);
-		SourceArtefact sourceArtefact = super.syncBackward(targetArtefact);
+		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = super.syncBackward(targetArtefact);
 		synchroniser.persistState(destination);		
 		
-		return sourceArtefact;
+		return syncResult;
 	}
 }

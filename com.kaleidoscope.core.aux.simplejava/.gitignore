@@ -1,5 +1,2 @@
 /bin
-/gen/*
-/model/*.genmodel
-/model/*.xmi
 !/**/.keep*

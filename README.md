@@ -7,8 +7,6 @@ Core repository for kaleidoscope, a model synchronisation framework.
 
 ## Install required plugins:
 1. Install the latest version of Xtend: http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/
-2. Install eMoflon: http://emoflon.github.io/eclipse-plugin/emoflon_2.31.0/updatesite
-Make sure you enable "contact all update sites" in the update manager so all dependencies are automatically installed.
 
 ## Setup steps:
 

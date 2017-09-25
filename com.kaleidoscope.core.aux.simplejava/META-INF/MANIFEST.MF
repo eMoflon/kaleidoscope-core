@@ -9,7 +9,6 @@ Bundle-Name: SimpleJava
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
- org.moflon.core.utilities,
  com.kaleidoscope.core.framework,
  org.eclipse.jdt.core,
  org.eclipse.equinox.registry,

@@ -4,6 +4,7 @@ package com.kaleidoscope.core.auxiliary.simplejava.artefactadapter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -398,7 +399,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 					Path javaPath = rootPath.resolve(Paths.get("src", jp.getName().replace('.', File.separatorChar), jcu.getName() + ".java"));
 					paths.add(javaPath);
 					File javaFile = javaPath.toFile();
-					FileUtils.writeStringToFile(javaFile, fileContent);
+					FileUtils.writeStringToFile(javaFile, fileContent, (Charset)null);
 				} catch (IOException e) {
 					logger.error("There was a problem in executing addAllFoldersAndFile!", e);
 				}

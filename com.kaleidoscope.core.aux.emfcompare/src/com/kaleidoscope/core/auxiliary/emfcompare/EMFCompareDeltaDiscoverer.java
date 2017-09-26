@@ -66,7 +66,7 @@ public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDelt
 					Match match = diff.getMatch();
 
 					AttributeChangeOp attributeDelta = new AttributeChangeOp(affectedAttribute, newValue, match.getRight() );
-					operationalDelta.getOperations().add(attributeDelta);
+					operationalDelta.addOperation(attributeDelta);
 				}
 			} else if (diff instanceof ReferenceChangeImpl) {
 				if (diff.getKind() == DifferenceKind.ADD) {
@@ -77,16 +77,17 @@ public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDelt
 					AddEdgeOp addEdgeOp = new AddEdgeOp(edge);
 					AddNodeOp addNodeOp = new AddNodeOp(((ReferenceChangeImpl) diff).getValue());
 
-					operationalDelta.getOperations().add(addEdgeOp);
-					operationalDelta.getOperations().add(addNodeOp);
+					operationalDelta.addOperation(addEdgeOp);
+					operationalDelta.addOperation(addNodeOp);					
 				} else if (diff.getKind().equals(DifferenceKind.DELETE)) {
 					
 					JavaBasedEdge edge = new JavaBasedEdge(((ReferenceChangeImpl) diff).getValue().eContainer(), ((ReferenceChangeImpl) diff).getValue(), ((ReferenceChangeImpl) diff).getReference()); 
 					DeleteEdgeOp removeEdgeOp = new DeleteEdgeOp(edge);
 					DeleteNodeOp removeNodeOp = new DeleteNodeOp(((ReferenceChangeImpl) diff).getValue());
 
-					operationalDelta.getOperations().add(removeEdgeOp);
-					operationalDelta.getOperations().add(removeNodeOp);
+					operationalDelta.addOperation(removeEdgeOp);
+					operationalDelta.addOperation(removeNodeOp);
+					
 				} else if (diff.getKind().equals(DifferenceKind.MOVE)) {
 					//FIXME[Dusko] Handle move operation detected by EMFCompare
 				}

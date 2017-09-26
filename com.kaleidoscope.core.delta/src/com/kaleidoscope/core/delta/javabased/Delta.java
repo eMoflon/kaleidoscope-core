@@ -2,7 +2,8 @@ package com.kaleidoscope.core.delta.javabased;
 
 import com.kaleidoscope.core.delta.javabased.opaque.OpaqueDelta;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
-import com.kaleidoscope.core.delta.javabased.structural.StructuralDelta;
+
+import KaleidoscopeDelta.StructuralDelta;
 
 /**
  * A Delta represents a model change. 

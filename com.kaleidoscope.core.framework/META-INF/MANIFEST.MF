@@ -7,7 +7,8 @@ Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: com.kaleidoscope.core.delta
+Require-Bundle: com.kaleidoscope.core.delta,
+ com.google.inject;bundle-version="3.0.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kaleidoscope.core.framework.annotations,
  com.kaleidoscope.core.framework.synchronisation,

@@ -11,15 +11,27 @@ import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
 
 public class PersistentDeltaBasedController<
-		SourceModel, SourceArtefact, TargetModel, 
-		TargetArtefact, UpdatePolicy, ModelDelta extends Delta, 
-		Failed extends Delta, SourceArtefactDelta, TargetArtefactDelta, 
+		SourceModel, 
+		SourceArtefact, 
+		TargetModel, 
+		TargetArtefact, 
+		UpdatePolicy, 
+		ModelDelta extends Delta, 
+		Failed extends Delta, 
+		SourceArtefactDelta, 
+		TargetArtefactDelta, 
 		Destination
 	> 
 	extends DeltaBasedController<
-		SourceModel, SourceArtefact, TargetModel, 
-		TargetArtefact, UpdatePolicy, ModelDelta, 
-		Failed, SourceArtefactDelta, TargetArtefactDelta
+		SourceModel, 
+		SourceArtefact, 
+		TargetModel, 
+		TargetArtefact, 
+		UpdatePolicy, 
+		ModelDelta, 
+		Failed, 
+		SourceArtefactDelta, 
+		TargetArtefactDelta
 	>{
 	protected final Destination destination;
 	protected final PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed, Destination>synchroniser;

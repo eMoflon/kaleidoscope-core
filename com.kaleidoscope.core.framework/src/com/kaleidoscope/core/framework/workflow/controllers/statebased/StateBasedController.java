@@ -5,6 +5,7 @@ import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;
 import com.kaleidoscope.core.delta.javabased.Delta;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
+import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
@@ -39,7 +40,7 @@ public class StateBasedController <
 		this.targetDeltaDiscoverer = targetDeltaDiscoverer;
 	}	
 	
-	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefact sourceArtefact){
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefact sourceArtefact)throws SynchronisationFailedException{
 		sourceArtefactAdapter.setArtefact(sourceArtefact);
 		sourceArtefactAdapter.parse();
 		SourceModel newSourceModel = sourceArtefactAdapter
@@ -62,7 +63,7 @@ public class StateBasedController <
 		return syncResult;		
 	}
 	
-	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefact targetArtefact) {
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefact targetArtefact) throws SynchronisationFailedException{
 		targetArtefactAdapter.setArtefact(targetArtefact);
 		targetArtefactAdapter.parse();
 		TargetModel newTargetModel = targetArtefactAdapter
@@ -88,6 +89,12 @@ public class StateBasedController <
 	@Override
 	public void setUpdatePolicy(UpdatePolicy updatePolicy) {
 		synchroniser.setUpdatePolicy(updatePolicy);
+		
+	}
+
+	@Override
+	public void initialise() throws SynchronisationFailedException {
+		synchroniser.initialize();
 		
 	}
 

@@ -4,10 +4,7 @@ package com.kaleidoscope.core.auxiliary.simplejava.artefactadapter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -62,43 +59,45 @@ import SimpleJava.JavaVariableDeclaration;
 import SimpleJava.JavaWorkflowMethod;
 import SimpleJava.SimpleJavaFactory;
 
-public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Path>> {
+public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, Path> {
 	
 	private static final Logger logger = Logger.getLogger(JavaArtefactAdapter.class);
 	
-	private Optional<List<Path>> artefact;
 	private Optional<JavaPackage> model;
-	private Path rootPath;
+	private Path javaPackagePath;
 	
 	public JavaArtefactAdapter(Path rootPath) {
-		this.rootPath = rootPath;
+		this.javaPackagePath = rootPath;
+		this.model = Optional.empty();
 	}
 	
 	@Override
 	public void parse(){
 		try{
-			artefact.ifPresent(paths -> {
+			
 				JavaPackage pack = SimpleJavaFactory.eINSTANCE.createJavaPackage();
-				for (Path filePath : paths) {
-					parseJavaFile(pack, filePath);
+				
+				for (File file : javaPackagePath.toFile().listFiles()) {
+					parseJavaFile(pack, file);
 				}
 				
 				model = Optional.of(pack);
-			});
+		
 		}catch (ClassCastException | NullPointerException e) {
-			logger.error("Unable to parse: " + artefact);
+			model = Optional.empty();
+			logger.error("Unable to parse: " + javaPackagePath);
 		}		
 	}
 	
-	private void parseJavaFile(JavaPackage pack, Path absJavaFilePath){
-		logger.info("Parsing " + absJavaFilePath + " into a java model!");		
+	private void parseJavaFile(JavaPackage pack, File javaFile){
+		logger.info("Parsing " + javaFile.getAbsolutePath() + " into a java model!");		
 		String fieldDeclarations = "";
 		JavaCompilationUnit jcu = SimpleJavaFactory.eINSTANCE.createJavaCompilationUnit();
 		Scanner scanner = null;
 		String fileContent = "";
 		
 		try {
-			scanner = new Scanner(absJavaFilePath.toFile(),"UTF-8");
+			scanner = new Scanner(javaFile,"UTF-8");
 			scanner.useDelimiter("\\A");
 		} catch (FileNotFoundException e) {
 			logger.error("Unable to load java file that needs to be parsed into a java model!", e);
@@ -187,7 +186,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 	        }
 	    }
 	    jcu.setFieldDeclarations(fieldDeclarations);
-	    logger.info("Parsing of a " + absJavaFilePath + "is finished!");
+	    logger.info("Parsing of a " + javaFile.getAbsolutePath() + "is finished!");
 	}
 	
 	private JavaMethod methodHandler(MethodDeclaration method){	       
@@ -388,35 +387,33 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 	public void unparse() {
 		logger.info("Starting to unparse java model!");
 		
-		model.ifPresent(jp -> {
-			JavaPackageToString gcs = new JavaPackageToString();
-
-			List<Path> paths = new ArrayList<>();
-			for (JavaCompilationUnit jcu : jp.getCunits()) {
-				String fileContent = gcs.unparseCompilationUnit(jp.getName(), jcu).toString();
-
-				try {
-					Path javaPath = rootPath.resolve(Paths.get("src", jp.getName().replace('.', File.separatorChar), jcu.getName() + ".java"));
-					paths.add(javaPath);
-					File javaFile = javaPath.toFile();
-					FileUtils.writeStringToFile(javaFile, fileContent, (Charset)null);
-				} catch (IOException e) {
-					logger.error("There was a problem in executing addAllFoldersAndFile!", e);
-				}
-			}
+		model.ifPresent(javaPackage -> {
+			JavaPackageToString javaPackageToStringConverter = new JavaPackageToString();
 			
-			artefact = Optional.of(paths);
+			for (JavaCompilationUnit jcu : javaPackage.getCunits()) {
+				String fileContent = javaPackageToStringConverter.unparseCompilationUnit(javaPackage.getName(), jcu).toString();
+				Path javaCompilationUnitPath = javaPackagePath.resolve(jcu.getName() + ".java");				
+				saveFile(javaCompilationUnitPath, fileContent);
+			}
 		});
 	}
 
+	private void saveFile(Path javaPath, String fileContent) {		
+		try {			
+			File javaFile = javaPath.toFile();
+			FileUtils.writeStringToFile(javaFile, fileContent);
+		} catch (IOException e) {
+			logger.error("There was a problem in executing addAllFoldersAndFile!", e);
+		}
+	}
 	@Override
 	public void setModel(JavaPackage m) {
 		model = Optional.of(m);
 	}
 
 	@Override
-	public void setArtefact(List<Path> a) {
-		artefact = Optional.of(a);
+	public void setArtefact(Path a) {
+		javaPackagePath = a;
 	}
 
 	@Override
@@ -425,7 +422,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, List<Pa
 	}
 
 	@Override
-	public Optional<List<Path>> getArtefact() {
-		return artefact;
+	public Optional<Path> getArtefact() {
+		return Optional.of(javaPackagePath);
 	}
 }

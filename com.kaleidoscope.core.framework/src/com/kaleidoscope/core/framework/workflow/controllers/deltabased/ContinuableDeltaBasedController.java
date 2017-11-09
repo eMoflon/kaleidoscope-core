@@ -6,13 +6,38 @@ import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.ContinuableSynchroniser;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationContinuationResult;
+import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
 
-public class ContinuableDeltaBasedController <SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, ModelDelta extends Delta, Failed extends Delta, SourceArtefactDelta, TargetArtefactDelta>
-					extends DeltaBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, ModelDelta, Failed, SourceArtefactDelta, TargetArtefactDelta>
-					 implements DeltaBasedContinuable<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed, UpdatePolicy>{
+public class ContinuableDeltaBasedController <
+											SourceModel, 
+											SourceArtefact, 
+											TargetModel,
+											TargetArtefact,
+											UpdatePolicy,
+											ModelDelta extends Delta,
+											Failed extends Delta,
+											SourceArtefactDelta,
+											TargetArtefactDelta>
+					extends DeltaBasedController<
+											SourceModel,
+											SourceArtefact,
+											TargetModel,
+											TargetArtefact,
+											UpdatePolicy,
+											ModelDelta,
+											Failed,
+											SourceArtefactDelta,
+											TargetArtefactDelta>
+					 implements DeltaBasedContinuable<
+											SourceModel,
+											SourceArtefact,
+											TargetModel,
+											TargetArtefact,
+											Failed,
+											UpdatePolicy>{
 
 	protected final ContinuableSynchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> continuableSynchroniser;
 	
@@ -41,12 +66,12 @@ public class ContinuableDeltaBasedController <SourceModel, SourceArtefact, Targe
 	}
 	
 	@Override
-    public SynchronisationContinuationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed, UpdatePolicy> syncForward(SourceArtefactDelta artefactDelta) {
+    public SynchronisationContinuationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed, UpdatePolicy> syncForward(SourceArtefactDelta artefactDelta) throws SynchronisationFailedException{
 		return generateContinuableSyncResult(super.syncForward(artefactDelta));
 	}
 	
 	@Override
-    public SynchronisationContinuationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed, UpdatePolicy> syncBackward(TargetArtefactDelta artefactDelta) {
+    public SynchronisationContinuationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed, UpdatePolicy> syncBackward(TargetArtefactDelta artefactDelta) throws SynchronisationFailedException{
 		return generateContinuableSyncResult(super.syncBackward(artefactDelta));
 	}
 	

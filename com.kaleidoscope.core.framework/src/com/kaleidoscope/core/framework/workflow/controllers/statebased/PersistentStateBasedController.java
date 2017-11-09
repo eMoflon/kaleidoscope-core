@@ -7,6 +7,7 @@ import com.kaleidoscope.core.framework.annotations.Dest;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.PersistentSynchroniser;
+import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
@@ -48,7 +49,7 @@ public class PersistentStateBasedController<
 	}	
 
 	@Override
-	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefact sourceArtefact){
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefact sourceArtefact)throws SynchronisationFailedException{
 		synchroniser.restoreState(destination);
 		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = super.syncForward(sourceArtefact);
 		synchroniser.persistState(destination);		
@@ -56,7 +57,7 @@ public class PersistentStateBasedController<
 		return syncResult;
 	}
 	@Override
-	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefact targetArtefact) {
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefact targetArtefact)throws SynchronisationFailedException {
 		synchroniser.restoreState(destination);
 		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = super.syncBackward(targetArtefact);
 		synchroniser.persistState(destination);		

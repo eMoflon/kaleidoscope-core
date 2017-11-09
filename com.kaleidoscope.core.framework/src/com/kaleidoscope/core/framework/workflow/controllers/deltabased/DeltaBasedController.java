@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.kaleidoscope.core.delta.javabased.Delta;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
+import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
@@ -32,7 +33,7 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 	}
 
 	@Override
-	public SynchronisationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed> syncForward(SourceArtefactDelta artefactDelta) {
+	public SynchronisationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed> syncForward(SourceArtefactDelta artefactDelta)throws SynchronisationFailedException {
 		
 		ModelDelta delta = sourceDeltaAdapter.parse(artefactDelta, synchroniser.getSourceModel());
 		synchroniser.syncForward(delta);
@@ -56,7 +57,7 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 
 	@Override
 	public SynchronisationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed> syncBackward(
-			TargetArtefactDelta artefactDelta) {
+			TargetArtefactDelta artefactDelta) throws SynchronisationFailedException{
 		ModelDelta delta = targetDeltaAdapter.parse(artefactDelta, synchroniser.getTargetModel());
 		synchroniser.syncBackward(delta);
 
@@ -77,5 +78,11 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 	@Override
 	public void setUpdatePolicy(UpdatePolicy updatePolicy) {
 		synchroniser.setUpdatePolicy(updatePolicy);
+	}
+
+	@Override
+	public void initialise() throws SynchronisationFailedException {
+		synchroniser.initialize();
+		
 	}
 }

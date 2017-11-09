@@ -13,13 +13,13 @@ public interface Synchroniser<
 	public  SourceModel getSourceModel();
 	public  TargetModel getTargetModel();
 	
-	public void syncForward(Input srcDelta);
-	public void syncBackward(Input trgDelta);
+	public void syncForward(Input srcDelta)throws SynchronisationFailedException;
+	public void syncBackward(Input trgDelta) throws SynchronisationFailedException;
 	
 	public Failed getFailedDelta();
 	public void setUpdatePolicy(UpdatePolicy updatePolicy);
 	
-	public void initialize();
+	public void initialize() throws SynchronisationFailedException;
 	public void terminate();
 	
 }

@@ -39,6 +39,7 @@ public class XMIArtefactAdapter<Model extends EObject> implements ArtefactAdapte
 		logger.debug("Parsing to XMI");
 		try {
 			File file = path.toFile();
+			System.out.println(file.exists());
 			Resource resource = resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));
 			resource.load(null);
 			

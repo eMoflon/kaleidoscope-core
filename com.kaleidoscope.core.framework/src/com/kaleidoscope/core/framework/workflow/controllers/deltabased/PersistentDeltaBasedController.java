@@ -6,6 +6,7 @@ import com.kaleidoscope.core.framework.annotations.Dest;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.PersistentSynchroniser;
+import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
@@ -50,7 +51,7 @@ public class PersistentDeltaBasedController<
 		this.synchroniser = synchroniser;
 	}	
 	
-	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefactDelta artefactDelta){
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefactDelta artefactDelta)throws SynchronisationFailedException{
 		synchroniser.restoreState(destination);
 		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = super.syncForward(artefactDelta);
 		synchroniser.persistState(destination);		
@@ -58,7 +59,7 @@ public class PersistentDeltaBasedController<
 		return syncResult;
 	}
 	
-	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefactDelta artefactDelta) {
+	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefactDelta artefactDelta)throws SynchronisationFailedException {
 		synchroniser.restoreState(destination);
 		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = super.syncBackward(artefactDelta);
 		synchroniser.persistState(destination);		

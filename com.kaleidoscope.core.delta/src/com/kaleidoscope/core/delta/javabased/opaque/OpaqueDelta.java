@@ -6,7 +6,7 @@ import com.kaleidoscope.core.delta.javabased.Delta;
  * An {@link OpaqueDelta} represents an arbitrary transformation that
  * destructively manipulates and changes the given input (and output) model. As
  * it is a functional interface, this transformation can be implemented as
- * arbitrary Java code or using your favourite model transformation language.
+ * arbitrary Java code or using your favorite model transformation language.
  * 
  * @author aanjorin, dgataric
  *

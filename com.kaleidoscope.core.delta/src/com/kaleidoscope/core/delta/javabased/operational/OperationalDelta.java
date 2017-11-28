@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.EObject;
 import com.kaleidoscope.core.delta.javabased.Delta;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.opaque.OpaqueDelta;
+import com.kaleidoscope.core.delta.javabased.structural.StructuralDelta;
 
 import KaleidoscopeDelta.AddEdgeOP;
 import KaleidoscopeDelta.AddNodeOP;
@@ -90,6 +91,10 @@ public class OperationalDelta implements Delta {
 	
 	public <Model> OpaqueDelta<Model> transformToOpaqueDelta() {
 		return (input) -> operations.forEach(Operation::executeOperation);
+	}
+	
+	public StructuralDelta transformToStructuralDelta() {
+		// TODO
 	}
 	
 	/* EMF-based Support for Persistence */

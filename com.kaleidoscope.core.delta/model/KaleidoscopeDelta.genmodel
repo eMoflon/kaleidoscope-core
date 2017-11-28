@@ -22,8 +22,8 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/addedEdges"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/deletedEdges"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/changedAttributes"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/addedNodes"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/deletedNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/addedNodes"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/deletedNodes"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/movedNodes"/>
     </genClasses>
     <genClasses ecoreClass="KaleidoscopeDelta.ecore#//OperationalDelta">

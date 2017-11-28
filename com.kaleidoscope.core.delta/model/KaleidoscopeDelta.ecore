@@ -26,9 +26,9 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="changedAttributes" upperBound="-1"
         eType="#//AttributeDelta" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="addedNodes" upperBound="-1"
-        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="deletedNodes" upperBound="-1"
         eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deletedNodes" upperBound="-1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="movedNodes" upperBound="-1"
         eType="#//MovedNodeDelta"/>
   </eClassifiers>

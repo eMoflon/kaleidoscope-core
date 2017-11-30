@@ -1,8 +1,11 @@
 package com.kaleidoscope.core.delta.javabased.operational;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
@@ -10,6 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 import com.kaleidoscope.core.delta.javabased.Delta;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.opaque.OpaqueDelta;
+import com.kaleidoscope.core.delta.javabased.structural.StructuralDelta;
 
 import KaleidoscopeDelta.AddEdgeOP;
 import KaleidoscopeDelta.AddNodeOP;
@@ -92,13 +96,45 @@ public class OperationalDelta implements Delta {
 		return (input) -> operations.forEach(Operation::executeOperation);
 	}
 	
+	public StructuralDelta transformToStructuralDelta() {
+		StructuralDelta sdelta = new StructuralDelta();
+		
+		// Added nodes
+		sdelta.addNodes(convertToStructural(AddNodeOp.class, (op) -> op.getNode()));
+		
+		// Deleted nodes
+		sdelta.deleteNodes(convertToStructural(DeleteNodeOp.class, (op) -> op.getNode()));
+		
+		// Moved nodes
+		sdelta.moveNodes(convertToStructural(MoveNodeOp.class, (op) -> op));
+		
+		// Changed attributes
+		sdelta.changeAttributes(convertToStructural(AttributeChangeOp.class, (op) -> op));
+		
+		// Added edges
+		sdelta.addEdges(convertToStructural(AddEdgeOp.class, (op) -> op.getEdge()));
+		
+		// Deleted edges
+		sdelta.deleteEdges(convertToStructural(DeleteEdgeOp.class, (op) -> op.getEdge()));
+		
+		return sdelta;
+	}
+	
+	private <From, To> Collection<To> convertToStructural(Class<From> c, Function<From, To> conversion) {
+		return operations.stream()
+		  		  .filter(c::isInstance)
+		  		  .map(c::cast)
+		  		  .map(conversion)
+		  		  .collect(Collectors.toList());
+	}
+	
 	/* EMF-based Support for Persistence */
 
 	public static OperationalDelta fromEMF(KaleidoscopeDelta.OperationalDelta operationalDelta) {
 		OperationalDelta odelta = new OperationalDelta();
 		
 		for (KaleidoscopeDelta.Operation operation : operationalDelta.getOperations()) {
-			if (operation instanceof AddEdgeOP) 
+			if (operation instanceof KaleidoscopeDelta.AddEdgeOP) 
 				odelta.addOperation(new AddEdgeOp((AddEdgeOP) operation));
 			if (operation instanceof DeleteEdgeOP)
 				odelta.addOperation(new DeleteEdgeOp((DeleteEdgeOP) operation));

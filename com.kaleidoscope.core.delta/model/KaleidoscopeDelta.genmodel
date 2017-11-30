@@ -10,20 +10,12 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//Edge/trg"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//Edge/type"/>
     </genClasses>
-    <genClasses ecoreClass="KaleidoscopeDelta.ecore#//AttributeDelta">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//AttributeDelta/affectedAttribute"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute KaleidoscopeDelta.ecore#//AttributeDelta/oldValue"/>
-    </genClasses>
-    <genClasses ecoreClass="KaleidoscopeDelta.ecore#//MovedNodeDelta">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//MovedNodeDelta/movedNode"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute KaleidoscopeDelta.ecore#//MovedNodeDelta/oldIndex"/>
-    </genClasses>
     <genClasses ecoreClass="KaleidoscopeDelta.ecore#//StructuralDelta">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/addedEdges"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/deletedEdges"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/changedAttributes"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/addedNodes"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/deletedNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/addedNodes"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/deletedNodes"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference KaleidoscopeDelta.ecore#//StructuralDelta/movedNodes"/>
     </genClasses>
     <genClasses ecoreClass="KaleidoscopeDelta.ecore#//OperationalDelta">

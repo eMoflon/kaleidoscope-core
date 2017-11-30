@@ -9,7 +9,7 @@ Export-Package: KaleidoscopeDelta,
  com.kaleidoscope.core.delta.javabased.operational,
  com.kaleidoscope.core.delta.javabased.structural
 Bundle-Name: com.kaleidoscope.core.delta
-Bundle-Version: 1.0
+Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,

@@ -6,7 +6,7 @@ Export-Package: SimpleJava,
  com.kaleidoscope.core.auxiliary.simplejava.artefactadapter,
  com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser
 Bundle-Name: com.kaleidoscope.core.aux.simplejava
-Bundle-Version: 1.0
+Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
  com.kaleidoscope.core.framework,

@@ -5,7 +5,7 @@ Export-Package: SimpleJava,
  SimpleJava.util,
  com.kaleidoscope.core.auxiliary.simplejava.artefactadapter,
  com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser
-Bundle-Name: SimpleJava
+Bundle-Name: com.kaleidoscope.core.aux.simplejava
 Bundle-Version: 1.0
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
@@ -22,5 +22,4 @@ Require-Bundle: org.eclipse.emf.ecore,
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: TU Darmstadt
 

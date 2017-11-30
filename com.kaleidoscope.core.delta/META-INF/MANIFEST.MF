@@ -8,7 +8,7 @@ Export-Package: KaleidoscopeDelta,
  com.kaleidoscope.core.delta.javabased.opaque,
  com.kaleidoscope.core.delta.javabased.operational,
  com.kaleidoscope.core.delta.javabased.structural
-Bundle-Name: com.kaleidoscope.core.delta.metamodel
+Bundle-Name: com.kaleidoscope.core.delta
 Bundle-Version: 1.0
 Bundle-ClassPath: .
 Require-Bundle: org.eclipse.core.runtime,
@@ -21,5 +21,4 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: eMoflon
 

@@ -43,9 +43,8 @@ public class StateBasedController <
 	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncForward(SourceArtefact sourceArtefact)throws SynchronisationFailedException{
 		sourceArtefactAdapter.setArtefact(sourceArtefact);
 		sourceArtefactAdapter.parse();
-		SourceModel newSourceModel = sourceArtefactAdapter
-				.getModel()
-				.orElseThrow(() -> new IllegalStateException("Unable to create source model."));
+		
+		SourceModel newSourceModel = sourceArtefactAdapter.getModel().orElse(synchroniser.getSourceModel());
 		SourceModel oldSourceModel = synchroniser.getSourceModel();
 		
 		ModelDelta delta = sourceDeltaDiscoverer.discoverDelta(newSourceModel, oldSourceModel);
@@ -54,6 +53,10 @@ public class StateBasedController <
 		TargetModel targetModel = synchroniser.getTargetModel();
 		targetArtefactAdapter.setModel(targetModel);
 		targetArtefactAdapter.unparse();
+		
+		SourceModel sourceModel = synchroniser.getSourceModel();
+		sourceArtefactAdapter.setModel(sourceModel);
+		sourceArtefactAdapter.unparse();
 
 		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = new SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed>(
 				sourceArtefactAdapter, 
@@ -66,9 +69,8 @@ public class StateBasedController <
 	public SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncBackward(TargetArtefact targetArtefact) throws SynchronisationFailedException{
 		targetArtefactAdapter.setArtefact(targetArtefact);
 		targetArtefactAdapter.parse();
-		TargetModel newTargetModel = targetArtefactAdapter
-				.getModel()
-				.orElseThrow(() -> new IllegalStateException("Unable to create target model."));
+		
+		TargetModel newTargetModel = targetArtefactAdapter.getModel().orElse(synchroniser.getTargetModel());
 		TargetModel oldTargetModel = synchroniser.getTargetModel();
 		
 		ModelDelta delta = targetDeltaDiscoverer.discoverDelta(newTargetModel, oldTargetModel);
@@ -77,6 +79,10 @@ public class StateBasedController <
 		SourceModel sourceModel = synchroniser.getSourceModel();
 		sourceArtefactAdapter.setModel(sourceModel);
 		sourceArtefactAdapter.unparse();
+		
+		TargetModel targetModel = synchroniser.getTargetModel();
+		targetArtefactAdapter.setModel(targetModel);
+		targetArtefactAdapter.unparse();
 		
 		SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed> syncResult = new SynchronisationResult<SourceModel, SourceArtefact,TargetModel, TargetArtefact, Failed>(
 				sourceArtefactAdapter, 

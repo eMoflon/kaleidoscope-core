@@ -2,5 +2,6 @@
     <wb-module deploy-name="com.kaleidoscope.core.delta">
         <wb-resource deploy-path="/" source-path="/src"/>
         <wb-resource deploy-path="/" source-path="/gen"/>
+        <wb-resource deploy-path="/" source-path="/injection"/>
     </wb-module>
 </project-modules>

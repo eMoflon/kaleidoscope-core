@@ -68,7 +68,7 @@ public class StructuralDelta implements Delta {
 	
 	/* Transformations to other delta types */
 	
-	public OperationalDelta transformToOperationalDelta(StructuralDelta sDelta) {
+	public OperationalDelta transformToOperationalDelta() {
 		OperationalDelta odelta = new OperationalDelta();
 		
 		// First change attributes and move before doing anything else

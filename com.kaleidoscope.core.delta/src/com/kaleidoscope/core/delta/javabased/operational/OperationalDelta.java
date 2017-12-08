@@ -2,7 +2,6 @@ package com.kaleidoscope.core.delta.javabased.operational;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -55,7 +54,7 @@ public class OperationalDelta implements Delta {
 	/* Methods to manipulate the sequence of operations in the odelta */
 	
 	public  List<Operation> getOperations() {
-		return Collections.unmodifiableList(operations);
+		return operations;
 	}
 
 	public void addOperation(Operation op) {

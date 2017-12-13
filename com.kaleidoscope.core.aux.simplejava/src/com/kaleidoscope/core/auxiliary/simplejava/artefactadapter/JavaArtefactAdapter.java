@@ -90,7 +90,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, Path> {
 	}
 	
 	private void parseJavaFile(JavaPackage pack, File javaFile){
-		logger.info("Parsing " + javaFile.getAbsolutePath() + " into a java model!");		
+		logger.info("Parsing java file: " + javaFile.getAbsolutePath());		
 		String fieldDeclarations = "";
 		JavaCompilationUnit jcu = SimpleJavaFactory.eINSTANCE.createJavaCompilationUnit();
 		Scanner scanner = null;
@@ -178,15 +178,13 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, Path> {
 	                    javaMethod.setIndex(methodIndex);
 	                    
 	                    jcu.getMethods().add(javaMethod);
-	                    
-	                    logger.info("Method declaration detected with the following name: " + method.getName());
+	                    	                   
 	                    methodIndex++;
 	                }
 	            }
 	        }
 	    }
-	    jcu.setFieldDeclarations(fieldDeclarations);
-	    logger.info("Parsing of a " + javaFile.getAbsolutePath() + "is finished!");
+	    jcu.setFieldDeclarations(fieldDeclarations);	    
 	}
 	
 	private JavaMethod methodHandler(MethodDeclaration method){	       
@@ -385,7 +383,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, Path> {
 	
 	@Override
 	public void unparse() {
-		logger.info("Starting to unparse java model!");
+		logger.debug("Unparse java model to: " + javaPackagePath);
 		
 		model.ifPresent(javaPackage -> {
 			JavaPackageToString javaPackageToStringConverter = new JavaPackageToString();

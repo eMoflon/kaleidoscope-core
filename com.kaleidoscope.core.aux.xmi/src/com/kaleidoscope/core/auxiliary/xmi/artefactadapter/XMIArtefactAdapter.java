@@ -36,10 +36,9 @@ public class XMIArtefactAdapter<Model extends EObject> implements ArtefactAdapte
 	@Override
 	@SuppressWarnings("unchecked")
 	public void parse() {	
-		logger.debug("Parsing to XMI");
+		logger.debug("Parsing XMI: " + path);
 		try {
-			File file = path.toFile();
-			System.out.println(file.exists());
+			File file = path.toFile();			
 			Resource resource = resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));
 			resource.load(null);
 			
@@ -57,14 +56,14 @@ public class XMIArtefactAdapter<Model extends EObject> implements ArtefactAdapte
 	
 	@Override
 	public void unparse() {
-		logger.debug("Starting to unparse XMI!");
+		logger.debug("Unparsing XMI: " + path);
 		
 		try {
 			File file = path.toFile();  
 			Resource resource = resourceSet.createResource(URI.createFileURI(file.getAbsolutePath()));	
 			model.ifPresent(m -> resource.getContents().add(m));
 			resource.save(null);			
-			logger.debug("XMI Resource saved!");
+			
 		} catch (IOException | ClassCastException e) {
 			logger.error("Not able to save XMI resource: " + e.getMessage());					
 		}		

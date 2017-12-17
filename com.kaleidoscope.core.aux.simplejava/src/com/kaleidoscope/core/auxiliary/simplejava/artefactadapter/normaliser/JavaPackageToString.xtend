@@ -83,7 +83,7 @@ class JavaPackageToString {
 	def unparseWorkflowMethod(JavaWorkflowMethod jMethod)
 	'''
 @Generated(value={"Crypto"})
-«val List<JavaVariableDeclaration> sortedParameters = new ArrayList<JavaVariableDeclaration>(jMethod.params)»«javaVariableDeclarationNormaliser.normalize(sortedParameters)»«jMethod.modifier» «jMethod.type» «jMethod.name»(«sortedParameters.map[p|p.type + " " + p.name].join(',')») «IF jMethod.throws.length > 1»throws«ENDIF» «jMethod.throws»
+«val List<JavaVariableDeclaration> sortedParameters = new ArrayList<JavaVariableDeclaration>(jMethod.params)»«javaVariableDeclarationNormaliser.normalize(sortedParameters)»«jMethod.modifier» «jMethod.type» «jMethod.name»(«sortedParameters.map[p|p.type + " " + p.name].join(',')») «IF jMethod.throws.length > 0»throws«ENDIF» «jMethod.throws»
 {
   «FOR s : jMethod.statements»
   «unparseStatement(s)»		
@@ -92,7 +92,7 @@ class JavaPackageToString {
 	'''
 	
 	def unparseOpaqueMethod(JavaOpaqueMethod jMethod)
-	'''«jMethod.modifier» «jMethod.type» «jMethod.name»(«jMethod.parameters») «IF jMethod.throws !== null»«IF jMethod.throws.length > 1»throws«ENDIF» «jMethod.throws»«ENDIF»
+	'''«jMethod.modifier» «jMethod.type» «jMethod.name»(«jMethod.parameters») «IF jMethod.throws !== null»«IF jMethod.throws.length > 0»throws«ENDIF» «jMethod.throws»«ENDIF»
 «jMethod.body»
 	'''
 	def unparseStatement(JavaStatement jStat)'''

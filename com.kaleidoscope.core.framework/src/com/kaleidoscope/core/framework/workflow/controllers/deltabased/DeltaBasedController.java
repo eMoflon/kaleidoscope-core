@@ -82,7 +82,7 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 
 	@Override
 	public void initialise() throws SynchronisationFailedException {
-		synchroniser.initialize();
+		synchroniser.initialise();
 		
 	}
 }

@@ -19,7 +19,7 @@ public interface Synchroniser<
 	public Failed getFailedDelta();
 	public void setUpdatePolicy(UpdatePolicy updatePolicy);
 	
-	public void initialize() throws SynchronisationFailedException;
+	public void initialise() throws SynchronisationFailedException;
 	public void terminate();
 	
 }

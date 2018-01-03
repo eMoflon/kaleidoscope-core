@@ -100,7 +100,7 @@ public class StateBasedController <
 
 	@Override
 	public void initialise() throws SynchronisationFailedException {
-		synchroniser.initialize();
+		synchroniser.initialise();
 		
 	}
 

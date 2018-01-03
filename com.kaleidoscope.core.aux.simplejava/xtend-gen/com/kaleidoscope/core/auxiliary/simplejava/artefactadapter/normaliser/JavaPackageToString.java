@@ -202,7 +202,7 @@ public class JavaPackageToString {
     _builder.append(") ");
     {
       int _length = jMethod.getThrows().length();
-      boolean _greaterThan = (_length > 1);
+      boolean _greaterThan = (_length > 0);
       if (_greaterThan) {
         _builder.append("throws");
       }
@@ -248,7 +248,7 @@ public class JavaPackageToString {
       if (_tripleNotEquals) {
         {
           int _length = jMethod.getThrows().length();
-          boolean _greaterThan = (_length > 1);
+          boolean _greaterThan = (_length > 0);
           if (_greaterThan) {
             _builder.append("throws");
           }

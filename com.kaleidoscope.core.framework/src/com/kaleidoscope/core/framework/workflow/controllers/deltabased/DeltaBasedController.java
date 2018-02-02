@@ -59,6 +59,7 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 	public SynchronisationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed> syncBackward(
 			TargetArtefactDelta artefactDelta) throws SynchronisationFailedException{
 		ModelDelta delta = targetDeltaAdapter.parse(artefactDelta, synchroniser.getTargetModel());
+
 		synchroniser.syncBackward(delta);
 
 		SourceModel sourceModel = synchroniser.getSourceModel();

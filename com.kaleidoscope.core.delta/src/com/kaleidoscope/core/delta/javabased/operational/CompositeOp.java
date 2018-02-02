@@ -2,6 +2,7 @@ package com.kaleidoscope.core.delta.javabased.operational;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import KaleidoscopeDelta.AddEdgeOP;
 import KaleidoscopeDelta.AddNodeOP;
@@ -64,5 +65,15 @@ public class CompositeOp extends Operation{
 	}
 	public List<Operation> getOperations(){
 		return operations;
+	}
+	@Override
+	public void rollbackOperation() {
+		
+		ListIterator<Operation> li = operations.listIterator(operations.size());
+
+		while(li.hasPrevious()) {
+		  li.previous().rollbackOperation();;
+		}
+		
 	}
 }

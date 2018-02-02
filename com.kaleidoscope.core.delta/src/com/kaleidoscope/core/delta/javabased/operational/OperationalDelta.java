@@ -72,6 +72,10 @@ public class OperationalDelta implements Delta {
 	public void changeAttributeOp(EAttribute affectedAttribute, Object newValue, EObject obj) {
 		operations.add(new AttributeChangeOp(affectedAttribute, newValue, obj));
 	}
+	
+	public void changeAttributeOp(EAttribute affectedAttribute, Object newValue, EObject obj, Object oldValue) {
+		operations.add(new AttributeChangeOp(affectedAttribute, newValue, obj, oldValue));
+	}
 
 	public void deleteNodeOp(EObject node) {
 		operations.add(new DeleteNodeOp(node));
@@ -92,7 +96,18 @@ public class OperationalDelta implements Delta {
 	/* Transformations to other delta types */
 	
 	public <Model> OpaqueDelta<Model> transformToOpaqueDelta() {
-		return (input) -> operations.forEach(Operation::executeOperation);
+		
+		
+		return (input) -> {
+			for(int i = 0; i < operations.size(); i++)
+				operations.get(i).executeOperation();
+		};
+	}
+	
+	public void rollback() {
+	
+		for(int i = operations.size() - 1; i >= 0; i--)
+			operations.get(i).rollbackOperation();
 	}
 	
 	public StructuralDelta transformToStructuralDelta() {

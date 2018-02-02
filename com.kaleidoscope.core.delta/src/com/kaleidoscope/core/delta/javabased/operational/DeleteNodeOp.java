@@ -32,7 +32,13 @@ public class DeleteNodeOp extends Operation{
       return deleteNodeOp;
    }
 	@Override
+	public void rollbackOperation() {
+		
+	}
+
+	@Override
 	public void executeOperation() {
+	
 		EcoreUtil.delete(node);
 		
 	}

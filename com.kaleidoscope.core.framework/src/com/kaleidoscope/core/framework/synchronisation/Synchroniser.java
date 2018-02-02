@@ -10,16 +10,15 @@ public interface Synchroniser<
 		Failed extends Delta
 	> {
 	
-	public  SourceModel getSourceModel();
-	public  TargetModel getTargetModel();
+	SourceModel getSourceModel();
+	TargetModel getTargetModel();
 	
-	public void syncForward(Input srcDelta)throws SynchronisationFailedException;
-	public void syncBackward(Input trgDelta) throws SynchronisationFailedException;
+	void syncForward(Input srcDelta)throws SynchronisationFailedException;
+	void syncBackward(Input trgDelta) throws SynchronisationFailedException;
 	
-	public Failed getFailedDelta();
-	public void setUpdatePolicy(UpdatePolicy updatePolicy);
+	Failed getFailedDelta();
+	void setUpdatePolicy(UpdatePolicy updatePolicy);
 	
-	public void initialise() throws SynchronisationFailedException;
-	public void terminate();
-	
+	void initialise() throws SynchronisationFailedException;
+	void terminate();
 }

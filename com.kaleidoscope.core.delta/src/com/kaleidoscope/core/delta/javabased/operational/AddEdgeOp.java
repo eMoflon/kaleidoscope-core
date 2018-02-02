@@ -31,7 +31,16 @@ public class AddEdgeOp extends Operation {
       return addEdgeOp;
    }
    
-	
+	@SuppressWarnings("rawtypes")
+	public void rollbackOperation() {
+		EStructuralFeature feature = edge.getType();
+		if(!feature.isDerived()){
+			if (feature.isMany()) {
+				((EList) edge.getSrc().eGet(feature)).remove(edge.getTrg());
+			} else
+				edge.getSrc().eUnset(feature);
+		}
+	}
    @Override
    @SuppressWarnings("unchecked")
    public void executeOperation(){

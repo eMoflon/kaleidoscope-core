@@ -10,8 +10,18 @@ import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
 
 public class AttributeChangeOp extends Operation{
 	private Object newValue;
+	private Object oldValue;
 	   private EAttribute affectedAttribute;
 	   private EObject affectedNode;
+	   
+	   
+	   public AttributeChangeOp(EAttribute affectedAttribute, Object newValue, EObject affectedNode, Object oldValue){
+		      
+		      this.newValue = newValue;
+		      this.affectedAttribute = affectedAttribute;
+		      this.affectedNode = affectedNode;
+		      this.oldValue = oldValue;
+		   }
 	   
 	   public AttributeChangeOp(EAttribute affectedAttribute, Object newValue, EObject affectedNode){
 	      
@@ -50,7 +60,11 @@ public class AttributeChangeOp extends Operation{
 	      return attributeChangeOp;
 	   }
 
-
+	   @Override
+		public void rollbackOperation() {
+			affectedNode.eSet(affectedAttribute, oldValue);
+			
+		}
 	@Override
 	public void executeOperation() {
 		affectedNode.eSet(affectedAttribute, newValue);

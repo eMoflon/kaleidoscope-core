@@ -1,6 +1,7 @@
 package com.kaleidoscope.core.delta.javabased.operational;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import com.kaleidoscope.core.delta.javabased.operational.Operation;
 
@@ -32,5 +33,9 @@ public class AddNodeOp extends Operation{
 	@Override
 	public void executeOperation() {
 		
+	}
+	@Override
+	public void rollbackOperation() {
+		EcoreUtil.delete(node);
 	}
 }

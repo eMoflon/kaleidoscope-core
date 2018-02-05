@@ -1,7 +1,7 @@
 package com.kaleidoscope.core.framework.workflow.controllers.deltabased;
 
 import com.google.inject.Inject;
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
@@ -10,7 +10,7 @@ import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
 
-public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, ModelDelta extends Delta, Failed extends Delta, SourceArtefactDelta, TargetArtefactDelta>
+public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, ModelDelta extends IDelta, Failed extends IDelta, SourceArtefactDelta, TargetArtefactDelta>
 		implements
 		DeltaBased<SourceModel, SourceArtefact, TargetModel, TargetArtefact, SourceArtefactDelta, TargetArtefactDelta, UpdatePolicy, Failed> {
 	protected final ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter;

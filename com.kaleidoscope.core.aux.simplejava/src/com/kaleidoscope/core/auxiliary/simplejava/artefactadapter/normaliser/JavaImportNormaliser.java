@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import SimpleJava.JavaImport;
+import Simplejava.JavaImport;
 
 
 public class JavaImportNormaliser implements Comparator<JavaImport> {

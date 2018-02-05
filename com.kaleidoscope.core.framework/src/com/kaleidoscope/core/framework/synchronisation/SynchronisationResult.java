@@ -1,9 +1,9 @@
 package com.kaleidoscope.core.framework.synchronisation;
 
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
-public class SynchronisationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed extends Delta> {
+public class SynchronisationResult<SourceModel, SourceArtefact, TargetModel, TargetArtefact, Failed extends IDelta> {
 	
 	protected ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter;
 	protected ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;

@@ -3,7 +3,7 @@ package com.kaleidoscope.core.delta.javabased;
 import com.kaleidoscope.core.delta.javabased.opaque.OpaqueDelta;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 
-import KaleidoscopeDelta.StructuralDelta;
+import Delta.StructuralDelta;
 
 /**
  * A Delta represents a model change. 
@@ -13,6 +13,6 @@ import KaleidoscopeDelta.StructuralDelta;
  * 
  * @author aanjorin, dgataric
  */
-public interface Delta {
+public interface IDelta {
 
 }

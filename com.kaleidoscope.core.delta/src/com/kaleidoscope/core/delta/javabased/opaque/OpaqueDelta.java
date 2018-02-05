@@ -1,6 +1,6 @@
 package com.kaleidoscope.core.delta.javabased.opaque;
 
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 
 /**
  * An {@link OpaqueDelta} represents an arbitrary transformation that
@@ -15,7 +15,7 @@ import com.kaleidoscope.core.delta.javabased.Delta;
  *            transformation is endogenous and in-place).
  */
 @FunctionalInterface
-public interface OpaqueDelta<Model> extends Delta {
+public interface OpaqueDelta<Model> extends IDelta {
 	/**
 	 * Execute the underlying transformation to manipulate and change the given
 	 * model.

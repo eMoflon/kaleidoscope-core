@@ -9,19 +9,19 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.opaque.OpaqueDelta;
 import com.kaleidoscope.core.delta.javabased.structural.StructuralDelta;
 
-import KaleidoscopeDelta.AddEdgeOP;
-import KaleidoscopeDelta.AddNodeOP;
-import KaleidoscopeDelta.AttributeChangeOP;
-import KaleidoscopeDelta.CompositeOP;
-import KaleidoscopeDelta.DeleteEdgeOP;
-import KaleidoscopeDelta.DeleteNodeOP;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
-import KaleidoscopeDelta.MoveNodeOP;
+import Delta.AddEdgeOP;
+import Delta.AddNodeOP;
+import Delta.AttributeChangeOP;
+import Delta.CompositeOP;
+import Delta.DeleteEdgeOP;
+import Delta.DeleteNodeOP;
+import Delta.DeltaFactory;
+import Delta.MoveNodeOP;
 
 /**
  * An {@link OperationalDelta} or just odelta represents a "change to be
@@ -44,7 +44,7 @@ import KaleidoscopeDelta.MoveNodeOP;
  * 
  * @author aanjorin, dgataric
  */
-public class OperationalDelta implements Delta {
+public class OperationalDelta implements IDelta {
 	private List<Operation> operations;
 
 	public OperationalDelta() {
@@ -144,11 +144,11 @@ public class OperationalDelta implements Delta {
 	
 	/* EMF-based Support for Persistence */
 
-	public static OperationalDelta fromEMF(KaleidoscopeDelta.OperationalDelta operationalDelta) {
+	public static OperationalDelta fromEMF(Delta.OperationalDelta operationalDelta) {
 		OperationalDelta odelta = new OperationalDelta();
 		
-		for (KaleidoscopeDelta.Operation operation : operationalDelta.getOperations()) {
-			if (operation instanceof KaleidoscopeDelta.AddEdgeOP) 
+		for (Delta.Operation operation : operationalDelta.getOperations()) {
+			if (operation instanceof Delta.AddEdgeOP) 
 				odelta.addOperation(new AddEdgeOp((AddEdgeOP) operation));
 			if (operation instanceof DeleteEdgeOP)
 				odelta.addOperation(new DeleteEdgeOp((DeleteEdgeOP) operation));
@@ -167,8 +167,8 @@ public class OperationalDelta implements Delta {
 		return odelta;
 	}
 	
-	public KaleidoscopeDelta.OperationalDelta toEMF() {
-		KaleidoscopeDelta.OperationalDelta operationalDelta = KaleidoscopeDeltaFactory.eINSTANCE.createOperationalDelta();
+	public Delta.OperationalDelta toEMF() {
+		Delta.OperationalDelta operationalDelta = DeltaFactory.eINSTANCE.createOperationalDelta();
 		operations.forEach(o -> operationalDelta.getOperations().add(o.toOperationalEMF()));
 		return operationalDelta;
 	}

@@ -5,8 +5,8 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.kaleidoscope.core.delta.javabased.operational.Operation;
 
-import KaleidoscopeDelta.AttributeChangeOP;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
+import Delta.AttributeChangeOP;
+import Delta.DeltaFactory;
 
 public class AttributeChangeOp extends Operation{
 	private Object newValue;
@@ -16,19 +16,18 @@ public class AttributeChangeOp extends Operation{
 	   
 	   
 	   public AttributeChangeOp(EAttribute affectedAttribute, Object newValue, EObject affectedNode, Object oldValue){
-		      
-		      this.newValue = newValue;
-		      this.affectedAttribute = affectedAttribute;
-		      this.affectedNode = affectedNode;
-		      this.oldValue = oldValue;
-		   }
+		   this.newValue = newValue;
+		   this.affectedAttribute = affectedAttribute;
+		   this.affectedNode = affectedNode;
+		   this.oldValue = oldValue;
+	   }
 	   
-	   public AttributeChangeOp(EAttribute affectedAttribute, Object newValue, EObject affectedNode){
-	      
+	   public AttributeChangeOp(EAttribute affectedAttribute, Object newValue, EObject affectedNode){  
 	      this.newValue = newValue;
 	      this.affectedAttribute = affectedAttribute;
 	      this.affectedNode = affectedNode;
 	   }
+	   
 	   public AttributeChangeOp(AttributeChangeOP attributeChangeOP){
 		   this.newValue = attributeChangeOP.getNewValue();
 		   this.affectedAttribute = attributeChangeOP.getAttr();
@@ -50,9 +49,9 @@ public class AttributeChangeOp extends Operation{
 		   return affectedNode;
 	   }
 
-	   public KaleidoscopeDelta.Operation toOperationalEMF()
+	   public Delta.Operation toOperationalEMF()
 	   {	      
-	      AttributeChangeOP attributeChangeOp = KaleidoscopeDeltaFactory.eINSTANCE.createAttributeChangeOP();
+	      AttributeChangeOP attributeChangeOp = DeltaFactory.eINSTANCE.createAttributeChangeOP();
 	      attributeChangeOp.setAttr(affectedAttribute);
 	      attributeChangeOp.setNewValue(newValue);
 	      attributeChangeOp.setNode(affectedNode);
@@ -68,6 +67,5 @@ public class AttributeChangeOp extends Operation{
 	@Override
 	public void executeOperation() {
 		affectedNode.eSet(affectedAttribute, newValue);
-		
 	}
 }

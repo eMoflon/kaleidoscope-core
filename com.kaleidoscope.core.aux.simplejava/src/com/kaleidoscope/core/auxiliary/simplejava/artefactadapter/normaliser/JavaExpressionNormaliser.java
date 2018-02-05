@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import SimpleJava.JavaExpression;
+import Simplejava.JavaExpression;
 
 
 public class JavaExpressionNormaliser<T> implements Comparator<T> {

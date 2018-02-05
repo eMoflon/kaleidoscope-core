@@ -6,8 +6,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 
-import KaleidoscopeDelta.DeleteEdgeOP;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
+import Delta.DeleteEdgeOP;
+import Delta.DeltaFactory;
 
 public class DeleteEdgeOp extends Operation{
 	private JavaBasedEdge edge;
@@ -15,7 +15,7 @@ public class DeleteEdgeOp extends Operation{
 	public DeleteEdgeOp(JavaBasedEdge edge){
 		this.edge = edge;
 	}
-	public DeleteEdgeOp(KaleidoscopeDelta.DeleteEdgeOP deleteEdgeOp){
+	public DeleteEdgeOp(Delta.DeleteEdgeOP deleteEdgeOp){
 		   this.edge = new JavaBasedEdge(deleteEdgeOp.getEdge());	   
 	}
 	
@@ -25,9 +25,9 @@ public class DeleteEdgeOp extends Operation{
 		return edge;
 	}
 	
-	public KaleidoscopeDelta.Operation toOperationalEMF()
+	public Delta.Operation toOperationalEMF()
    {	      
-	  DeleteEdgeOP deleteEdgeOp = KaleidoscopeDeltaFactory.eINSTANCE.createDeleteEdgeOP();      
+	  DeleteEdgeOP deleteEdgeOp = DeltaFactory.eINSTANCE.createDeleteEdgeOP();      
 	  deleteEdgeOp.setEdge(edge.toEMF());
       
       return deleteEdgeOp;

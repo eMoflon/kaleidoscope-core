@@ -2,8 +2,8 @@ package com.kaleidoscope.core.delta.javabased.operational;
 
 import org.eclipse.emf.ecore.EObject;
 
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
-import KaleidoscopeDelta.MoveNodeOP;
+import Delta.DeltaFactory;
+import Delta.MoveNodeOP;
 
 public class MoveNodeOp extends Operation{
 	private EObject node;
@@ -34,9 +34,9 @@ public class MoveNodeOp extends Operation{
 	public int getOldIndex() {
 		return oldIndex;
 	}
-	public KaleidoscopeDelta.Operation toOperationalEMF()
+	public Delta.Operation toOperationalEMF()
     {	      
-	  MoveNodeOP moveNodeOp = KaleidoscopeDeltaFactory.eINSTANCE.createMoveNodeOP();
+	  MoveNodeOP moveNodeOp = DeltaFactory.eINSTANCE.createMoveNodeOP();
 	  moveNodeOp.setNewIndex(newIndex);
 	  moveNodeOp.setNode(node);
       

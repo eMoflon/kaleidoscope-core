@@ -1,11 +1,11 @@
 package com.kaleidoscope.core.framework.synchronisation;
 
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 
 public interface ContinuableSynchroniser<
 		SourceModel, TargetModel, 
-		UpdatePolicy, Input extends Delta, 
-		Failed extends Delta> 
+		UpdatePolicy, Input extends IDelta, 
+		Failed extends IDelta> 
 	extends Synchroniser<
 		SourceModel, TargetModel, 
 		UpdatePolicy, Input, Failed> {

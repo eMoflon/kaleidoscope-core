@@ -8,7 +8,7 @@ import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedExce
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
-import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
+import com.kaleidoscope.core.framework.workflow.adapters.DeltaInputAdapter;
 
 public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, ModelDelta extends IDelta, Failed extends IDelta, SourceArtefactDelta, TargetArtefactDelta>
 		implements
@@ -16,15 +16,15 @@ public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, Targ
 	protected final ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter;
 	protected final ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
 	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> synchroniser;
-	protected final DeltaAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter;
-	protected final DeltaAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter;	
+	protected final DeltaInputAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter;
+	protected final DeltaInputAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter;	
 
 	@Inject
 	public DeltaBasedController(@Src ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter,
 			@Trg ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
 			Synchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> synchroniser,
-			@Src DeltaAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
-			@Trg DeltaAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter) {
+			@Src DeltaInputAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
+			@Trg DeltaInputAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter) {
 		this.sourceArtefactAdapter = sourceArtefactAdapter;
 		this.targetArtefactAdapter = targetArtefactAdapter;
 		this.synchroniser = synchroniser;

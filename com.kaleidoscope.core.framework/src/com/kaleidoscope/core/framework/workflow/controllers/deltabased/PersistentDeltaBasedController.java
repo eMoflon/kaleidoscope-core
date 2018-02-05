@@ -9,7 +9,7 @@ import com.kaleidoscope.core.framework.synchronisation.PersistentSynchroniser;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
-import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
+import com.kaleidoscope.core.framework.workflow.adapters.DeltaInputAdapter;
 
 public class PersistentDeltaBasedController<
 		SourceModel, 
@@ -42,8 +42,8 @@ public class PersistentDeltaBasedController<
 			@Src  ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter,
 			@Trg  ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
 				  PersistentSynchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed, Destination> synchroniser,  
-			@Src  DeltaAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
-			@Trg  DeltaAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter, 
+			@Src  DeltaInputAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
+			@Trg  DeltaInputAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter, 
 			@Dest Destination destination
 		) {
 		super(sourceArtefactAdapter, targetArtefactAdapter, synchroniser, sourceDeltaAdapter, targetDeltaAdapter);

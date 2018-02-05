@@ -124,42 +124,7 @@ public class ExcelHandler {
 
 		setRowRelations(rowList, simpleSheet, 0);
 	}
-
-	/**
-	 * This method reads sheets, Rows from them and creates columnObjects
-	 * 
-	 * @param simpleSheet
-	 * @param rowList
-	 */
-	private void createColumnObjects(Simpleexcel.Sheet simpleSheet, List<Row> rowList) {
-		// get max number of cell in a row - set that as column number
-		int maxColumnNumber = 0;
-		for (Row row : rowList) {
-			int lastRowNum = row.getLastCellNum();
-			if (lastRowNum > 0)
-				maxColumnNumber = lastRowNum;
-		}
-
-		// System.out.println("Number of columns "+ columnNumber);
-
-		for (int colIndex = 0; colIndex < maxColumnNumber; colIndex++) {
-			ColObject columnObject = SimpleexcelFactory.eINSTANCE.createColObject();
-
-			// add cells to columns - iterate RowOBject for that
-			EList<RowObject> rowObjectList = simpleSheet.getRowobject();
-			for (RowObject rowObject : rowObjectList) {
-				EList<Simpleexcel.Cell> cellList = rowObject.getCell();
-				if (cellList != null && cellList.size() > 0) {
-					Simpleexcel.Cell cell = rowObject.getCell().get(colIndex);
-					columnObject.getCell().add(cell);
-				}
-			}
-
-			// add columnObject to Sheet
-			simpleSheet.getColobject().add(columnObject);
-		}
-	}
-
+	
 	/**
 	 * Recursive code for reading the rows and setting nextRowObject
 	 * 

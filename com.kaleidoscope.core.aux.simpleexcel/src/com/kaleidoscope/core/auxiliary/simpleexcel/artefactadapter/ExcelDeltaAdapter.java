@@ -84,7 +84,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			List<Object> innerOperations = new ArrayList<Object>();
 
 			// ================ ADD NODE ===================
-			if ((operation instanceof AddNodeOp)) {
+			if (operation instanceof AddNodeOp) {
 				// ============== ADD FILE =================
 				if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.File) {
 					innerOperations.add("ADD_FILE");
@@ -103,14 +103,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 					innerOperations.add(innerMap);
 				}
-				
-				// ============== DELETE SHEET =================
-				if (((DeleteNodeOp) operation).getNode() instanceof Simpleexcel.Sheet) {
-					innerOperations.add("DELETE_SHEET");
-					HashMap<String, Object> innerMap = new HashMap<String, Object>();
-					innerMap.put("SHEET_NAME", ((Simpleexcel.Sheet) ((AddNodeOp) operation).getNode()).getSheetName());
-				}
-				
+
 				// ============== ADD ROW =================
 				if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.RowObject) {
 					innerOperations.add("ADD_ROW");
@@ -128,9 +121,21 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 					innerOperations.add(innerMap);
 				}
+			} else {
+				if (operation instanceof DeleteNodeOp) {
+					// ============== DELETE SHEET =================
+					if (((DeleteNodeOp) operation).getNode() instanceof Simpleexcel.Sheet) {
+						innerOperations.add("DELETE_SHEET");
+						HashMap<String, Object> innerMap = new HashMap<String, Object>();
+						innerMap.put("SHEET_NAME",
+								((Simpleexcel.Sheet) ((DeleteNodeOp) operation).getNode()).getSheetName());
+
+						innerOperations.add(innerMap);
+					}
+				}
 			}
-			
-			if(null!=innerOperations && !innerOperations.isEmpty())
+
+			if (null != innerOperations && !innerOperations.isEmpty())
 				excelOperations.add(innerOperations);
 		}
 	}
@@ -154,7 +159,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		// create cells
 		sortedOperationsExcelPOI.addAll(cellNodeAddDeleteOperations);
 		sortedOperationsExcelPOI.addAll(rowToCellEdgeAddAndDeleteOperations);
-		
+
 		printOperationsFromList(sortedOperationsExcelPOI, "Sorted operations for EXCEL");
 
 	}
@@ -163,7 +168,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	 * Sort the operations to make sense for EMF
 	 */
 	private void sortOperations() {
-		//printOperationsFromList(operations, "Original List");
+		// printOperationsFromList(operations, "Original List");
 
 		for (Operation operation : operations) {
 			// ==============FILE=================
@@ -274,17 +279,17 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 		sortedOperationsEMF.addAll(rowToCellEdgeAddAndDeleteOperations);
 
-		//printOperationsFromList(sortedOperationsEMF, "Sorted Operations for EMF");
+		// printOperationsFromList(sortedOperationsEMF, "Sorted Operations for EMF");
 	}
 
 	/**
 	 * Test method to print all operations in details
 	 * 
 	 * @param operations2
-	 * @param string 
+	 * @param string
 	 */
 	private void printOperationsFromList(List<Operation> operations2, String string) {
-		System.out.println("Printing list : "+ string);
+		System.out.println("Printing list : " + string);
 
 		for (Operation operation : operations2) {
 

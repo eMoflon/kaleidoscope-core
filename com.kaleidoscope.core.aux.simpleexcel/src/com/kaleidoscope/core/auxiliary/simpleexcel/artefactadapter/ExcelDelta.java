@@ -90,11 +90,10 @@ public class ExcelDelta {
 				break;
 
 			case "ADD_ROW":
-				rowOperation("ADD_ROW", list.get(1));
+				rowOperation("ADD_ROW", null);
 				break;
 
 			case "ADD_CELL":
-
 				break;
 
 			default:
@@ -138,7 +137,7 @@ public class ExcelDelta {
 	private void sheetOperation(String string, Object object) throws UnableToEditExcelFile {
 		HashMap<String, Object> sheetDataMap = (HashMap<String, Object>) object;
 		String sheetName = "";
-		int sheedId = 0;
+		int sheetId = 0;
 		if (null != sheetDataMap) {
 			if (sheetDataMap.containsKey("SHEET_NAME"))
 				if (sheetDataMap.get("SHEET_NAME") instanceof String)
@@ -147,22 +146,55 @@ public class ExcelDelta {
 					throw new UnableToEditExcelFile("SHEET NAME NOT READBLE...");
 			if (sheetDataMap.containsKey("SHEET_ID"))
 				if (sheetDataMap.get("SHEET_ID") instanceof Integer)
-					sheedId = (int) sheetDataMap.get("SHEET_ID");
+					sheetId = (int) sheetDataMap.get("SHEET_ID");
 				else
 					throw new UnableToEditExcelFile("SHEET ID NOT READBLE...");
 		}
 
 		switch (string) {
 		case "ADD_SHEET":
-			createSheet(sheetName, sheedId);
+			createSheet(sheetName, sheetId);
 			break;
 
 		case "DELETE_SHEET":
-
+			deleteSheet(sheetName, sheetId);
 			break;
 
 		default:
 			break;
+		}
+	}
+
+	/**
+	 * Deletes a sheet in excel file
+	 * 
+	 * @param sheetName
+	 * @param sheetId
+	 * @throws UnableToEditExcelFile
+	 */
+	private void deleteSheet(String sheetName, int sheetId) throws UnableToEditExcelFile {
+		try {
+
+			File file = new File(this.file);
+			if (file.exists()) {
+				final InputStream is = new FileInputStream(file);
+				workbook = new XSSFWorkbook(is);
+
+				for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
+					if (workbook.getSheetName(sheetIndex).equals(sheetName))
+						workbook.removeSheetAt(sheetIndex);
+				}
+
+				FileOutputStream fileOutputStream = new FileOutputStream(file);
+				workbook.write(fileOutputStream);
+				fileOutputStream.close();
+			} else {
+				throw new UnableToEditExcelFile("FILE NOT FOUND..");
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

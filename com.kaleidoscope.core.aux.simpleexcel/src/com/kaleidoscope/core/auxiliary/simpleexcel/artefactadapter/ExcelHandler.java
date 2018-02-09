@@ -21,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.eclipse.emf.common.util.EList;
 
+import com.google.common.collect.Lists;
 import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelConstants;
 
 import Simpleexcel.ColObject;
@@ -51,7 +52,7 @@ public class ExcelHandler {
 	 */
 	public Optional<Simpleexcel.File> parseExcelFile() {
 		Optional<Simpleexcel.File> result = Optional.empty();
-		
+
 		try {
 			logger.debug("Starting reading...");
 
@@ -64,7 +65,8 @@ public class ExcelHandler {
 				absoluteFileName = absoluteFileName.replace("\\.\\", "\\");
 			}
 			simpleFile.setFileName(absoluteFileName);
-			
+			simpleFile.setPath(absoluteFileName);
+
 			// iterate through all the sheets
 			for (int sheetCount = 0; sheetCount < workBook.getNumberOfSheets(); sheetCount++) {
 				// create excelElement from Sheet
@@ -72,12 +74,12 @@ public class ExcelHandler {
 				readSheet(workBook.getSheetAt(sheetCount), sheetCount, simpleSheet);
 				simpleFile.getSheet().add(simpleSheet);
 			}
-			
+
 			result = Optional.of(simpleFile);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
-		
+		}
+
 		return result;
 	}
 
@@ -118,13 +120,26 @@ public class ExcelHandler {
 		// set column relations
 		for (int index = 0; index < columnObjectList.size(); index++) {
 			if (index < maxColumnNumber - 1) {
-				columnObjectList.get(index).setNextColumn(columnObjectList.get(index+1));
+				columnObjectList.get(index).setNextColumn(columnObjectList.get(index + 1));
 			}
 		}
 
 		setRowRelations(rowList, simpleSheet, 0);
+
+		// correct the order of the rows which happened because of the recursive code
+		List<RowObject> reversedRows = simpleSheet.getRowobject();
+		// deep copy into a new list
+		List<RowObject> orderedRows = new ArrayList<RowObject>();
+		for (int i = reversedRows.size() - 1; i >= 0; i--) {
+			orderedRows.add(reversedRows.get(i));
+		}
+		reversedRows.clear();
+		
+		simpleSheet.getRowobject().addAll(orderedRows);
+
+		System.out.println();
 	}
-	
+
 	/**
 	 * Recursive code for reading the rows and setting nextRowObject
 	 * 
@@ -139,23 +154,16 @@ public class ExcelHandler {
 		RowObject nextRowObject = null;
 		if (index < rowList.size()) {
 			currentRow = rowList.get(index);
-			if (!rowIsEmpty(currentRow)) {
-				RowObject rowObject = SimpleexcelFactory.eINSTANCE.createRowObject();
-				// if (rowId == 1)
-				// rowObject.setIsheader(true);
-				// rowObject.setRowId(rowId++);
+			// if (!rowIsEmpty(currentRow)) {
+			RowObject rowObject = SimpleexcelFactory.eINSTANCE.createRowObject();
+			readRow(currentRow, rowObject, simpleSheet);
+			nextRowObject = setRowRelations(rowList, simpleSheet, index + 1);
+			if (nextRowObject != null)
+				rowObject.setNextRow(nextRowObject);
 
-				readRow(currentRow, rowObject, simpleSheet);
-
-				nextRowObject = setRowRelations(rowList, simpleSheet, index + 1);
-
-				// if (nextRowObject != null && !(nextRowObject.getRowId() <= 0))
-				if (nextRowObject != null)
-					rowObject.setNextRow(nextRowObject);
-
-				simpleSheet.getRowobject().add(rowObject);
-				return rowObject;
-			}
+			simpleSheet.getRowobject().add(rowObject);
+			return rowObject;
+			// }
 		}
 		return nextRowObject;
 	}
@@ -230,13 +238,6 @@ public class ExcelHandler {
 		if (xssfColor != null) {
 			String argbHex = xssfColor.getARGBHex();
 			System.out.println("row:" + rowIndex + ",col:" + colIndex + " color: " + argbHex);
-			/*if (argbHex.toString().compareTo(Constants.RED_ARGB) == 0)
-				cellObject.setBackgroundColor("RED");
-			if (argbHex.toString().compareTo(Constants.YELLOW_ARGB) == 0)
-				cellObject.setBackgroundColor("YELLOW");
-			if (argbHex.toString().compareTo(Constants.GREEN_ARGB) == 0)
-				cellObject.setBackgroundColor("GREEN");
-			*/
 			cellObject.setBackgroundColor(argbHex);
 		}
 	}

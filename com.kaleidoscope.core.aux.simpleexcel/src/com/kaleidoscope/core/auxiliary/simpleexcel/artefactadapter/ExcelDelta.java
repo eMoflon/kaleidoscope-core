@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,9 +37,28 @@ public class ExcelDelta {
 	 * @param path
 	 * @param operationList2
 	 */
-	public ExcelDelta(Path path, List<List<Object>> excelOperations) {
-		this.filePath = path;
+	public ExcelDelta(List<List<Object>> excelOperations) {
+		// this.filePath = path;
 		this.excelOperations = excelOperations;
+		for (List<Object> list : excelOperations) {
+			if (list.get(0).equals("ADD_FILE")) {
+				if (list.get(1) instanceof Simpleexcel.File) {
+					String fileName = ((Simpleexcel.File) (list.get(1))).getFileName();
+					String filePath = ((Simpleexcel.File) (list.get(1))).getPath();
+					if (fileName != null && !fileName.equals("")) {
+						if (filePath != null && !filePath.equals("")) {
+							this.filePath = Paths.get(filePath + "\\" + fileName);
+						} else {
+							this.filePath = Paths.get(fileName);
+						}
+					}
+				} else {
+					this.filePath = null;
+				}
+			} else {
+				this.filePath = null;
+			}
+		}
 		splitOperations();
 	}
 
@@ -71,6 +91,11 @@ public class ExcelDelta {
 		}
 	}
 
+	/**
+	 * Entry point for this class
+	 * 
+	 * @throws UnableToEditExcelFile
+	 */
 	public void execute() throws UnableToEditExcelFile {
 		System.out.println("Printing excel operations");
 		for (List<Object> list : excelOperations) {
@@ -207,8 +232,13 @@ public class ExcelDelta {
 	 */
 	private void createSheet(String sheetName, int sheedId) throws UnableToEditExcelFile {
 		try {
+			File file;
+			if (null != this.file) {
+				file = new File(this.file);
+			} else {
+				file = new File(discoverFileName(sheetName));
+			}
 
-			File file = new File(this.file);
 			if (file.exists()) {
 				final InputStream is = new FileInputStream(file);
 				workbook = new XSSFWorkbook(is);
@@ -225,6 +255,28 @@ public class ExcelDelta {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Finds file name when it is not the operational delta
+	 * 
+	 * @param sheetName
+	 * 
+	 * @return
+	 */
+	private String discoverFileName(String sheetName) {
+		// iterate through all the operations.
+		for (List<Object> excelOps : excelOperations) {
+			if (excelOps.get(0).equals("ADD_FILE_SHEET_EDGE")) {
+				HashMap<String, Object> map = (HashMap<String, Object>) excelOps.get(1);
+
+				if (map.get("TRG").equals(sheetName)) {
+					return (String) map.get("SRC");
+				}
+
+			}
+		}
+		return "";
 	}
 
 	/**

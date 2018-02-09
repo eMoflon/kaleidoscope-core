@@ -47,12 +47,36 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	@Override
 	public void unparse() {
 		ExcelDeltaAdapter excelDeltaAdapter = new ExcelDeltaAdapter();
-		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
+//		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
+		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile1(), path);
 		try {
 			excelDelta.execute();
 		} catch (UnableToEditExcelFile e) {
 			e.printStackTrace();
 		}
+	}
+
+	private OperationalDelta generateOperationalDeltaForFile1() {
+		// OperationalDelta initialize
+		OperationalDelta opDelta = new OperationalDelta();
+
+		// iterate through model
+
+		// get File name
+		Optional<File> m = getModel();
+
+		// add file node
+		File file = m.get();
+		
+
+		// add new Sheet
+		Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
+		newSheet.setSheetName("Sheet to Add");
+		opDelta.addNodeOp(newSheet);
+		opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+
+
+		return opDelta;
 	}
 
 	private OperationalDelta generateOperationalDeltaForFile() {
@@ -69,10 +93,6 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		file.setFileName("test.xlsx");
 		file.setPath(
 				"D:\\WorkSpaces\\Kaleidoscope Development\\Refactoring\\kaleidoscope-core\\com.kaleidoscope.core.aux.simpleexcel\\Resources\\");
-		// file.setFileName("D:\\WorkSpaces\\Kaleidoscope
-		// Development\\Refactoring\\kaleidoscope-core\\com.kaleidoscope.core.aux.simpleexcel\\Resources\\test.xlsx");
-		// file.setPath("D:\\WorkSpaces\\Kaleidoscope
-		// Development\\Refactoring\\kaleidoscope-core\\com.kaleidoscope.core.aux.simpleexcel\\Resources\\test.xlsx");
 		opDelta.addNodeOp(file);
 
 		// iterate through all the sheets in a file

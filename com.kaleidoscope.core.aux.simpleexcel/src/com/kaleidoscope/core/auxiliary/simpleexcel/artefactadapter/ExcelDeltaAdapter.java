@@ -71,7 +71,8 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		convertToExcelAssignments();
 
 		// connect with ExcelDelta
-		ExcelDelta excelDelta = new ExcelDelta(path, excelOperations);
+		// ExcelDelta excelDelta = new ExcelDelta(path, excelOperations);
+		ExcelDelta excelDelta = new ExcelDelta(excelOperations);
 		return excelDelta;
 	}
 
@@ -122,6 +123,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 					innerOperations.add(innerMap);
 				}
 			} else {
+				// Delete nodes
 				if (operation instanceof DeleteNodeOp) {
 					// ============== DELETE SHEET =================
 					if (((DeleteNodeOp) operation).getNode() instanceof Simpleexcel.Sheet) {
@@ -131,6 +133,33 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 								((Simpleexcel.Sheet) ((DeleteNodeOp) operation).getNode()).getSheetName());
 
 						innerOperations.add(innerMap);
+					}
+				} else {
+					// Add edges
+					if (operation instanceof AddEdgeOp) {
+						// ============== ADD FILE-->SHEET EDGE =================
+						EObject src = ((AddEdgeOp) operation).getEdge().getSrc();
+						EObject trg = ((AddEdgeOp) operation).getEdge().getTrg();
+
+						if (src instanceof Simpleexcel.File && trg instanceof Simpleexcel.Sheet) {
+							innerOperations.add("ADD_FILE_SHEET_EDGE");
+							HashMap<String, Object> innerMap = new HashMap<String, Object>();
+							String fileName = ((Simpleexcel.File) ((AddEdgeOp) operation).getEdge().getSrc()).getFileName();
+							String path = ((Simpleexcel.File) ((AddEdgeOp) operation).getEdge().getSrc()).getPath();
+							if(path!=null && !path.isEmpty() && !path.equals(fileName)) {
+								innerMap.put("SRC", path+"\\"+fileName);
+							}
+							else
+								innerMap.put("SRC", fileName);
+							innerMap.put("TRG",
+									((Simpleexcel.Sheet) ((AddEdgeOp) operation).getEdge().getTrg()).getSheetName());
+							innerOperations.add(innerMap);
+						}
+					} else {
+						// delete edges
+						if (operation instanceof DeleteEdgeOp) {
+
+						}
 					}
 				}
 			}

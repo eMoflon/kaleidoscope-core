@@ -8,11 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EcoreFactory;
-import org.eclipse.emf.ecore.EcorePackage;
 
+import com.kaleidoscope.core.auxiliary.simpleexcel.bean.ExcelOperationsBean;
 import com.kaleidoscope.core.delta.javabased.operational.AddEdgeOp;
 import com.kaleidoscope.core.delta.javabased.operational.AddNodeOp;
 import com.kaleidoscope.core.delta.javabased.operational.DeleteEdgeOp;
@@ -21,9 +19,6 @@ import com.kaleidoscope.core.delta.javabased.operational.Operation;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 import com.kaleidoscope.core.framework.workflow.adapters.DeltaOutputAdapter;
 
-import Delta.AddNodeOP;
-import Delta.Edge;
-import Delta.impl.AddNodeOPImpl;
 import Simpleexcel.Cell;
 import Simpleexcel.File;
 import Simpleexcel.RowObject;
@@ -38,7 +33,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	List<Operation> operations = new ArrayList<Operation>();
 	List<Operation> sortedOperationsEMF = new ArrayList<Operation>();
 	List<Operation> sortedOperationsExcelPOI = new ArrayList<Operation>();
-	List<List<Object>> excelOperations = new ArrayList<List<Object>>();
+	List<ExcelOperationsBean> excelOperations = new ArrayList<ExcelOperationsBean>();
 
 	private List<Operation> fileNodeAddDeleteOperations = new ArrayList<Operation>();
 	private List<Operation> sheetNodeAddDeleteOperations = new ArrayList<Operation>();
@@ -82,107 +77,231 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	 */
 	private void convertToExcelAssignments() {
 		for (Operation operation : sortedOperationsExcelPOI) {
-			List<Object> innerOperations = new ArrayList<Object>();
+			ExcelOperationsBean excelOperationsBean = null;
 
-			// ================ ADD NODE ===================
 			if (operation instanceof AddNodeOp) {
-				// ============== ADD FILE =================
-				if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.File) {
-					innerOperations.add("ADD_FILE");
-					HashMap<String, String> innerMap = new HashMap<String, String>();
-					innerMap.put("FILE_NAME", ((Simpleexcel.File) ((AddNodeOp) operation).getNode()).getFileName());
-					innerMap.put("FILE_PATH", ((Simpleexcel.File) ((AddNodeOp) operation).getNode()).getPath());
-
-					innerOperations.add(innerMap);
-				}
-				// ============== ADD SHEET =================
-				if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.Sheet) {
-					innerOperations.add("ADD_SHEET");
-					HashMap<String, Object> innerMap = new HashMap<String, Object>();
-					innerMap.put("SHEET_NAME", ((Simpleexcel.Sheet) ((AddNodeOp) operation).getNode()).getSheetName());
-					innerMap.put("SHEET_ID", ((Simpleexcel.Sheet) ((AddNodeOp) operation).getNode()).getSheetId());
-
-					innerOperations.add(innerMap);
-				}
-
-				// ============== ADD ROW =================
-				if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.RowObject) {
-					innerOperations.add("ADD_ROW");
-				}
-				// ============== ADD CELL =================
-				if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.Cell) {
-					innerOperations.add("ADD_CELL");
-					HashMap<String, Object> innerMap = new HashMap<String, Object>();
-					innerMap.put("CELL_TEXT", ((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getText());
-					innerMap.put("CELL_ID", ((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getCellId());
-					innerMap.put("CELL_COMMENTS",
-							((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getCellComments());
-					innerMap.put("CELL_COLOR",
-							((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getBackgroundColor());
-
-					innerOperations.add(innerMap);
-				}
+				excelOperationsBean = addAddNodeOperations(operation, excelOperationsBean);
 			} else {
-				// Delete nodes
 				if (operation instanceof DeleteNodeOp) {
-					// ============== DELETE SHEET =================
-					if (((DeleteNodeOp) operation).getNode() instanceof Simpleexcel.Sheet) {
-						innerOperations.add("DELETE_SHEET");
-						HashMap<String, Object> innerMap = new HashMap<String, Object>();
-						innerMap.put("SHEET_NAME",
-								((Simpleexcel.Sheet) ((DeleteNodeOp) operation).getNode()).getSheetName());
+					excelOperationsBean = addDeleteNodeOperations(operation, excelOperationsBean);
 
-						innerOperations.add(innerMap);
-					}
 				} else {
-					// Add edges
 					if (operation instanceof AddEdgeOp) {
-						// ============== ADD FILE-->SHEET EDGE =================
-						EObject src = ((AddEdgeOp) operation).getEdge().getSrc();
-						EObject trg = ((AddEdgeOp) operation).getEdge().getTrg();
-
-						if (src instanceof Simpleexcel.File && trg instanceof Simpleexcel.Sheet) {
-							innerOperations.add("ADD_FILE_SHEET_EDGE");
-							HashMap<String, Object> innerMap = new HashMap<String, Object>();
-							String fileName = ((Simpleexcel.File) ((AddEdgeOp) operation).getEdge().getSrc()).getFileName();
-							String path = ((Simpleexcel.File) ((AddEdgeOp) operation).getEdge().getSrc()).getPath();
-							if(path!=null && !path.isEmpty() && !path.equals(fileName)) {
-								innerMap.put("SRC", path+"\\"+fileName);
-							}
-							else
-								innerMap.put("SRC", fileName);
-							innerMap.put("TRG",
-									((Simpleexcel.Sheet) ((AddEdgeOp) operation).getEdge().getTrg()).getSheetName());
-							innerOperations.add(innerMap);
-						}
+						excelOperationsBean = addAddEdgeOperations(operation, excelOperationsBean);
 					} else {
-						// delete edges
 						if (operation instanceof DeleteEdgeOp) {
-							// ============== DELETE FILE-->SHEET EDGE =================
-							EObject src = ((DeleteEdgeOp) operation).getEdge().getSrc();
-							EObject trg = ((DeleteEdgeOp) operation).getEdge().getTrg();
-							if (src instanceof Simpleexcel.File && trg instanceof Simpleexcel.Sheet) {
-								innerOperations.add("DELETE_FILE_SHEET_EDGE");
-								HashMap<String, Object> innerMap = new HashMap<String, Object>();
-								String fileName = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getFileName();
-								String path = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getPath();
-								if(path!=null && !path.isEmpty() && !path.equals(fileName)) {
-									innerMap.put("SRC", path+"\\"+fileName);
-								}
-								else
-									innerMap.put("SRC", fileName);
-								innerMap.put("TRG",
-										((Simpleexcel.Sheet) ((DeleteEdgeOp) operation).getEdge().getTrg()).getSheetName());
-								innerOperations.add(innerMap);
-							}
+							excelOperationsBean = addDeleteEdgeOperations(operation, excelOperationsBean);
 						}
 					}
 				}
 			}
 
-			if (null != innerOperations && !innerOperations.isEmpty())
-				excelOperations.add(innerOperations);
+			if (null != excelOperationsBean)
+				excelOperations.add(excelOperationsBean);
 		}
+	}
+
+	/**
+	 * DELETE EDGE OPERATIONS TRANSLATION
+	 * 
+	 * @param operation
+	 * @param excelOperationsBean
+	 * @return
+	 */
+	private ExcelOperationsBean addDeleteEdgeOperations(Operation operation, ExcelOperationsBean excelOperationsBean) {
+		EObject src = ((DeleteEdgeOp) operation).getEdge().getSrc();
+		EObject trg = ((DeleteEdgeOp) operation).getEdge().getTrg();
+
+		// ============== DELETE FILE-->SHEET EDGE =================
+		if (src instanceof Simpleexcel.File && trg instanceof Simpleexcel.Sheet) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("DELETE_FILE_SHEET_EDGE");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			String fileName = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getFileName();
+			String path = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getPath();
+			if (path != null && !path.isEmpty() && !path.equals(fileName)) {
+				innerMap.put("SRC", path + "\\" + fileName);
+			} else
+				innerMap.put("SRC", fileName);
+			innerMap.put("TRG", ((Simpleexcel.Sheet) ((DeleteEdgeOp) operation).getEdge().getTrg()).getSheetName());
+			excelOperationsBean.setOperationDetails(innerMap);
+		}
+
+		// ============== DELETE SHEET-->ROW EDGE =================
+		if (src instanceof Simpleexcel.File && trg instanceof Simpleexcel.Sheet) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("DELETE_SHEET_ROW_EDGE");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			/*String fileName = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getFileName();
+			String path = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getPath();
+			if (path != null && !path.isEmpty() && !path.equals(fileName)) {
+				innerMap.put("SRC", path + "\\" + fileName);
+			} else
+				innerMap.put("SRC", fileName);
+			innerMap.put("TRG", ((Simpleexcel.Sheet) ((DeleteEdgeOp) operation).getEdge().getTrg()).getSheetName());*/
+			excelOperationsBean.setOperationDetails(innerMap);
+		}
+		
+		// ============== DELETE ROW-->CELL EDGE =================
+		if (src instanceof Simpleexcel.File && trg instanceof Simpleexcel.Sheet) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("DELETE_ROW_CELL_EDGE");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			/*String fileName = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getFileName();
+			String path = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getPath();
+			if (path != null && !path.isEmpty() && !path.equals(fileName)) {
+				innerMap.put("SRC", path + "\\" + fileName);
+			} else
+				innerMap.put("SRC", fileName);
+			innerMap.put("TRG", ((Simpleexcel.Sheet) ((DeleteEdgeOp) operation).getEdge().getTrg()).getSheetName());*/
+			excelOperationsBean.setOperationDetails(innerMap);
+		}
+
+		return excelOperationsBean;
+	}
+
+	/**
+	 * ADD EDGE OPERATIONS TRANSLATION
+	 * 
+	 * @param operation
+	 * @param excelOperationsBean
+	 * @return
+	 */
+	private ExcelOperationsBean addAddEdgeOperations(Operation operation, ExcelOperationsBean excelOperationsBean) {
+		EObject src = ((AddEdgeOp) operation).getEdge().getSrc();
+		EObject trg = ((AddEdgeOp) operation).getEdge().getTrg();
+
+		// ============== ADD FILE-->SHEET EDGE =================
+
+		if (src instanceof Simpleexcel.File && trg instanceof Simpleexcel.Sheet) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("ADD_FILE_SHEET_EDGE");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			String fileName = ((Simpleexcel.File) ((AddEdgeOp) operation).getEdge().getSrc()).getFileName();
+			String path = ((Simpleexcel.File) ((AddEdgeOp) operation).getEdge().getSrc()).getPath();
+			if (path != null && !path.isEmpty() && !path.equals(fileName)) {
+				innerMap.put("SRC", path + "\\" + fileName);
+			} else
+				innerMap.put("SRC", fileName);
+			innerMap.put("TRG", ((Simpleexcel.Sheet) ((AddEdgeOp) operation).getEdge().getTrg()).getSheetName());
+			excelOperationsBean.setOperationDetails(innerMap);
+
+		}
+
+		// ============== ADD SHEET-->ROW EDGE =================
+
+		if (src instanceof Simpleexcel.Sheet && trg instanceof Simpleexcel.RowObject) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("ADD_SHEET_ROW_EDGE");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			String sheetName = ((Simpleexcel.Sheet) ((AddEdgeOp) operation).getEdge().getSrc()).getSheetName();
+			innerMap.put("SRC", sheetName);
+			// innerMap.put("TRG", ((Simpleexcel.RowObject) ((AddEdgeOp)
+			// operation).getEdge().getTrg()));
+			excelOperationsBean.setOperationDetails(innerMap);
+
+		}
+
+		// ============== ADD ROW-->CELL EDGE =================
+
+		if (src instanceof Simpleexcel.RowObject && trg instanceof Simpleexcel.Cell) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("ADD_ROW_CELL_EDGE");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			// String sheetName = ((Simpleexcel.RowObject) ((AddEdgeOp)
+			// operation).getEdge().getSrc()).getSheetName();
+			// innerMap.put("SRC", sheetName);
+			// innerMap.put("TRG", ((Simpleexcel.RowObject) ((AddEdgeOp)
+			// operation).getEdge().getTrg()));
+			excelOperationsBean.setOperationDetails(innerMap);
+
+		}
+
+		return excelOperationsBean;
+	}
+
+	/**
+	 * DELETE NODE OPERATIONS TRANSLATION
+	 * 
+	 * @param operation
+	 * @param excelOperationsBean
+	 * @return
+	 */
+	private ExcelOperationsBean addDeleteNodeOperations(Operation operation, ExcelOperationsBean excelOperationsBean) {
+		// ============== DELETE SHEET =================
+		if (((DeleteNodeOp) operation).getNode() instanceof Simpleexcel.Sheet) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("DELETE_SHEET");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			innerMap.put("SHEET_NAME", ((Simpleexcel.Sheet) ((DeleteNodeOp) operation).getNode()).getSheetName());
+			excelOperationsBean.setOperationDetails(innerMap);
+		}
+
+		// ============== DELETE ROW =================
+		if (((DeleteNodeOp) operation).getNode() instanceof Simpleexcel.RowObject) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("DELETE_ROW");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			excelOperationsBean.setOperationDetails(innerMap);
+		}
+
+		// ============== DELETE CELL =================
+		if (((DeleteNodeOp) operation).getNode() instanceof Simpleexcel.RowObject) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("DELETE_CELL");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			excelOperationsBean.setOperationDetails(innerMap);
+		}
+
+		return excelOperationsBean;
+	}
+
+	/**
+	 * ADD NODE OPERATIONS TRANSLATION
+	 * 
+	 * @param operation
+	 * @param excelOperationsBean
+	 * @return
+	 */
+	private ExcelOperationsBean addAddNodeOperations(Operation operation, ExcelOperationsBean excelOperationsBean) {
+
+		// ============== ADD FILE =================
+		if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.File) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("ADD_FILE");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			innerMap.put("FILE_NAME", ((Simpleexcel.File) ((AddNodeOp) operation).getNode()).getFileName());
+			innerMap.put("FILE_PATH", ((Simpleexcel.File) ((AddNodeOp) operation).getNode()).getPath());
+			excelOperationsBean.setOperationDetails(innerMap);
+		}
+		// ============== ADD SHEET =================
+		if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.Sheet) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("ADD_SHEET");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			innerMap.put("SHEET_NAME", ((Simpleexcel.Sheet) ((AddNodeOp) operation).getNode()).getSheetName());
+			excelOperationsBean.setOperationDetails(innerMap);
+		}
+
+		// ============== ADD ROW =================
+		if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.RowObject) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("ADD_ROW");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			excelOperationsBean.setOperationDetails(innerMap);
+		}
+		// ============== ADD CELL =================
+		if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.Cell) {
+			excelOperationsBean = new ExcelOperationsBean();
+			excelOperationsBean.setOperationName("ADD_CELL");
+			HashMap<String, String> innerMap = new HashMap<String, String>();
+			innerMap.put("CELL_TEXT", ((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getText());
+			innerMap.put("CELL_COMMENTS", ((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getCellComments());
+			innerMap.put("CELL_COLORS", ((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getBackgroundColor());
+		}
+
+		return excelOperationsBean;
+
 	}
 
 	/**

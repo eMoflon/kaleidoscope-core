@@ -8,22 +8,15 @@ import java.util.Optional;
 
 import com.kaleidoscope.core.auxiliary.simpleexcel.utils.UnableToEditExcelFile;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
-import com.kaleidoscope.core.delta.javabased.operational.AddEdgeOp;
-import com.kaleidoscope.core.delta.javabased.operational.AddNodeOp;
-import com.kaleidoscope.core.delta.javabased.operational.DeleteEdgeOp;
-import com.kaleidoscope.core.delta.javabased.operational.DeleteNodeOp;
-import com.kaleidoscope.core.delta.javabased.operational.Operation;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
 import Simpleexcel.Cell;
-import Simpleexcel.ColObject;
 import Simpleexcel.File;
 import Simpleexcel.RowObject;
 import Simpleexcel.Sheet;
 import Simpleexcel.SimpleexcelFactory;
 import Simpleexcel.SimpleexcelPackage;
-import Simpleexcel.util.SimpleexcelAdapterFactory;
 
 /**
  * @author Srijani
@@ -48,8 +41,8 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	@Override
 	public void unparse() {
 		ExcelDeltaAdapter excelDeltaAdapter = new ExcelDeltaAdapter();
-		//ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
-		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile1(), path);
+		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
+		//ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile1(), path);
 		try {
 			excelDelta.execute();
 		} catch (UnableToEditExcelFile e) {
@@ -64,8 +57,6 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	private OperationalDelta generateOperationalDeltaForFile1() {
 		// OperationalDelta initialize
 		OperationalDelta opDelta = new OperationalDelta();
-
-		// iterate through model
 
 		// get File name
 		Optional<File> m = getModel();
@@ -102,7 +93,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 
 		// add file node
 		File file = m.get();
-		file.setFileName("test1.xlsx");
+		file.setFileName("CreatedNewFile.xlsx");
 		file.setPath(
 				"D:\\WorkSpaces\\Kaleidoscope Development\\Refactoring\\kaleidoscope-core\\com.kaleidoscope.core.aux.simpleexcel\\Resources\\");
 		opDelta.addNodeOp(file);
@@ -133,32 +124,12 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		// add row->cell
 		opDelta.addEdgeOp(new JavaBasedEdge(newRow, newCell, SimpleexcelPackage.eINSTANCE.getRowObject_Cell()));
 
-		// create a copy
-		OperationalDelta opDeltaCopy = new OperationalDelta();
-
-		// ========delete a sheet named as "Sheet to delete"======================
-		/*
-		 * for (Operation operation : opDelta.getOperations()) { if ((operation
-		 * instanceof AddEdgeOp)) { if (((AddEdgeOp) operation).getEdge().getTrg()
-		 * instanceof Sheet) { JavaBasedEdge edge = ((AddEdgeOp) operation).getEdge();
-		 * Sheet sheetToDelete = (Sheet) edge.getTrg(); if
-		 * (sheetToDelete.getSheetName().equals("Sheet to delete")) {
-		 * opDeltaCopy.deleteEdgeOp(edge); opDeltaCopy.deleteNodeOp(sheetToDelete); } }
-		 * } }
-		 */
-
 		// delete a sheet
 		Sheet toDel = SimpleexcelFactory.eINSTANCE.createSheet();
 		toDel.setSheetName("Sheet to delete");
 		opDelta.deleteEdgeOp(new JavaBasedEdge(file, toDel, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
 
 		opDelta.deleteNodeOp(toDel);
-
-		// copy del operations in actual opDelta List
-		/*
-		 * for (Operation opCopy : opDeltaCopy.getOperations()) {
-		 * opDelta.addOperation(opCopy); }
-		 */
 
 		return opDelta;
 	}

@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.kaleidoscope.core.auxiliary.simpleexcel.bean.ExcelOperationsBean;
 import com.kaleidoscope.core.auxiliary.simpleexcel.utils.UnableToEditExcelFile;
 
 /**
@@ -27,34 +28,36 @@ public class ExcelDelta {
 	private XSSFWorkbook workbook;
 	private String file;
 
-	private List<List<Object>> excelOperations;
-	private List<List<Object>> excelOperationsAddNodes;
-	private List<List<Object>> excelOperationsDeleteNodes;
-	private List<List<Object>> excelOperationsAddEdges;
-	private List<List<Object>> excelOperationsDeleteEdges;
+	private List<ExcelOperationsBean> excelOperations;
+	private List<ExcelOperationsBean> excelOperationsAddNodes;
+	private List<ExcelOperationsBean> excelOperationsDeleteNodes;
+	private List<ExcelOperationsBean> excelOperationsAddEdges;
+	private List<ExcelOperationsBean> excelOperationsDeleteEdges;
 
 	/**
 	 * @param path
 	 * @param operationList2
 	 */
-	public ExcelDelta(List<List<Object>> excelOperations) {
+	public ExcelDelta(List<ExcelOperationsBean> excelOperations) {
 		// this.filePath = path;
 		this.excelOperations = excelOperations;
-		for (List<Object> list : excelOperations) {
-			if (list.get(0).equals("ADD_FILE")) {
-				if (list.get(1) instanceof Simpleexcel.File) {
-					String fileName = ((Simpleexcel.File) (list.get(1))).getFileName();
-					String filePath = ((Simpleexcel.File) (list.get(1))).getPath();
-					if (fileName != null && !fileName.equals("")) {
-						if (filePath != null && !filePath.equals("")) {
-							this.filePath = Paths.get(filePath + "\\" + fileName);
-						} else {
-							this.filePath = Paths.get(fileName);
-						}
+		for (ExcelOperationsBean excelOperationBean : excelOperations) {
+			String fileName = "";
+			String filePath = "";
+			if (excelOperationBean.getOperationName().equals("ADD_FILE")) {
+				if (excelOperationBean.getOperationDetails().containsKey("FILE_NAME"))
+					fileName = excelOperationBean.getOperationDetails().get("FILE_NAME");
+				if (excelOperationBean.getOperationDetails().containsKey("FILE_PATH"))
+					filePath = excelOperationBean.getOperationDetails().get("FILE_PATH");
+
+				if (fileName != null && !fileName.equals("")) {
+					if (filePath != null && !filePath.equals("")) {
+						this.filePath = Paths.get(filePath + "\\" + fileName);
+					} else {
+						this.filePath = Paths.get(fileName);
 					}
-				} else {
-					this.filePath = null;
 				}
+
 			} else {
 				this.filePath = null;
 			}
@@ -66,23 +69,23 @@ public class ExcelDelta {
 	 * Split functions based on the operation types
 	 */
 	private void splitOperations() {
-		for (List<Object> list : excelOperations) {
-			String opName = list.get(0).toString();
+		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
+			String opName = excelOperationsBean.getOperationName();
 			switch (opName) {
 			case "ADD_NODE":
-				excelOperationsAddNodes.add(list);
+				excelOperationsAddNodes.add(excelOperationsBean);
 				break;
 
 			case "ADD_EDGE":
-				excelOperationsAddEdges.add(list);
+				excelOperationsAddEdges.add(excelOperationsBean);
 				break;
 
 			case "DELET_NODE":
-				excelOperationsDeleteNodes.add(list);
+				excelOperationsDeleteNodes.add(excelOperationsBean);
 				break;
 
 			case "DELETE_EDGE":
-				excelOperationsDeleteEdges.add(list);
+				excelOperationsDeleteEdges.add(excelOperationsBean);
 				break;
 
 			default:
@@ -98,20 +101,20 @@ public class ExcelDelta {
 	 */
 	public void execute() throws UnableToEditExcelFile {
 		System.out.println("Printing excel operations");
-		for (List<Object> list : excelOperations) {
-			String operationName = list.get(0).toString();
+		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
+			String operationName = excelOperationsBean.getOperationName();
 			System.out.println(operationName);
 			switch (operationName) {
 			case "ADD_FILE":
-				fileOperation("ADD_FILE", list.get(1));
+				fileOperation("ADD_FILE", excelOperationsBean.getOperationDetails());
 				break;
 
 			case "ADD_SHEET":
-				sheetOperation("ADD_SHEET", list.get(1));
+				sheetOperation("ADD_SHEET", excelOperationsBean.getOperationDetails());
 				break;
 
 			case "DELETE_SHEET":
-				sheetOperation("DELETE_SHEET", list.get(1));
+				sheetOperation("DELETE_SHEET", excelOperationsBean.getOperationDetails());
 				break;
 
 			case "ADD_ROW":
@@ -156,11 +159,12 @@ public class ExcelDelta {
 	 * SHEET OPERATIONS, ADD_SHEET & DELETE_SHEET
 	 * 
 	 * @param string
+	 * @param object 
 	 * @param object
 	 * @throws UnableToEditExcelFile
 	 */
-	private void sheetOperation(String string, Object object) throws UnableToEditExcelFile {
-		HashMap<String, Object> sheetDataMap = (HashMap<String, Object>) object;
+	private void sheetOperation(String string, HashMap<String, String> object) throws UnableToEditExcelFile {
+		HashMap<String, String> sheetDataMap = object;
 		String sheetName = "";
 		int sheetId = 0;
 		if (null != sheetDataMap) {
@@ -169,11 +173,6 @@ public class ExcelDelta {
 					sheetName = (String) sheetDataMap.get("SHEET_NAME");
 				else
 					throw new UnableToEditExcelFile("SHEET NAME NOT READBLE...");
-			if (sheetDataMap.containsKey("SHEET_ID"))
-				if (sheetDataMap.get("SHEET_ID") instanceof Integer)
-					sheetId = (int) sheetDataMap.get("SHEET_ID");
-				else
-					throw new UnableToEditExcelFile("SHEET ID NOT READBLE...");
 		}
 
 		switch (string) {
@@ -202,9 +201,9 @@ public class ExcelDelta {
 
 			File file;
 			if (null != this.file) {
-				file = new File(this.file);
+				file = new File(this.file); // deals with new files
 			} else {
-				file = new File(discoverFileName(sheetName));
+				file = new File(discoverFileName(sheetName)); // deals with existing files
 			}
 
 			if (file.exists()) {
@@ -258,7 +257,6 @@ public class ExcelDelta {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -272,9 +270,9 @@ public class ExcelDelta {
 	 */
 	private String discoverFileName(String sheetName) {
 		// iterate through all the operations.
-		for (List<Object> excelOps : excelOperations) {
-			if (excelOps.get(0).equals("ADD_FILE_SHEET_EDGE") || excelOps.get(0).equals("DELETE_FILE_SHEET_EDGE")) {
-				HashMap<String, Object> map = (HashMap<String, Object>) excelOps.get(1);
+		for (ExcelOperationsBean excelOps : excelOperations) {
+			if (excelOps.getOperationName().equals("ADD_FILE_SHEET_EDGE") || excelOps.getOperationName().equals("DELETE_FILE_SHEET_EDGE")) {
+				HashMap<String, String> map = excelOps.getOperationDetails();
 
 				if (map.get("TRG").equals(sheetName)) {
 					return (String) map.get("SRC");

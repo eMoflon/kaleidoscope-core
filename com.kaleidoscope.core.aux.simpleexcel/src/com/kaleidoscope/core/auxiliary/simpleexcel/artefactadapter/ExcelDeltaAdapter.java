@@ -158,7 +158,23 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 					} else {
 						// delete edges
 						if (operation instanceof DeleteEdgeOp) {
-
+							// ============== DELETE FILE-->SHEET EDGE =================
+							EObject src = ((DeleteEdgeOp) operation).getEdge().getSrc();
+							EObject trg = ((DeleteEdgeOp) operation).getEdge().getTrg();
+							if (src instanceof Simpleexcel.File && trg instanceof Simpleexcel.Sheet) {
+								innerOperations.add("DELETE_FILE_SHEET_EDGE");
+								HashMap<String, Object> innerMap = new HashMap<String, Object>();
+								String fileName = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getFileName();
+								String path = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getPath();
+								if(path!=null && !path.isEmpty() && !path.equals(fileName)) {
+									innerMap.put("SRC", path+"\\"+fileName);
+								}
+								else
+									innerMap.put("SRC", fileName);
+								innerMap.put("TRG",
+										((Simpleexcel.Sheet) ((DeleteEdgeOp) operation).getEdge().getTrg()).getSheetName());
+								innerOperations.add(innerMap);
+							}
 						}
 					}
 				}

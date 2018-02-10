@@ -200,7 +200,13 @@ public class ExcelDelta {
 	private void deleteSheet(String sheetName, int sheetId) throws UnableToEditExcelFile {
 		try {
 
-			File file = new File(this.file);
+			File file;
+			if (null != this.file) {
+				file = new File(this.file);
+			} else {
+				file = new File(discoverFileName(sheetName));
+			}
+
 			if (file.exists()) {
 				final InputStream is = new FileInputStream(file);
 				workbook = new XSSFWorkbook(is);
@@ -267,7 +273,7 @@ public class ExcelDelta {
 	private String discoverFileName(String sheetName) {
 		// iterate through all the operations.
 		for (List<Object> excelOps : excelOperations) {
-			if (excelOps.get(0).equals("ADD_FILE_SHEET_EDGE")) {
+			if (excelOps.get(0).equals("ADD_FILE_SHEET_EDGE") || excelOps.get(0).equals("DELETE_FILE_SHEET_EDGE")) {
 				HashMap<String, Object> map = (HashMap<String, Object>) excelOps.get(1);
 
 				if (map.get("TRG").equals(sheetName)) {

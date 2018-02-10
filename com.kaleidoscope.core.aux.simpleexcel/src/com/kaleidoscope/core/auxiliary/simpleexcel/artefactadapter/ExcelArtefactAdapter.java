@@ -23,6 +23,7 @@ import Simpleexcel.RowObject;
 import Simpleexcel.Sheet;
 import Simpleexcel.SimpleexcelFactory;
 import Simpleexcel.SimpleexcelPackage;
+import Simpleexcel.util.SimpleexcelAdapterFactory;
 
 /**
  * @author Srijani
@@ -47,7 +48,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	@Override
 	public void unparse() {
 		ExcelDeltaAdapter excelDeltaAdapter = new ExcelDeltaAdapter();
-//		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
+		//ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
 		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile1(), path);
 		try {
 			excelDelta.execute();
@@ -56,6 +57,10 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		}
 	}
 
+	/**
+	 * Test method: alternate input for operational delta without file name
+	 * @return
+	 */
 	private OperationalDelta generateOperationalDeltaForFile1() {
 		// OperationalDelta initialize
 		OperationalDelta opDelta = new OperationalDelta();
@@ -64,10 +69,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 
 		// get File name
 		Optional<File> m = getModel();
-
-		// add file node
 		File file = m.get();
-		
 
 		// add new Sheet
 		Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
@@ -75,10 +77,20 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		opDelta.addNodeOp(newSheet);
 		opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
 
+		// delete a sheet
+		Sheet toDel = SimpleexcelFactory.eINSTANCE.createSheet();
+		toDel.setSheetName("Sheet to delete");
+		opDelta.deleteEdgeOp(new JavaBasedEdge(file, toDel, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+
+		opDelta.deleteNodeOp(toDel);
 
 		return opDelta;
 	}
 
+	/**
+	 * Generate operational delta.
+	 * @return
+	 */
 	private OperationalDelta generateOperationalDeltaForFile() {
 		// OperationalDelta initialize
 		OperationalDelta opDelta = new OperationalDelta();
@@ -90,7 +102,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 
 		// add file node
 		File file = m.get();
-		file.setFileName("test.xlsx");
+		file.setFileName("test1.xlsx");
 		file.setPath(
 				"D:\\WorkSpaces\\Kaleidoscope Development\\Refactoring\\kaleidoscope-core\\com.kaleidoscope.core.aux.simpleexcel\\Resources\\");
 		opDelta.addNodeOp(file);
@@ -125,23 +137,28 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		OperationalDelta opDeltaCopy = new OperationalDelta();
 
 		// ========delete a sheet named as "Sheet to delete"======================
-		for (Operation operation : opDelta.getOperations()) {
-			if ((operation instanceof AddEdgeOp)) {
-				if (((AddEdgeOp) operation).getEdge().getTrg() instanceof Sheet) {
-					JavaBasedEdge edge = ((AddEdgeOp) operation).getEdge();
-					Sheet sheetToDelete = (Sheet) edge.getTrg();
-					if (sheetToDelete.getSheetName().equals("Sheet to delete")) {
-						opDeltaCopy.deleteEdgeOp(edge);
-						opDeltaCopy.deleteNodeOp(sheetToDelete);
-					}
-				}
-			}
-		}
+		/*
+		 * for (Operation operation : opDelta.getOperations()) { if ((operation
+		 * instanceof AddEdgeOp)) { if (((AddEdgeOp) operation).getEdge().getTrg()
+		 * instanceof Sheet) { JavaBasedEdge edge = ((AddEdgeOp) operation).getEdge();
+		 * Sheet sheetToDelete = (Sheet) edge.getTrg(); if
+		 * (sheetToDelete.getSheetName().equals("Sheet to delete")) {
+		 * opDeltaCopy.deleteEdgeOp(edge); opDeltaCopy.deleteNodeOp(sheetToDelete); } }
+		 * } }
+		 */
+
+		// delete a sheet
+		Sheet toDel = SimpleexcelFactory.eINSTANCE.createSheet();
+		toDel.setSheetName("Sheet to delete");
+		opDelta.deleteEdgeOp(new JavaBasedEdge(file, toDel, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+
+		opDelta.deleteNodeOp(toDel);
 
 		// copy del operations in actual opDelta List
-		for (Operation opCopy : opDeltaCopy.getOperations()) {
-			opDelta.addOperation(opCopy);
-		}
+		/*
+		 * for (Operation opCopy : opDeltaCopy.getOperations()) {
+		 * opDelta.addOperation(opCopy); }
+		 */
 
 		return opDelta;
 	}

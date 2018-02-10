@@ -21,7 +21,7 @@ public class ExcelMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String excelPath = "./Resources/test.xlsx";
+		String excelPath = "./Resources/Test.xlsx";
 
 		ResourceSet set = setResourceSet();
 

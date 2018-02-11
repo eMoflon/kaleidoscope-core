@@ -263,6 +263,7 @@ public class ExcelHandler {
 				Cell excelCell = currentExcelSheet.getRow(rowIndex).getCell(colIndex);
 				if (null != excelCell) {
 					Simpleexcel.Cell simpleCell = SimpleexcelFactory.eINSTANCE.createCell();
+					// TODO : need to make this flexible to make it read every possible cell values
 					simpleCell.setText(excelCell.getStringCellValue());
 					String comment = excelCell.getCellComment() != null
 							? excelCell.getCellComment().getString().toString()

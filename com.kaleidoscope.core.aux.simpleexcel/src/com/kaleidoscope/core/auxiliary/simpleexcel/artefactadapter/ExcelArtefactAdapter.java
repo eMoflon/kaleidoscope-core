@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import com.kaleidoscope.core.auxiliary.simpleexcel.utils.UnableToEditExcelFile;
+import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelException;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
@@ -48,7 +48,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile1(), path);
 		try {
 			excelDelta.execute();
-		} catch (UnableToEditExcelFile e) {
+		} catch (ExcelException e) {
 			e.printStackTrace();
 		}
 	}
@@ -100,7 +100,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 							Simpleexcel.Cell cellToEdit = tempRow.getCell().get(colIndex);
 							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_Text(), "New Data",
 									cellToEdit, "Cell to edit");
-							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_BackgroundColor(), IndexedColors.BLUE.getIndex(),
+							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_BackgroundColor(), "#FFFF00",
 									cellToEdit);
 						}
 						tempCol = tempCol.getNextColumn();

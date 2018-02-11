@@ -11,7 +11,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 
 import com.kaleidoscope.core.auxiliary.simpleexcel.bean.ExcelOperationsBean;
-import com.kaleidoscope.core.auxiliary.simpleexcel.utils.UnableToEditExcelFile;
+import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelException;
 import com.kaleidoscope.core.delta.javabased.operational.AddEdgeOp;
 import com.kaleidoscope.core.delta.javabased.operational.AddNodeOp;
 import com.kaleidoscope.core.delta.javabased.operational.AttributeChangeOp;
@@ -78,7 +78,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 			// assign excel tasks in order
 			convertToExcelAssignments();
-		} catch (UnableToEditExcelFile e) {
+		} catch (ExcelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -92,9 +92,9 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	 * This method takes sortedOperationsExcelPOI list and convert it to
 	 * corresponding excel tasks
 	 * 
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void convertToExcelAssignments() throws UnableToEditExcelFile {
+	private void convertToExcelAssignments() throws ExcelException {
 		for (Operation operation : sortedOperationsExcelPOI) {
 			ExcelOperationsBean excelOperationsBean = null;
 
@@ -124,10 +124,10 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	 * @param operation
 	 * @param excelOperationsBean
 	 * @return
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
 	private ExcelOperationsBean addAttributeChangeOperations(Operation operation,
-			ExcelOperationsBean excelOperationsBean) throws UnableToEditExcelFile {
+			ExcelOperationsBean excelOperationsBean) throws ExcelException {
 		EObject changedObject = ((AttributeChangeOp) operation).getAffectedNode();
 
 		// =========== CHANGE CELL ============
@@ -157,7 +157,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			if (changedObject instanceof Sheet) {
 				// TODO
 			} else {
-				throw new UnableToEditExcelFile(
+				throw new ExcelException(
 						"Change attribute for anything except sheets and cells are not allowed..");
 			}
 		}

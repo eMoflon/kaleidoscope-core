@@ -3,6 +3,7 @@
  */
 package com.kaleidoscope.core.auxiliary.simpleexcel.artefactadapter;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,12 +19,15 @@ import org.antlr.grammar.v3.ANTLRParser.throwsSpec_return;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Comment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.kaleidoscope.core.auxiliary.simpleexcel.bean.ExcelOperationsBean;
-import com.kaleidoscope.core.auxiliary.simpleexcel.utils.UnableToEditExcelFile;
+import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelException;
 
 /**
  * @author Srijani
@@ -110,10 +114,9 @@ public class ExcelDelta {
 	/**
 	 * Entry point for this class
 	 * 
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	public void execute() throws UnableToEditExcelFile {
-		System.out.println("Printing excel operations");
+	public void execute() throws ExcelException {
 		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
 			String operationName = excelOperationsBean.getOperationName();
 			System.out.println(operationName);
@@ -131,11 +134,11 @@ public class ExcelDelta {
 				break;
 
 			case "ADD_ROW":
-				throw new UnableToEditExcelFile("Add rows is not supported...");
+				throw new ExcelException("Add rows is not supported...");
 				// break;
 
 			case "ADD_CELL":
-				throw new UnableToEditExcelFile("Add cells is not supported...");
+				throw new ExcelException("Add cells is not supported...");
 				// break;
 
 			case "CHANGE_ATTR_CELL":
@@ -155,16 +158,16 @@ public class ExcelDelta {
 	 * 
 	 * @param string
 	 * @param operationDetails
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void cellOperation(String param, HashMap<String, String> operationDetails) throws UnableToEditExcelFile {
+	private void cellOperation(String param, HashMap<String, String> operationDetails) throws ExcelException {
 		switch (param) {
 		case "CHANGE_ATTR_CELL":
 			changeAttributeCell(operationDetails);
 			break;
 
 		default:
-			throw new UnableToEditExcelFile("This operation is not supported...");
+			throw new ExcelException("This operation is not supported...");
 			// break;
 		}
 	}
@@ -173,9 +176,9 @@ public class ExcelDelta {
 	 * Modifies the attributes for a cell
 	 * 
 	 * @param operationDetails
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void changeAttributeCell(HashMap<String, String> operationDetails) throws UnableToEditExcelFile {
+	private void changeAttributeCell(HashMap<String, String> operationDetails) throws ExcelException {
 		String attributeName = "";
 		int rowIndex = 0;
 		int colIndex = 0;
@@ -184,33 +187,33 @@ public class ExcelDelta {
 		if (operationDetails.containsKey("ATTR_NAME")) {
 			attributeName = operationDetails.get("ATTR_NAME");
 		} else
-			throw new UnableToEditExcelFile("Attribute to be modified not found for the cell");
+			throw new ExcelException("Attribute to be modified not found for the cell");
 		if (operationDetails.containsKey("SHEET_NAME")) {
 			sheetName = operationDetails.get("SHEET_NAME");
 		} else
-			throw new UnableToEditExcelFile("Sheet name to be modified not found for the cell");
+			throw new ExcelException("Sheet name to be modified not found for the cell");
 		String fileName = discoverFileName(sheetName);
 		if (operationDetails.containsKey("ROW_INDEX")) {
 			String rowIndexString = operationDetails.get("ROW_INDEX");
 			rowIndex = Integer.parseInt(rowIndexString);
 		} else
-			throw new UnableToEditExcelFile("Row index to be modified not found for the cell");
+			throw new ExcelException("Row index to be modified not found for the cell");
 		if (operationDetails.containsKey("COL_INDEX")) {
 			String colIndexString = operationDetails.get("COL_INDEX");
 			colIndex = Integer.parseInt(colIndexString);
 		} else
-			throw new UnableToEditExcelFile("Column Index to be modified not found for the cell");
+			throw new ExcelException("Column Index to be modified not found for the cell");
 		if (operationDetails.containsKey("NEW_VALUE")) {
 			newValue = operationDetails.get("NEW_VALUE");
 		} else
-			throw new UnableToEditExcelFile("New value to be inserted not found for the cell");
+			throw new ExcelException("New value to be inserted not found for the cell");
 
 		try {
 			File file = null;
 			if (null != fileName || !fileName.isEmpty()) {
 				file = new File(fileName);
 			} else
-				throw new UnableToEditExcelFile("File name can not be empty");
+				throw new ExcelException("File name can not be empty");
 
 			if (file.exists()) {
 				final InputStream is = new FileInputStream(file);
@@ -223,13 +226,14 @@ public class ExcelDelta {
 					break;
 
 				case "backgroundColor":
-					CellStyle style = workbook.createCellStyle();
-					style.setFillForegroundColor(Short.parseShort(newValue));
-					sheetToEdit.getRow(rowIndex).getCell(colIndex).setCellStyle(style);
+					XSSFCellStyle style1 = workbook.createCellStyle();
+					Color rgb = hex2Rgb(newValue);
+					style1.setFillForegroundColor(new XSSFColor(rgb));
+					style1.setFillPattern(CellStyle.SOLID_FOREGROUND);
+					sheetToEdit.getRow(rowIndex).getCell(colIndex).setCellStyle(style1);
 					break;
 
 				case "cellComments":
-					//sheetToEdit.getRow(rowIndex).getCell(colIndex).setCellComment("Test Comment"); ??
 					break;
 
 				default:
@@ -240,7 +244,7 @@ public class ExcelDelta {
 				workbook.write(fileOutputStream);
 				fileOutputStream.close();
 			} else {
-				throw new UnableToEditExcelFile("FILE NOT FOUND..");
+				throw new ExcelException("FILE NOT FOUND..");
 			}
 
 		} catch (IOException e) {
@@ -249,14 +253,34 @@ public class ExcelDelta {
 
 	}
 
+
+	/**
+	 * 
+	 * @param colorStr
+	 *            e.g. "#FFFFFF"
+	 * @return
+	 * @throws ExcelException 
+	 */
+	public static Color hex2Rgb(String colorStr) throws ExcelException {
+		Color color = null;
+		try {
+		color= new Color(Integer.valueOf(colorStr.substring(1, 3), 16), Integer.valueOf(colorStr.substring(3, 5), 16),
+				Integer.valueOf(colorStr.substring(5, 7), 16));
+		}
+		catch(Exception e) {
+			throw new ExcelException("Color format is wrong. Please input #FF0000 for color:Red");
+		}
+		return color;
+	}
+
 	/**
 	 * ROW OPERATIONS, ADD_ROW & DELETE_ROW
 	 * 
 	 * @param string
 	 * @param object
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void rowOperation(String string, Object object) throws UnableToEditExcelFile {
+	private void rowOperation(String string, Object object) throws ExcelException {
 		// at this moment, there is nothing in the object.
 
 		switch (string) {
@@ -274,9 +298,9 @@ public class ExcelDelta {
 	}
 
 	/**
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void addRow() throws UnableToEditExcelFile {
+	private void addRow() throws ExcelException {
 		// find sheet name
 		for (ExcelOperationsBean edge : excelOperationsAddEdges) {
 			if (edge.getOperationName().equals("ADD_SHEET_ROW_EDGE")) {
@@ -318,7 +342,7 @@ public class ExcelDelta {
 							workbook.write(fileOutputStream);
 							fileOutputStream.close();
 						} else {
-							throw new UnableToEditExcelFile("FILE NOT FOUND..");
+							throw new ExcelException("FILE NOT FOUND..");
 						}
 
 					} catch (IOException e) {
@@ -336,9 +360,9 @@ public class ExcelDelta {
 	 * @param string
 	 * @param object
 	 * @param object
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void sheetOperation(String string, HashMap<String, String> object) throws UnableToEditExcelFile {
+	private void sheetOperation(String string, HashMap<String, String> object) throws ExcelException {
 		HashMap<String, String> sheetDataMap = object;
 		String sheetName = "";
 		int sheetId = 0;
@@ -347,7 +371,7 @@ public class ExcelDelta {
 				if (sheetDataMap.get("SHEET_NAME") instanceof String)
 					sheetName = (String) sheetDataMap.get("SHEET_NAME");
 				else
-					throw new UnableToEditExcelFile("SHEET NAME NOT READBLE...");
+					throw new ExcelException("SHEET NAME NOT READBLE...");
 		}
 
 		switch (string) {
@@ -369,9 +393,9 @@ public class ExcelDelta {
 	 * 
 	 * @param sheetName
 	 * @param sheetId
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void deleteSheet(String sheetName, int sheetId) throws UnableToEditExcelFile {
+	private void deleteSheet(String sheetName, int sheetId) throws ExcelException {
 		try {
 
 			File file;
@@ -394,7 +418,7 @@ public class ExcelDelta {
 				workbook.write(fileOutputStream);
 				fileOutputStream.close();
 			} else {
-				throw new UnableToEditExcelFile("FILE NOT FOUND..");
+				throw new ExcelException("FILE NOT FOUND..");
 			}
 
 		} catch (IOException e) {
@@ -408,9 +432,9 @@ public class ExcelDelta {
 	 * 
 	 * @param sheetName
 	 * @param sheedId
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void createSheet(String sheetName, int sheedId) throws UnableToEditExcelFile {
+	private void createSheet(String sheetName, int sheedId) throws ExcelException {
 		try {
 			File file;
 			if (null != this.file) {
@@ -428,7 +452,7 @@ public class ExcelDelta {
 				workbook.write(fileOutputStream);
 				fileOutputStream.close();
 			} else {
-				throw new UnableToEditExcelFile("FILE NOT FOUND..");
+				throw new ExcelException("FILE NOT FOUND..");
 			}
 
 		} catch (IOException e) {
@@ -464,9 +488,9 @@ public class ExcelDelta {
 	 * 
 	 * @param string
 	 * @param object
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void fileOperation(String string, Object object) throws UnableToEditExcelFile {
+	private void fileOperation(String string, Object object) throws ExcelException {
 		HashMap<String, Object> fileDataMap = (HashMap<String, Object>) object;
 		String fileName = "";
 		String filePath = "";
@@ -475,13 +499,13 @@ public class ExcelDelta {
 				if (fileDataMap.get("FILE_NAME") instanceof String)
 					fileName = (String) fileDataMap.get("FILE_NAME");
 				else
-					throw new UnableToEditExcelFile("FILE NAME NOT READBLE...");
+					throw new ExcelException("FILE NAME NOT READBLE...");
 			}
 			if (fileDataMap.containsKey("FILE_PATH")) {
 				if (fileDataMap.get("FILE_PATH") instanceof String)
 					filePath = (String) fileDataMap.get("FILE_PATH");
 				else
-					throw new UnableToEditExcelFile("FILE PATH NOT READBLE...");
+					throw new ExcelException("FILE PATH NOT READBLE...");
 			}
 		}
 		switch (string) {
@@ -501,12 +525,12 @@ public class ExcelDelta {
 	 * 
 	 * @param fileName
 	 * @param filePath
-	 * @throws UnableToEditExcelFile
+	 * @throws ExcelException
 	 */
-	private void createFile(String fileName, String filePath) throws UnableToEditExcelFile {
+	private void createFile(String fileName, String filePath) throws ExcelException {
 		File file = new File(filePath + "\\" + fileName);
 		if (file.exists()) {
-			throw new UnableToEditExcelFile("File already exists!");
+			throw new ExcelException("File already exists!");
 		} else {
 			this.file = filePath + "\\" + fileName;
 			System.out.println("Creating new file...");

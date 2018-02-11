@@ -43,9 +43,9 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	@Override
 	public void unparse() {
 		ExcelDeltaAdapter excelDeltaAdapter = new ExcelDeltaAdapter();
-		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
 		// ExcelDelta excelDelta =
-		// excelDeltaAdapter.unparse(generateOperationalDeltaForFile1(), path);
+		// excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
+		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile1(), path);
 		try {
 			excelDelta.execute();
 		} catch (UnableToEditExcelFile e) {
@@ -141,7 +141,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		opDelta.addNodeOp(newSheet);
 		opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
 
-		// edit a cell
+		// edit an existing cell
 
 		/*
 		 * // add new row in new sheet RowObject newRow =

@@ -86,33 +86,35 @@ public class ExcelHandler {
 	 * Read data from an Excel Sheet
 	 * 
 	 * @param sheetCount
-	 * @param simpleSheet
+	 * @param currentSimpleSheet
 	 * @param sheetAt
 	 */
-	private void readSheet(Sheet currentSheet, int sheetCount, Simpleexcel.Sheet simpleSheet) {
+	private void readSheet(Sheet currentExcelSheet, int sheetCount, Simpleexcel.Sheet currentSimpleSheet) {
 		List<ColObject> columnObjectList = new ArrayList<ColObject>();
 		List<RowObject> rowObjectList = new ArrayList<RowObject>();
 
 		RowObject firstRow = null;
 		RowObject lastRow = null;
+		ColObject firstColumn = null;
+		ColObject lastColumn = null;
 
 		System.out.println("Reading from Sheet :" + this.workBook.getSheetName(sheetCount));
 
-		simpleSheet.setSheetName(currentSheet.getSheetName());
+		currentSimpleSheet.setSheetName(currentExcelSheet.getSheetName());
 
 		// read the rows of whole sheet
 		List<Row> rowList = new ArrayList<Row>();
-		Iterator<Row> rowIterator = currentSheet.iterator();
+		Iterator<Row> rowIterator = currentExcelSheet.iterator();
 		while (rowIterator.hasNext()) {
 			Row currentRow = rowIterator.next();
 			rowList.add(currentRow);
 		}
 
 		// creat rows
-		for (int rowIndex = 0; rowIndex < currentSheet.getPhysicalNumberOfRows(); rowIndex++) {
+		for (int rowIndex = 0; rowIndex < currentExcelSheet.getPhysicalNumberOfRows(); rowIndex++) {
 			RowObject rowObject = SimpleexcelFactory.eINSTANCE.createRowObject();
 			rowObjectList.add(rowObject);
-			simpleSheet.getRowobject().add(rowObject);
+			currentSimpleSheet.getRowobject().add(rowObject);
 		}
 
 		// set row relations - next
@@ -125,30 +127,8 @@ public class ExcelHandler {
 			rowObjectList.get(rowIndex).setPrevRow((rowObjectList.get(rowIndex - 1)));
 		}
 
-		// get max number of cell in a row - set that as column number
-		int maxColumnNumber = 0;
-		for (Row row : rowList) {
-			int lastRowNum = row.getLastCellNum();
-			if (lastRowNum > 0)
-				maxColumnNumber = lastRowNum;
-		}
-
-		// create columns
-		for (int colIndex = 0; colIndex < maxColumnNumber; colIndex++) {
-			ColObject columnObject = SimpleexcelFactory.eINSTANCE.createColObject();
-			columnObjectList.add(columnObject);
-			simpleSheet.getColobject().add(columnObject);
-		}
-
-		// set column relations
-		for (int index = 0; index < columnObjectList.size(); index++) {
-			if (index < maxColumnNumber - 1) {
-				columnObjectList.get(index).setNextColumn(columnObjectList.get(index + 1));
-			}
-		}
-
 		// get firstRow
-		for (RowObject rowObject : simpleSheet.getRowobject()) {
+		for (RowObject rowObject : currentSimpleSheet.getRowobject()) {
 			if (rowObject.getPrevRow() == null)
 				firstRow = rowObject;
 		}
@@ -159,6 +139,43 @@ public class ExcelHandler {
 			tempRowObject = tempRowObject.getNextRow();
 		}
 		lastRow = tempRowObject;
+
+		// get max number of cell in a row - set that as column number
+		int maxColumnNumber = 0;
+		for (Row row : rowList) {
+			int lastRowNum = row.getLastCellNum();
+			if (lastRowNum > maxColumnNumber)
+				maxColumnNumber = lastRowNum;
+		}
+
+		// create columns
+		for (int colIndex = 0; colIndex < maxColumnNumber; colIndex++) {
+			ColObject columnObject = SimpleexcelFactory.eINSTANCE.createColObject();
+			columnObjectList.add(columnObject);
+			currentSimpleSheet.getColobject().add(columnObject);
+		}
+
+		// set column relations
+		for (int index = 0; index < columnObjectList.size(); index++) {
+			if (index < maxColumnNumber - 1) {
+				columnObjectList.get(index).setNextColumn(columnObjectList.get(index + 1));
+			}
+		}
+
+		// get firstColumn
+		for (ColObject colObject : currentSimpleSheet.getColobject()) {
+			if (colObject.getPrevColumn() == null)
+				firstColumn = colObject;
+		}
+		ColObject tempColObject = firstColumn;
+
+		// get lastColumn
+		while (tempColObject != null && tempColObject.getNextColumn() != null) {
+			tempColObject = tempColObject.getNextColumn();
+		}
+		lastColumn = tempColObject;
+
+		currentSimpleSheet = readCellData(firstRow, firstColumn, currentExcelSheet, currentSimpleSheet);
 
 		tempRowObject = firstRow;
 		int i = 1;
@@ -171,76 +188,57 @@ public class ExcelHandler {
 	}
 
 	/**
-	 * Check if a row is empty or null If so, then do not create any object for that
+	 * Reads every cell in the sheet
 	 * 
-	 * @param currentRow
+	 * @param firstRow
+	 * @param firstColumn
+	 * @param currentExcelSheet
+	 * @param currentSimpleSheet
+	 * @return
 	 */
-	private boolean rowIsEmpty(Row currentRow) {
-		if ((null == currentRow) || (currentRow.getLastCellNum() <= 0))
-			return true;
+	private Simpleexcel.Sheet readCellData(RowObject firstRow, ColObject firstColumn, Sheet currentExcelSheet,
+			Simpleexcel.Sheet currentSimpleSheet) {
+		// read cell data for every row and every column
+		RowObject tempRow = firstRow;
 
-		for (int cellIndex = currentRow.getFirstCellNum(); cellIndex < currentRow.getLastCellNum(); cellIndex++) {
-			Cell cell = currentRow.getCell(cellIndex);
-			if (null != cell && cell.getCellTypeEnum() != CellType.BLANK && StringUtils.isNotBlank(cell.toString())) {
-				return false;
+		int rowIndex = 0;
+
+		while (tempRow != null) {
+			ColObject tempCol = firstColumn;
+			int colIndex = 0;
+			while (tempCol != null) {
+				Cell excelCell = currentExcelSheet.getRow(rowIndex).getCell(colIndex);
+				if (null != excelCell) {
+					Simpleexcel.Cell simpleCell = SimpleexcelFactory.eINSTANCE.createCell();
+					simpleCell.setText(excelCell.getStringCellValue());
+					String comment = excelCell.getCellComment() != null
+							? excelCell.getCellComment().getString().toString()
+							: "";
+					// add attributes to the cellObject
+					if (!comment.equals("")) // ignore empty comments
+						simpleCell.setCellComments(comment);
+					// get cell colors
+					XSSFColor xssfColor = (XSSFColor) excelCell.getCellStyle().getFillForegroundColorColor();
+					if (xssfColor != null) {
+						String argbHex = xssfColor.getARGBHex();
+						System.out.println("row:" + rowIndex + ",col:" + colIndex + " color: " + argbHex);
+						simpleCell.setBackgroundColor(argbHex);
+					}
+					// add to row
+					tempRow.getCell().add(simpleCell);
+					// add to col
+					tempCol.getCell().add(simpleCell);
+					// add to sheet
+					currentSimpleSheet.getCell().add(simpleCell);
+				}
+				tempCol = tempCol.getNextColumn();
+				colIndex++;
 			}
+			tempRow = tempRow.getNextRow();
+			rowIndex++;
 		}
 
-		return false;
+		return currentSimpleSheet;
 	}
 
-	/**
-	 * Read data from each row
-	 * 
-	 * @param currentRow
-	 * @param rowObject
-	 * @param simpleSheet
-	 */
-	private void readRow(Row currentRow, RowObject rowObject, Simpleexcel.Sheet simpleSheet) {
-		Iterator<Cell> cellIterator = currentRow.iterator();
-		while (cellIterator.hasNext()) {
-			Cell currentCell = cellIterator.next();
-			// create Cell Object for Model
-			Simpleexcel.Cell cellObject = SimpleexcelFactory.eINSTANCE.createCell();
-
-			// cread attributes for every cell
-			readCell1(cellObject, currentCell);
-			rowObject.getCell().add(cellObject);
-
-			// add cell to colObject
-			// columnObjectList.get(currentCell.getAddress().getColumn()).getCell().add(cellObject);
-
-			// add cell to simpleSheet
-			simpleSheet.getCell().add(cellObject);
-		}
-	}
-
-	/**
-	 * This method reads the attributes for every cell and then insert them in the
-	 * model
-	 * 
-	 * @param cellObject
-	 * @param currentCell
-	 */
-	private void readCell1(Simpleexcel.Cell cellObject, Cell currentCell) {
-		// get attributes
-		int rowIndex = currentCell.getRowIndex() + 1;
-		int colIndex = currentCell.getColumnIndex() + 1;
-		String comment = currentCell.getCellComment() != null ? currentCell.getCellComment().getString().toString()
-				: "";
-
-		// add attributes to the cellObject
-		if (!comment.equals("")) // ignore empty comments
-			cellObject.setCellComments(comment);
-		if (!currentCell.toString().equals(""))
-			cellObject.setText(currentCell.toString());
-		cellObject.setCellId(cellId++);
-		// get cell colors
-		XSSFColor xssfColor = (XSSFColor) currentCell.getCellStyle().getFillForegroundColorColor();
-		if (xssfColor != null) {
-			String argbHex = xssfColor.getARGBHex();
-			System.out.println("row:" + rowIndex + ",col:" + colIndex + " color: " + argbHex);
-			cellObject.setBackgroundColor(argbHex);
-		}
-	}
 }

@@ -9,7 +9,6 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="path" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Sheet" eSuperTypes="#//ExcelElement">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="sheetId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sheetName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="colobject" lowerBound="1"
         upperBound="-1" eType="#//ColObject" containment="true"/>
@@ -30,7 +29,10 @@
   <eClassifiers xsi:type="ecore:EClass" name="RowObject">
     <eStructuralFeatures xsi:type="ecore:EReference" name="cell" lowerBound="1" upperBound="-1"
         eType="#//Cell"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nextRow" eType="#//RowObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nextRow" eType="#//RowObject"
+        eOpposite="#//RowObject/prevRow"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="prevRow" eType="#//RowObject"
+        eOpposite="#//RowObject/nextRow"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ColObject">
     <eStructuralFeatures xsi:type="ecore:EReference" name="cell" lowerBound="1" upperBound="-1"

@@ -39,7 +39,6 @@ public class ExcelHandler {
 	private Workbook workBook;
 
 	private int cellId = ExcelConstants.INIT_CELL;
-	private List<ColObject> columnObjectList = new ArrayList<ColObject>();
 
 	public ExcelHandler(Path path) {
 		this.path = path;
@@ -91,7 +90,13 @@ public class ExcelHandler {
 	 * @param sheetAt
 	 */
 	private void readSheet(Sheet currentSheet, int sheetCount, Simpleexcel.Sheet simpleSheet) {
-		logger.debug("Reading from Sheet :" + this.workBook.getSheetName(sheetCount));
+		List<ColObject> columnObjectList = new ArrayList<ColObject>();
+		List<RowObject> rowObjectList = new ArrayList<RowObject>();
+
+		RowObject firstRow = null;
+		RowObject lastRow = null;
+
+		System.out.println("Reading from Sheet :" + this.workBook.getSheetName(sheetCount));
 
 		simpleSheet.setSheetName(currentSheet.getSheetName());
 
@@ -103,6 +108,23 @@ public class ExcelHandler {
 			rowList.add(currentRow);
 		}
 
+		// creat rows
+		for (int rowIndex = 0; rowIndex < currentSheet.getPhysicalNumberOfRows(); rowIndex++) {
+			RowObject rowObject = SimpleexcelFactory.eINSTANCE.createRowObject();
+			rowObjectList.add(rowObject);
+			simpleSheet.getRowobject().add(rowObject);
+		}
+
+		// set row relations - next
+		for (int rowIndex = 0; rowIndex < rowObjectList.size() - 1; rowIndex++) {
+			rowObjectList.get(rowIndex).setNextRow(rowObjectList.get(rowIndex + 1));
+		}
+
+		// set row relations - prev
+		for (int rowIndex = 1; rowIndex < rowObjectList.size(); rowIndex++) {
+			rowObjectList.get(rowIndex).setPrevRow((rowObjectList.get(rowIndex - 1)));
+		}
+
 		// get max number of cell in a row - set that as column number
 		int maxColumnNumber = 0;
 		for (Row row : rowList) {
@@ -111,6 +133,7 @@ public class ExcelHandler {
 				maxColumnNumber = lastRowNum;
 		}
 
+		// create columns
 		for (int colIndex = 0; colIndex < maxColumnNumber; colIndex++) {
 			ColObject columnObject = SimpleexcelFactory.eINSTANCE.createColObject();
 			columnObjectList.add(columnObject);
@@ -124,48 +147,27 @@ public class ExcelHandler {
 			}
 		}
 
-		setRowRelations(rowList, simpleSheet, 0);
-
-		// correct the order of the rows which happened because of the recursive code
-		List<RowObject> reversedRows = simpleSheet.getRowobject();
-		// deep copy into a new list
-		List<RowObject> orderedRows = new ArrayList<RowObject>();
-		for (int i = reversedRows.size() - 1; i >= 0; i--) {
-			orderedRows.add(reversedRows.get(i));
+		// get firstRow
+		for (RowObject rowObject : simpleSheet.getRowobject()) {
+			if (rowObject.getPrevRow() == null)
+				firstRow = rowObject;
 		}
-		reversedRows.clear();
-		
-		simpleSheet.getRowobject().addAll(orderedRows);
+		RowObject tempRowObject = firstRow;
+
+		// get lastRow
+		while (tempRowObject != null && tempRowObject.getNextRow() != null) {
+			tempRowObject = tempRowObject.getNextRow();
+		}
+		lastRow = tempRowObject;
+
+		tempRowObject = firstRow;
+		int i = 1;
+		while (tempRowObject != null) {
+			System.out.println(i++);
+			tempRowObject = tempRowObject.getNextRow();
+		}
 
 		System.out.println();
-	}
-
-	/**
-	 * Recursive code for reading the rows and setting nextRowObject
-	 * 
-	 * @param rowList
-	 * @param simpleSheet
-	 * @param index
-	 * @return
-	 */
-	private RowObject setRowRelations(List<Row> rowList, Simpleexcel.Sheet simpleSheet, int index) {
-		Row currentRow = null;
-		// RowObject nextRowObject = SimpleexcelFactory.eINSTANCE.createRowObject();
-		RowObject nextRowObject = null;
-		if (index < rowList.size()) {
-			currentRow = rowList.get(index);
-			// if (!rowIsEmpty(currentRow)) {
-			RowObject rowObject = SimpleexcelFactory.eINSTANCE.createRowObject();
-			readRow(currentRow, rowObject, simpleSheet);
-			nextRowObject = setRowRelations(rowList, simpleSheet, index + 1);
-			if (nextRowObject != null)
-				rowObject.setNextRow(nextRowObject);
-
-			simpleSheet.getRowobject().add(rowObject);
-			return rowObject;
-			// }
-		}
-		return nextRowObject;
 	}
 
 	/**
@@ -202,11 +204,11 @@ public class ExcelHandler {
 			Simpleexcel.Cell cellObject = SimpleexcelFactory.eINSTANCE.createCell();
 
 			// cread attributes for every cell
-			readCell(cellObject, currentCell);
+			readCell1(cellObject, currentCell);
 			rowObject.getCell().add(cellObject);
 
 			// add cell to colObject
-			columnObjectList.get(currentCell.getAddress().getColumn()).getCell().add(cellObject);
+			// columnObjectList.get(currentCell.getAddress().getColumn()).getCell().add(cellObject);
 
 			// add cell to simpleSheet
 			simpleSheet.getCell().add(cellObject);
@@ -220,7 +222,7 @@ public class ExcelHandler {
 	 * @param cellObject
 	 * @param currentCell
 	 */
-	private void readCell(Simpleexcel.Cell cellObject, Cell currentCell) {
+	private void readCell1(Simpleexcel.Cell cellObject, Cell currentCell) {
 		// get attributes
 		int rowIndex = currentCell.getRowIndex() + 1;
 		int colIndex = currentCell.getColumnIndex() + 1;

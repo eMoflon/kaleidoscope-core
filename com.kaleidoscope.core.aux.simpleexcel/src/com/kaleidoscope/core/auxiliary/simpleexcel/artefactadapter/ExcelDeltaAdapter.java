@@ -66,7 +66,6 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		convertToExcelAssignments();
 
 		// connect with ExcelDelta
-		// ExcelDelta excelDelta = new ExcelDelta(path, excelOperations);
 		ExcelDelta excelDelta = new ExcelDelta(excelOperations);
 		return excelDelta;
 	}
@@ -132,28 +131,32 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			excelOperationsBean = new ExcelOperationsBean();
 			excelOperationsBean.setOperationName("DELETE_SHEET_ROW_EDGE");
 			HashMap<String, String> innerMap = new HashMap<String, String>();
-			/*String fileName = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getFileName();
-			String path = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getPath();
-			if (path != null && !path.isEmpty() && !path.equals(fileName)) {
-				innerMap.put("SRC", path + "\\" + fileName);
-			} else
-				innerMap.put("SRC", fileName);
-			innerMap.put("TRG", ((Simpleexcel.Sheet) ((DeleteEdgeOp) operation).getEdge().getTrg()).getSheetName());*/
+			/*
+			 * String fileName = ((Simpleexcel.File) ((DeleteEdgeOp)
+			 * operation).getEdge().getSrc()).getFileName(); String path =
+			 * ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getPath();
+			 * if (path != null && !path.isEmpty() && !path.equals(fileName)) {
+			 * innerMap.put("SRC", path + "\\" + fileName); } else innerMap.put("SRC",
+			 * fileName); innerMap.put("TRG", ((Simpleexcel.Sheet) ((DeleteEdgeOp)
+			 * operation).getEdge().getTrg()).getSheetName());
+			 */
 			excelOperationsBean.setOperationDetails(innerMap);
 		}
-		
+
 		// ============== DELETE ROW-->CELL EDGE =================
 		if (src instanceof Simpleexcel.File && trg instanceof Simpleexcel.Sheet) {
 			excelOperationsBean = new ExcelOperationsBean();
 			excelOperationsBean.setOperationName("DELETE_ROW_CELL_EDGE");
 			HashMap<String, String> innerMap = new HashMap<String, String>();
-			/*String fileName = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getFileName();
-			String path = ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getPath();
-			if (path != null && !path.isEmpty() && !path.equals(fileName)) {
-				innerMap.put("SRC", path + "\\" + fileName);
-			} else
-				innerMap.put("SRC", fileName);
-			innerMap.put("TRG", ((Simpleexcel.Sheet) ((DeleteEdgeOp) operation).getEdge().getTrg()).getSheetName());*/
+			/*
+			 * String fileName = ((Simpleexcel.File) ((DeleteEdgeOp)
+			 * operation).getEdge().getSrc()).getFileName(); String path =
+			 * ((Simpleexcel.File) ((DeleteEdgeOp) operation).getEdge().getSrc()).getPath();
+			 * if (path != null && !path.isEmpty() && !path.equals(fileName)) {
+			 * innerMap.put("SRC", path + "\\" + fileName); } else innerMap.put("SRC",
+			 * fileName); innerMap.put("TRG", ((Simpleexcel.Sheet) ((DeleteEdgeOp)
+			 * operation).getEdge().getTrg()).getSheetName());
+			 */
 			excelOperationsBean.setOperationDetails(innerMap);
 		}
 
@@ -196,8 +199,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			HashMap<String, String> innerMap = new HashMap<String, String>();
 			String sheetName = ((Simpleexcel.Sheet) ((AddEdgeOp) operation).getEdge().getSrc()).getSheetName();
 			innerMap.put("SRC", sheetName);
-			// innerMap.put("TRG", ((Simpleexcel.RowObject) ((AddEdgeOp)
-			// operation).getEdge().getTrg()));
+			innerMap.put("TRG", ""); // just add new row. no other info
 			excelOperationsBean.setOperationDetails(innerMap);
 
 		}

@@ -6,6 +6,8 @@ package com.kaleidoscope.core.auxiliary.simpleexcel.artefactadapter;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import org.eclipse.emf.common.util.EList;
+
 import com.kaleidoscope.core.auxiliary.simpleexcel.utils.UnableToEditExcelFile;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
@@ -42,7 +44,8 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	public void unparse() {
 		ExcelDeltaAdapter excelDeltaAdapter = new ExcelDeltaAdapter();
 		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
-		//ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile1(), path);
+		// ExcelDelta excelDelta =
+		// excelDeltaAdapter.unparse(generateOperationalDeltaForFile1(), path);
 		try {
 			excelDelta.execute();
 		} catch (UnableToEditExcelFile e) {
@@ -51,7 +54,8 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	}
 
 	/**
-	 * Test method: alternate input for operational delta without file name
+	 * Test method: alternate input for operational delta with existing file
+	 * 
 	 * @return
 	 */
 	private OperationalDelta generateOperationalDeltaForFile1() {
@@ -62,24 +66,50 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		Optional<File> m = getModel();
 		File file = m.get();
 
-		// add new Sheet
+		// iterate through all the sheets in a file
+		for (int sheetCount = 0; sheetCount < file.getSheet().size(); sheetCount++) {
+			Sheet sheet = m.get().getSheet().get(sheetCount);
+			opDelta.addEdgeOp(new JavaBasedEdge(file, sheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+
+			// edit an existing cell in sheet- Sheet to edit
+			if (sheet.getSheetName().equals("Sheet to edit")) {
+				// identify starting row
+				RowObject startRow = null;
+				for (int rowCounter = 0; rowCounter < sheet.getRowobject().size(); rowCounter++) {
+					if (sheet.getRowobject().get(rowCounter).getPrevRow() == null) {
+						startRow = sheet.getRowobject().get(rowCounter);
+					}
+				}
+			}
+		}
+
+		// add new Sheet Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
 		Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
 		newSheet.setSheetName("Sheet to Add");
 		opDelta.addNodeOp(newSheet);
 		opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
 
-		// delete a sheet
-		Sheet toDel = SimpleexcelFactory.eINSTANCE.createSheet();
-		toDel.setSheetName("Sheet to delete");
-		opDelta.deleteEdgeOp(new JavaBasedEdge(file, toDel, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+		/*
+		 * // delete a sheet Sheet toDel = SimpleexcelFactory.eINSTANCE.createSheet();
+		 * toDel.setSheetName("Sheet to delete"); opDelta.deleteEdgeOp(new
+		 * JavaBasedEdge(file, toDel, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+		 * 
+		 * opDelta.deleteNodeOp(toDel);
+		 */
 
-		opDelta.deleteNodeOp(toDel);
+		// add new row in new sheet
+		/*
+		 * RowObject newRow = SimpleexcelFactory.eINSTANCE.createRowObject();
+		 * opDelta.addNodeOp(newRow); opDelta.addEdgeOp(new JavaBasedEdge(toEdit,
+		 * newRow, SimpleexcelPackage.eINSTANCE.getSheet_Rowobject()));
+		 */
 
 		return opDelta;
 	}
 
 	/**
-	 * Generate operational delta.
+	 * Generate operational delta for new file
+	 * 
 	 * @return
 	 */
 	private OperationalDelta generateOperationalDeltaForFile() {
@@ -111,25 +141,22 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		opDelta.addNodeOp(newSheet);
 		opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
 
-		// add a new cell in newSheet
-		Cell newCell = SimpleexcelFactory.eINSTANCE.createCell();
-		opDelta.addNodeOp(newCell);
-		opDelta.addEdgeOp(new JavaBasedEdge(newSheet, newCell, SimpleexcelPackage.eINSTANCE.getSheet_Cell()));
+		// edit a cell
 
-		// add new row in new sheet
-		RowObject newRow = SimpleexcelFactory.eINSTANCE.createRowObject();
-		opDelta.addNodeOp(newRow);
-		opDelta.addEdgeOp(new JavaBasedEdge(newSheet, newRow, SimpleexcelPackage.eINSTANCE.getSheet_Rowobject()));
-
-		// add row->cell
-		opDelta.addEdgeOp(new JavaBasedEdge(newRow, newCell, SimpleexcelPackage.eINSTANCE.getRowObject_Cell()));
+		/*
+		 * // add new row in new sheet RowObject newRow =
+		 * SimpleexcelFactory.eINSTANCE.createRowObject(); opDelta.addNodeOp(newRow);
+		 * opDelta.addEdgeOp(new JavaBasedEdge(newSheet, newRow,
+		 * SimpleexcelPackage.eINSTANCE.getSheet_Rowobject()));
+		 */
 
 		// delete a sheet
-		Sheet toDel = SimpleexcelFactory.eINSTANCE.createSheet();
-		toDel.setSheetName("Sheet to delete");
-		opDelta.deleteEdgeOp(new JavaBasedEdge(file, toDel, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+		// Sheet toDel = SimpleexcelFactory.eINSTANCE.createSheet();
+		// toDel.setSheetName("Sheet to delete");
+		// opDelta.deleteEdgeOp(new JavaBasedEdge(file, toDel,
+		// SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
 
-		opDelta.deleteNodeOp(toDel);
+		// opDelta.deleteNodeOp(toDel);
 
 		return opDelta;
 	}

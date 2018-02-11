@@ -10,9 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.kaleidoscope.core.auxiliary.simpleexcel.bean.ExcelOperationsBean;
@@ -29,10 +33,10 @@ public class ExcelDelta {
 	private String file;
 
 	private List<ExcelOperationsBean> excelOperations;
-	private List<ExcelOperationsBean> excelOperationsAddNodes;
-	private List<ExcelOperationsBean> excelOperationsDeleteNodes;
-	private List<ExcelOperationsBean> excelOperationsAddEdges;
-	private List<ExcelOperationsBean> excelOperationsDeleteEdges;
+	private List<ExcelOperationsBean> excelOperationsAddNodes = new ArrayList<ExcelOperationsBean>();
+	private List<ExcelOperationsBean> excelOperationsDeleteNodes = new ArrayList<ExcelOperationsBean>();;
+	private List<ExcelOperationsBean> excelOperationsAddEdges = new ArrayList<ExcelOperationsBean>();;
+	private List<ExcelOperationsBean> excelOperationsDeleteEdges = new ArrayList<ExcelOperationsBean>();;
 
 	/**
 	 * @param path
@@ -71,25 +75,25 @@ public class ExcelDelta {
 	private void splitOperations() {
 		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
 			String opName = excelOperationsBean.getOperationName();
-			switch (opName) {
-			case "ADD_NODE":
-				excelOperationsAddNodes.add(excelOperationsBean);
-				break;
-
-			case "ADD_EDGE":
+			System.out.println(opName);
+			//ADD EDGE
+			if(opName.startsWith("ADD_") && opName.endsWith("_EDGE")) {
 				excelOperationsAddEdges.add(excelOperationsBean);
-				break;
-
-			case "DELET_NODE":
-				excelOperationsDeleteNodes.add(excelOperationsBean);
-				break;
-
-			case "DELETE_EDGE":
+			}
+			
+			//ADD NODE
+			if(opName.startsWith("ADD_") && !opName.endsWith("_EDGE")) {
+				excelOperationsAddNodes.add(excelOperationsBean);
+			}
+			
+			//DELETE EDGE
+			if(opName.startsWith("DELETE_") && opName.endsWith("_EDGE")) {
 				excelOperationsDeleteEdges.add(excelOperationsBean);
-				break;
-
-			default:
-				break;
+			}
+			
+			//DELETE NODE
+			if(opName.startsWith("DELETE_") && !opName.endsWith("_EDGE")) {
+				excelOperationsDeleteNodes.add(excelOperationsBean);
 			}
 		}
 	}
@@ -137,13 +141,14 @@ public class ExcelDelta {
 	 * 
 	 * @param string
 	 * @param object
+	 * @throws UnableToEditExcelFile 
 	 */
-	private void rowOperation(String string, Object object) {
+	private void rowOperation(String string, Object object) throws UnableToEditExcelFile {
 		// at this moment, there is nothing in the object.
 
 		switch (string) {
 		case "ADD_ROW":
-
+			addRow();
 			break;
 
 		case "DELETE_ROW":
@@ -152,6 +157,62 @@ public class ExcelDelta {
 
 		default:
 			break;
+		}
+	}
+
+	private void addRow() throws UnableToEditExcelFile {
+		//find sheet name
+		for (ExcelOperationsBean edge : excelOperationsAddEdges) {
+			if(edge.getOperationName().equals("ADD_SHEET_ROW_EDGE")) {
+				HashMap<String, String> edgeData = edge.getOperationDetails();
+				String sheetName = edgeData.get("SRC");
+				String rowInfo = edgeData.get("TRG");
+				//append a new row in a sheet
+				if(rowInfo.equals("")) {
+					try {
+
+						File file;
+						if (null != this.file) {
+							file = new File(this.file); // deals with new files
+						} else {
+							file = new File(discoverFileName(sheetName)); // deals with existing files
+						}
+
+						if (file.exists()) {
+							final InputStream is = new FileInputStream(file);
+							workbook = new XSSFWorkbook(is);
+							
+							
+
+							for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
+								if (workbook.getSheetName(sheetIndex).equals(sheetName)) {
+									XSSFSheet sheetToEdit = workbook.getSheet(sheetName);
+									
+									int maxRow = sheetToEdit.getLastRowNum();
+									Row row = null;
+									if(maxRow!=0)
+										row = sheetToEdit.createRow(maxRow+1);
+									else
+										row = sheetToEdit.createRow(maxRow);
+									Cell cell = row.createCell(0);
+									cell.setCellValue("HELLO");
+								}
+									
+							}
+
+							FileOutputStream fileOutputStream = new FileOutputStream(file);
+							workbook.write(fileOutputStream);
+							fileOutputStream.close();
+						} else {
+							throw new UnableToEditExcelFile("FILE NOT FOUND..");
+						}
+
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 	}
 

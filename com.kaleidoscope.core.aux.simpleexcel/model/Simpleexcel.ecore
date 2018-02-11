@@ -37,6 +37,9 @@
   <eClassifiers xsi:type="ecore:EClass" name="ColObject">
     <eStructuralFeatures xsi:type="ecore:EReference" name="cell" lowerBound="1" upperBound="-1"
         eType="#//Cell"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nextColumn" eType="#//ColObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nextColumn" eType="#//ColObject"
+        eOpposite="#//ColObject/prevColumn"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="prevColumn" eType="#//ColObject"
+        eOpposite="#//ColObject/nextColumn"/>
   </eClassifiers>
 </ecore:EPackage>

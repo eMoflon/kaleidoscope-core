@@ -6,16 +6,16 @@ package com.kaleidoscope.core.auxiliary.simpleexcel.artefactadapter;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import org.eclipse.emf.common.util.EList;
+import org.apache.poi.ss.usermodel.IndexedColors;
 
 import com.kaleidoscope.core.auxiliary.simpleexcel.utils.UnableToEditExcelFile;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
-import Simpleexcel.Cell;
+import Simpleexcel.Column;
 import Simpleexcel.File;
-import Simpleexcel.RowObject;
+import Simpleexcel.Row;
 import Simpleexcel.Sheet;
 import Simpleexcel.SimpleexcelFactory;
 import Simpleexcel.SimpleexcelPackage;
@@ -74,11 +74,40 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 			// edit an existing cell in sheet- Sheet to edit
 			if (sheet.getSheetName().equals("Sheet to edit")) {
 				// identify starting row
-				RowObject startRow = null;
+				Row startRow = null;
 				for (int rowCounter = 0; rowCounter < sheet.getRowobject().size(); rowCounter++) {
 					if (sheet.getRowobject().get(rowCounter).getPrevRow() == null) {
 						startRow = sheet.getRowobject().get(rowCounter);
 					}
+				}
+
+				// identify starting column
+				Column startColumn = null;
+				for (int colCounter = 0; colCounter < sheet.getRowobject().size(); colCounter++) {
+					if (sheet.getColobject().get(colCounter).getPrevColumn() == null) {
+						startColumn = sheet.getColobject().get(colCounter);
+					}
+				}
+
+				// edit a cell (1,1 --> Cell to edit)
+				Row tempRow = startRow;
+				int rowIndex = 0;
+				while (tempRow != null) {
+					Column tempCol = startColumn;
+					int colIndex = 0;
+					while (tempCol != null) {
+						if (rowIndex == 1 && colIndex == 1) {
+							Simpleexcel.Cell cellToEdit = tempRow.getCell().get(colIndex);
+							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_Text(), "New Data",
+									cellToEdit, "Cell to edit");
+							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_BackgroundColor(), IndexedColors.BLUE.getIndex(),
+									cellToEdit);
+						}
+						tempCol = tempCol.getNextColumn();
+						colIndex++;
+					}
+					tempRow = tempRow.getNextRow();
+					rowIndex++;
 				}
 			}
 		}
@@ -95,13 +124,6 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		 * JavaBasedEdge(file, toDel, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
 		 * 
 		 * opDelta.deleteNodeOp(toDel);
-		 */
-
-		// add new row in new sheet
-		/*
-		 * RowObject newRow = SimpleexcelFactory.eINSTANCE.createRowObject();
-		 * opDelta.addNodeOp(newRow); opDelta.addEdgeOp(new JavaBasedEdge(toEdit,
-		 * newRow, SimpleexcelPackage.eINSTANCE.getSheet_Rowobject()));
 		 */
 
 		return opDelta;

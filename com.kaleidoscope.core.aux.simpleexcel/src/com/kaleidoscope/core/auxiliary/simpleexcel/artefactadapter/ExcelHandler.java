@@ -10,22 +10,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.eclipse.emf.common.util.EList;
 
-import com.google.common.collect.Lists;
 import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelConstants;
 
-import Simpleexcel.ColObject;
-import Simpleexcel.RowObject;
+import Simpleexcel.Column;
 import Simpleexcel.SimpleexcelFactory;
 
 /**
@@ -90,13 +85,13 @@ public class ExcelHandler {
 	 * @param sheetAt
 	 */
 	private void readSheet(Sheet currentExcelSheet, int sheetCount, Simpleexcel.Sheet currentSimpleSheet) {
-		List<ColObject> columnObjectList = new ArrayList<ColObject>();
-		List<RowObject> rowObjectList = new ArrayList<RowObject>();
+		List<Column> columnObjectList = new ArrayList<Column>();
+		List<Simpleexcel.Row> rowObjectList = new ArrayList<Simpleexcel.Row>();
 
-		RowObject firstRow = null;
-		RowObject lastRow = null;
-		ColObject firstColumn = null;
-		ColObject lastColumn = null;
+		Simpleexcel.Row firstRow = null;
+		Simpleexcel.Row lastRow = null;
+		Column firstColumn = null;
+		Column lastColumn = null;
 
 		System.out.println("Reading from Sheet :" + this.workBook.getSheetName(sheetCount));
 
@@ -110,11 +105,128 @@ public class ExcelHandler {
 			rowList.add(currentRow);
 		}
 
-		// creat rows
+		readRows(currentExcelSheet, rowObjectList, currentSimpleSheet);
+
+		List<Simpleexcel.Row> firstAndLastRows = getFirstAndLastRows(currentSimpleSheet);
+		firstRow = firstAndLastRows.get(0);
+		lastRow = firstAndLastRows.get(1);
+
+		readColumns(rowList, columnObjectList, currentSimpleSheet);
+
+		List<Simpleexcel.Column> firstAndLastCols = getFirstAndLastColumns(currentSimpleSheet);
+		firstColumn = firstAndLastCols.get(0);
+		lastColumn = firstAndLastCols.get(1);
+
+		currentSimpleSheet = readCellData(firstRow, firstColumn, currentExcelSheet, currentSimpleSheet);
+
+		System.out.println();
+	}
+
+	/**
+	 * Read first and last column for every sheet
+	 * 
+	 * @param currentSimpleSheet
+	 * @return
+	 */
+	private List<Column> getFirstAndLastColumns(Simpleexcel.Sheet currentSimpleSheet) {
+		Simpleexcel.Column firstColumn = null;
+		Simpleexcel.Column lastColumn = null;
+		List<Simpleexcel.Column> returnVal = new ArrayList<Simpleexcel.Column>();
+		// get firstColumn
+		for (Column colObject : currentSimpleSheet.getColobject()) {
+			if (colObject.getPrevColumn() == null)
+				firstColumn = colObject;
+		}
+		Column tempColObject = firstColumn;
+		returnVal.add(firstColumn);
+
+		// get lastColumn
+		while (tempColObject != null && tempColObject.getNextColumn() != null) {
+			tempColObject = tempColObject.getNextColumn();
+		}
+		lastColumn = tempColObject;
+		returnVal.add(lastColumn);
+		
+		return returnVal;
+	}
+
+	/**
+	 * Returns first and last Row for every sheet
+	 * 
+	 * @param currentSimpleSheet
+	 * @return
+	 */
+	private List<Simpleexcel.Row> getFirstAndLastRows(Simpleexcel.Sheet currentSimpleSheet) {
+		Simpleexcel.Row firstRow = null;
+		Simpleexcel.Row lastRow = null;
+		List<Simpleexcel.Row> returnVal = new ArrayList<Simpleexcel.Row>();
+
+		// get firstRow
+		for (Simpleexcel.Row rowObject : currentSimpleSheet.getRowobject()) {
+			if (rowObject.getPrevRow() == null)
+				firstRow = rowObject;
+		}
+		Simpleexcel.Row tempRowObject = firstRow;
+		returnVal.add(firstRow);
+
+		// get lastRow
+		while (tempRowObject != null && tempRowObject.getNextRow() != null) {
+			tempRowObject = tempRowObject.getNextRow();
+		}
+		lastRow = tempRowObject;
+		returnVal.add(lastRow);
+
+		return returnVal;
+	}
+
+	/**
+	 * Reads all columns of a sheet
+	 * 
+	 * @param rowList
+	 * @param columnObjectList
+	 * @param currentSimpleSheet
+	 */
+	private void readColumns(List<Row> rowList, List<Column> columnObjectList, Simpleexcel.Sheet currentSimpleSheet) {
+		// get max number of cell in a row - set that as column number
+		int maxColumnNumber = 0;
+		for (Row row : rowList) {
+			int lastRowNum = row.getLastCellNum();
+			if (lastRowNum > maxColumnNumber)
+				maxColumnNumber = lastRowNum;
+		}
+
+		// create columns
+		for (int colIndex = 0; colIndex < maxColumnNumber; colIndex++) {
+			Column columnObject = SimpleexcelFactory.eINSTANCE.createColumn();
+			columnObjectList.add(columnObject);
+			currentSimpleSheet.getColobject().add(columnObject);
+			columnObject.setSheet(currentSimpleSheet);
+		}
+
+		// set column relations
+		for (int index = 0; index < columnObjectList.size(); index++) {
+			if (index < maxColumnNumber - 1) {
+				columnObjectList.get(index).setNextColumn(columnObjectList.get(index + 1));
+			}
+		}
+	}
+
+	/**
+	 * Read all rows of a sheet
+	 * 
+	 * @param currentExcelSheet
+	 * @param rowObjectList
+	 * @param currentSimpleSheet
+	 */
+	private void readRows(Sheet currentExcelSheet, List<Simpleexcel.Row> rowObjectList,
+			Simpleexcel.Sheet currentSimpleSheet) {
+
+		// create rows
 		for (int rowIndex = 0; rowIndex < currentExcelSheet.getPhysicalNumberOfRows(); rowIndex++) {
-			RowObject rowObject = SimpleexcelFactory.eINSTANCE.createRowObject();
-			rowObjectList.add(rowObject);
-			currentSimpleSheet.getRowobject().add(rowObject);
+			Simpleexcel.Row row = SimpleexcelFactory.eINSTANCE.createRow();
+			rowObjectList.add(row);
+			currentSimpleSheet.getRowobject().add(row);
+			row.setSheet(currentSimpleSheet);
 		}
 
 		// set row relations - next
@@ -126,65 +238,6 @@ public class ExcelHandler {
 		for (int rowIndex = 1; rowIndex < rowObjectList.size(); rowIndex++) {
 			rowObjectList.get(rowIndex).setPrevRow((rowObjectList.get(rowIndex - 1)));
 		}
-
-		// get firstRow
-		for (RowObject rowObject : currentSimpleSheet.getRowobject()) {
-			if (rowObject.getPrevRow() == null)
-				firstRow = rowObject;
-		}
-		RowObject tempRowObject = firstRow;
-
-		// get lastRow
-		while (tempRowObject != null && tempRowObject.getNextRow() != null) {
-			tempRowObject = tempRowObject.getNextRow();
-		}
-		lastRow = tempRowObject;
-
-		// get max number of cell in a row - set that as column number
-		int maxColumnNumber = 0;
-		for (Row row : rowList) {
-			int lastRowNum = row.getLastCellNum();
-			if (lastRowNum > maxColumnNumber)
-				maxColumnNumber = lastRowNum;
-		}
-
-		// create columns
-		for (int colIndex = 0; colIndex < maxColumnNumber; colIndex++) {
-			ColObject columnObject = SimpleexcelFactory.eINSTANCE.createColObject();
-			columnObjectList.add(columnObject);
-			currentSimpleSheet.getColobject().add(columnObject);
-		}
-
-		// set column relations
-		for (int index = 0; index < columnObjectList.size(); index++) {
-			if (index < maxColumnNumber - 1) {
-				columnObjectList.get(index).setNextColumn(columnObjectList.get(index + 1));
-			}
-		}
-
-		// get firstColumn
-		for (ColObject colObject : currentSimpleSheet.getColobject()) {
-			if (colObject.getPrevColumn() == null)
-				firstColumn = colObject;
-		}
-		ColObject tempColObject = firstColumn;
-
-		// get lastColumn
-		while (tempColObject != null && tempColObject.getNextColumn() != null) {
-			tempColObject = tempColObject.getNextColumn();
-		}
-		lastColumn = tempColObject;
-
-		currentSimpleSheet = readCellData(firstRow, firstColumn, currentExcelSheet, currentSimpleSheet);
-
-		tempRowObject = firstRow;
-		int i = 1;
-		while (tempRowObject != null) {
-			System.out.println(i++);
-			tempRowObject = tempRowObject.getNextRow();
-		}
-
-		System.out.println();
 	}
 
 	/**
@@ -196,15 +249,15 @@ public class ExcelHandler {
 	 * @param currentSimpleSheet
 	 * @return
 	 */
-	private Simpleexcel.Sheet readCellData(RowObject firstRow, ColObject firstColumn, Sheet currentExcelSheet,
+	private Simpleexcel.Sheet readCellData(Simpleexcel.Row firstRow, Column firstColumn, Sheet currentExcelSheet,
 			Simpleexcel.Sheet currentSimpleSheet) {
 		// read cell data for every row and every column
-		RowObject tempRow = firstRow;
+		Simpleexcel.Row tempRow = firstRow;
 
 		int rowIndex = 0;
 
 		while (tempRow != null) {
-			ColObject tempCol = firstColumn;
+			Column tempCol = firstColumn;
 			int colIndex = 0;
 			while (tempCol != null) {
 				Cell excelCell = currentExcelSheet.getRow(rowIndex).getCell(colIndex);
@@ -226,8 +279,10 @@ public class ExcelHandler {
 					}
 					// add to row
 					tempRow.getCell().add(simpleCell);
+					simpleCell.setRow(tempRow);
 					// add to col
 					tempCol.getCell().add(simpleCell);
+					simpleCell.setColumn(tempCol);
 					// add to sheet
 					currentSimpleSheet.getCell().add(simpleCell);
 				}

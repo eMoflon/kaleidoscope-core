@@ -45,6 +45,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 	// node
 	private List<Operation> cellNodeAddDeleteOperations = new ArrayList<Operation>();
+	
 	private List<Operation> sheetToCellEdgeAddAndDeleteOperations = new ArrayList<Operation>();
 
 	// row

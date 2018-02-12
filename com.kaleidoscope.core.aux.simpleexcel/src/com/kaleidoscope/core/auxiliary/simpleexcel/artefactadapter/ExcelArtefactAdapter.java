@@ -110,6 +110,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 						}
 						tempCol = tempCol.getNextColumn();
 						colIndex++;
+						
 					}
 					tempRow = tempRow.getNextRow();
 					rowIndex++;

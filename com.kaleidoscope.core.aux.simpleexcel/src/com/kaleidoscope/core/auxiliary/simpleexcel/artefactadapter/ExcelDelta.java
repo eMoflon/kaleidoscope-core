@@ -76,7 +76,7 @@ public class ExcelDelta {
 				this.filePath = null;
 			}
 		}
-		splitOperations();
+		splitOperations(); 
 	}
 
 	/**

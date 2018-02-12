@@ -6,8 +6,6 @@ package com.kaleidoscope.core.auxiliary.simpleexcel.artefactadapter;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import org.apache.poi.ss.usermodel.IndexedColors;
-
 import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelException;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
@@ -100,7 +98,9 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 							Simpleexcel.Cell cellToEdit = tempRow.getCell().get(colIndex);
 							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_Text(), "New Data",
 									cellToEdit, "Cell to edit");
-							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_BackgroundColor(), "#FFFF00",
+							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_BackgroundColor(), "#00FF00",
+									cellToEdit);
+							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_CellComments(), "This is a test comment",
 									cellToEdit);
 						}
 						tempCol = tempCol.getNextColumn();
@@ -117,14 +117,6 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		newSheet.setSheetName("Sheet to Add");
 		opDelta.addNodeOp(newSheet);
 		opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
-
-		/*
-		 * // delete a sheet Sheet toDel = SimpleexcelFactory.eINSTANCE.createSheet();
-		 * toDel.setSheetName("Sheet to delete"); opDelta.deleteEdgeOp(new
-		 * JavaBasedEdge(file, toDel, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
-		 * 
-		 * opDelta.deleteNodeOp(toDel);
-		 */
 
 		return opDelta;
 	}

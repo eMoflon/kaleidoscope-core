@@ -18,8 +18,12 @@ import java.util.List;
 import org.antlr.grammar.v3.ANTLRParser.throwsSpec_return;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
@@ -36,7 +40,6 @@ import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelException;
 public class ExcelDelta {
 
 	private Path filePath;
-	private XSSFWorkbook workbook;
 	private String file;
 
 	private List<ExcelOperationsBean> excelOperations;
@@ -217,12 +220,12 @@ public class ExcelDelta {
 
 			if (file.exists()) {
 				final InputStream is = new FileInputStream(file);
-				workbook = new XSSFWorkbook(is);
+				XSSFWorkbook workbook = new XSSFWorkbook(is);
 				XSSFSheet sheetToEdit = workbook.getSheet(sheetName);
-
+				Cell cellToEdit = sheetToEdit.getRow(rowIndex).getCell(colIndex);
 				switch (attributeName) {
 				case "text":
-					sheetToEdit.getRow(rowIndex).getCell(colIndex).setCellValue(newValue);
+					cellToEdit.setCellValue(newValue);
 					break;
 
 				case "backgroundColor":
@@ -230,10 +233,12 @@ public class ExcelDelta {
 					Color rgb = hex2Rgb(newValue);
 					style1.setFillForegroundColor(new XSSFColor(rgb));
 					style1.setFillPattern(CellStyle.SOLID_FOREGROUND);
-					sheetToEdit.getRow(rowIndex).getCell(colIndex).setCellStyle(style1);
+					//sheetToEdit.getRow(rowIndex).getCell(colIndex).setCellStyle(style1);
+					cellToEdit.setCellStyle(style1);
 					break;
 
 				case "cellComments":
+					createCellComment(cellToEdit, newValue, workbook);
 					break;
 
 				default:
@@ -253,6 +258,26 @@ public class ExcelDelta {
 
 	}
 
+
+	/**
+	 * Create Cell comments
+	 * @param cellToEdit
+	 * @param newValue
+	 * @param workbook 
+	 */
+	private void createCellComment(Cell cellToEdit, String newValue, XSSFWorkbook workbook) {
+		if(cellToEdit.getSheet() instanceof XSSFSheet) {
+			CreationHelper factory = workbook.getCreationHelper();
+			Drawing drawing = cellToEdit.getSheet().createDrawingPatriarch();
+			
+			ClientAnchor anchor = factory.createClientAnchor();
+			Comment comment = drawing.createCellComment(anchor);
+			RichTextString string = factory.createRichTextString(newValue);
+			comment.setString(string);
+			//comment.setAuthor("Srijani");
+			cellToEdit.setCellComment(comment);
+		}
+	}
 
 	/**
 	 * 
@@ -300,59 +325,7 @@ public class ExcelDelta {
 	/**
 	 * @throws ExcelException
 	 */
-	private void addRow() throws ExcelException {
-		// find sheet name
-		for (ExcelOperationsBean edge : excelOperationsAddEdges) {
-			if (edge.getOperationName().equals("ADD_SHEET_ROW_EDGE")) {
-				HashMap<String, String> edgeData = edge.getOperationDetails();
-				String sheetName = edgeData.get("SRC");
-				String rowInfo = edgeData.get("TRG");
-				// append a new row in a sheet
-				if (rowInfo.equals("")) {
-					try {
-
-						File file;
-						if (null != this.file) {
-							file = new File(this.file); // deals with new files
-						} else {
-							file = new File(discoverFileName(sheetName)); // deals with existing files
-						}
-
-						if (file.exists()) {
-							final InputStream is = new FileInputStream(file);
-							workbook = new XSSFWorkbook(is);
-
-							for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
-								if (workbook.getSheetName(sheetIndex).equals(sheetName)) {
-									XSSFSheet sheetToEdit = workbook.getSheet(sheetName);
-
-									int maxRow = sheetToEdit.getLastRowNum();
-									Row row = null;
-									if (maxRow != 0)
-										row = sheetToEdit.createRow(maxRow + 1);
-									else
-										row = sheetToEdit.createRow(maxRow);
-									Cell cell = row.createCell(0);
-									cell.setCellValue("HELLO");
-								}
-
-							}
-
-							FileOutputStream fileOutputStream = new FileOutputStream(file);
-							workbook.write(fileOutputStream);
-							fileOutputStream.close();
-						} else {
-							throw new ExcelException("FILE NOT FOUND..");
-						}
-
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
+	private void addRow() throws ExcelException {}
 
 	/**
 	 * SHEET OPERATIONS, ADD_SHEET & DELETE_SHEET
@@ -407,7 +380,7 @@ public class ExcelDelta {
 
 			if (file.exists()) {
 				final InputStream is = new FileInputStream(file);
-				workbook = new XSSFWorkbook(is);
+				XSSFWorkbook workbook = new XSSFWorkbook(is);
 
 				for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
 					if (workbook.getSheetName(sheetIndex).equals(sheetName))
@@ -445,7 +418,7 @@ public class ExcelDelta {
 
 			if (file.exists()) {
 				final InputStream is = new FileInputStream(file);
-				workbook = new XSSFWorkbook(is);
+				XSSFWorkbook workbook = new XSSFWorkbook(is);
 				workbook.createSheet(sheetName);
 
 				FileOutputStream fileOutputStream = new FileOutputStream(file);

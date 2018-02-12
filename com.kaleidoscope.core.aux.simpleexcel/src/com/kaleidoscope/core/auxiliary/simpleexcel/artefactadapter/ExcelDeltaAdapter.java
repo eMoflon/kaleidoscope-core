@@ -56,7 +56,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 	private List<Operation> sheetChangeAttrOperation = new ArrayList<Operation>();
 	private List<Operation> cellChangeAttrOperation = new ArrayList<Operation>();
-	
+
 	// sheet --> cols
 	private List<Operation> sheetToColEdgeAddAndDeleteOperations = new ArrayList<Operation>();
 
@@ -150,15 +150,14 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			innerMap.put("NEW_VALUE", newValue);
 			innerMap.put("ROW_INDEX", rowIndex);
 			innerMap.put("COL_INDEX", colIndex);
-			
+
 			excelOperationsBean.setOperationDetails(innerMap);
 		} else {
 			// ============= CHANGE SHEET ===============
 			if (changedObject instanceof Sheet) {
 				// TODO
 			} else {
-				throw new ExcelException(
-						"Change attribute for anything except sheets and cells are not allowed..");
+				throw new ExcelException("Change attribute for anything except sheets and cells are not allowed..");
 			}
 		}
 
@@ -195,7 +194,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 			return rowIndex + "";
 		}
-		
+
 		if (param.equals("COL")) {
 			Column firstColumn = getFirstAndLastColumns(sheet).get(0);
 			int colIndex = 0;
@@ -214,10 +213,10 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 			return colIndex + "";
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Read first and last column for every sheet
 	 * 
@@ -242,10 +241,9 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		}
 		lastColumn = tempColObject;
 		returnVal.add(lastColumn);
-		
+
 		return returnVal;
 	}
-
 
 	/**
 	 * Returns first and last Row for every sheet
@@ -447,12 +445,24 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		}
 		// ============== ADD CELL =================
 		if (((AddNodeOp) operation).getNode() instanceof Simpleexcel.Cell) {
+			Cell changedCell = (Cell) ((AddNodeOp) operation).getNode();
+			// identify row
+			String rowIndex = identifyIndex("ROW", changedCell);
+			// identify column
+			String colIndex = identifyIndex("COL", changedCell);
 			excelOperationsBean = new ExcelOperationsBean();
 			excelOperationsBean.setOperationName("ADD_CELL");
 			HashMap<String, String> innerMap = new HashMap<String, String>();
-			innerMap.put("CELL_TEXT", ((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getText());
-			innerMap.put("CELL_COMMENTS", ((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getCellComments());
-			innerMap.put("CELL_COLORS", ((Simpleexcel.Cell) ((AddNodeOp) operation).getNode()).getBackgroundColor());
+			if (changedCell.getText() != null)
+				innerMap.put("CELL_TEXT", changedCell.getText());
+			if (changedCell.getCellComments() != null)
+				innerMap.put("CELL_COMMENTS", changedCell.getCellComments());
+			if (changedCell.getBackgroundColor() != null)
+				innerMap.put("CELL_COLORS", changedCell.getBackgroundColor());
+			innerMap.put("ROW_INDEX", rowIndex);
+			innerMap.put("COL_INDEX", colIndex);
+			innerMap.put("SHEET_NAME", changedCell.getRow().getSheet().getSheetName());
+			excelOperationsBean.setOperationDetails(innerMap);
 		}
 
 		return excelOperationsBean;

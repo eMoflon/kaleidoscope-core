@@ -11,6 +11,7 @@ import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
+import Simpleexcel.Cell;
 import Simpleexcel.Column;
 import Simpleexcel.File;
 import Simpleexcel.Row;
@@ -76,6 +77,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 				for (int rowCounter = 0; rowCounter < sheet.getRowobject().size(); rowCounter++) {
 					if (sheet.getRowobject().get(rowCounter).getPrevRow() == null) {
 						startRow = sheet.getRowobject().get(rowCounter);
+						break;
 					}
 				}
 
@@ -84,24 +86,27 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 				for (int colCounter = 0; colCounter < sheet.getRowobject().size(); colCounter++) {
 					if (sheet.getColobject().get(colCounter).getPrevColumn() == null) {
 						startColumn = sheet.getColobject().get(colCounter);
+						break;
 					}
 				}
 
-				// edit a cell (1,1 --> Cell to edit)
+				// edit a cell (1,1)
+				int cellRowIndex = 1;
+				int cellColIndex = 1;
 				Row tempRow = startRow;
 				int rowIndex = 0;
 				while (tempRow != null) {
 					Column tempCol = startColumn;
 					int colIndex = 0;
 					while (tempCol != null) {
-						if (rowIndex == 1 && colIndex == 1) {
+						if (rowIndex == cellRowIndex && colIndex == cellColIndex) {
 							Simpleexcel.Cell cellToEdit = tempRow.getCell().get(colIndex);
-							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_Text(), "New Data",
+							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_Text(), "Edited cell",
 									cellToEdit, "Cell to edit");
 							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_BackgroundColor(), "#00FF00",
 									cellToEdit);
-							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_CellComments(), "This is a test comment",
-									cellToEdit);
+							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_CellComments(),
+									"This is a test comment", cellToEdit);
 						}
 						tempCol = tempCol.getNextColumn();
 						colIndex++;
@@ -109,14 +114,80 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 					tempRow = tempRow.getNextRow();
 					rowIndex++;
 				}
+
+				// add a cell (6,3) to existing row
+				cellRowIndex = 6;
+				cellColIndex = 3;
+				tempRow = startRow;
+				rowIndex = 0;
+				while (tempRow != null) {
+					Column tempCol = startColumn;
+					int colIndex = 0;
+					while (tempCol != null) {
+						if (rowIndex == cellRowIndex && colIndex == cellColIndex) {
+							Cell addCell = SimpleexcelFactory.eINSTANCE.createCell();
+							addCell.setText("Added cell to existing row");
+							opDelta.addNodeOp(addCell);
+							tempRow.getCell().add(addCell);
+							tempCol.getCell().add(addCell);
+						}
+						tempCol = tempCol.getNextColumn();
+						colIndex++;
+					}
+					tempRow = tempRow.getNextRow();
+					rowIndex++;
+				}
+
+				// add a cell (10,6) to new row
+				cellRowIndex = 10;
+				cellColIndex = 6;
+
+				tempRow = startRow;
+				rowIndex = 0;
+				while (tempRow != null) {
+					Column tempCol = startColumn;
+					int colIndex = 0;
+					while (tempCol != null) {
+						if (rowIndex == cellRowIndex && colIndex == cellColIndex) {
+							Cell addCell = SimpleexcelFactory.eINSTANCE.createCell();
+							addCell.setText("Added cell to new row");
+							addCell.setBackgroundColor("#FF0000");
+							opDelta.addNodeOp(addCell);
+							tempRow.getCell().add(addCell);
+							tempCol.getCell().add(addCell);
+							break;
+						}
+						if (tempCol.getNextColumn() == null && colIndex < cellColIndex) {
+							Column col = SimpleexcelFactory.eINSTANCE.createColumn();
+							col.setPrevColumn(tempCol);
+							sheet.getColobject().add(tempCol);
+							System.out.println("ADDED ONE COL");
+						}
+						tempCol = tempCol.getNextColumn();
+						colIndex++;
+					}
+					if (tempRow.getNextRow() == null && rowIndex < cellRowIndex) {
+						Row row = SimpleexcelFactory.eINSTANCE.createRow();
+						row.setPrevRow(tempRow);
+						sheet.getRowobject().add(row);
+						System.out.println("ADDED ONE ROW");
+					}
+					tempRow = tempRow.getNextRow();
+					rowIndex++;
+				}
+
+				System.out.println();
+
 			}
 		}
 
 		// add new Sheet Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
-		Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
-		newSheet.setSheetName("Sheet to Add");
-		opDelta.addNodeOp(newSheet);
-		opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+		/*
+		 * Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
+		 * newSheet.setSheetName("Sheet to Add"); opDelta.addNodeOp(newSheet);
+		 * opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet,
+		 * SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+		 */
 
 		return opDelta;
 	}

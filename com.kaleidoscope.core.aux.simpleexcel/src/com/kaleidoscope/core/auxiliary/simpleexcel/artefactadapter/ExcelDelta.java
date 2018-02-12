@@ -137,12 +137,12 @@ public class ExcelDelta {
 				break;
 
 			case "ADD_ROW":
-				throw new ExcelException("Add rows is not supported...");
-				// break;
+				rowOperation("ADD_ROW", excelOperationsBean.getOperationDetails());
+				break;
 
 			case "ADD_CELL":
-				throw new ExcelException("Add cells is not supported...");
-				// break;
+				cellOperation("ADD_CELL", excelOperationsBean.getOperationDetails());
+				break;
 
 			case "CHANGE_ATTR_CELL":
 				cellOperation("CHANGE_ATTR_CELL", excelOperationsBean.getOperationDetails());
@@ -169,9 +169,82 @@ public class ExcelDelta {
 			changeAttributeCell(operationDetails);
 			break;
 
+		case "ADD_CELL":
+			addCell(operationDetails);
+			break;
+
 		default:
 			throw new ExcelException("This operation is not supported...");
 			// break;
+		}
+	}
+
+	/**
+	 * Adds a cell in a sheet/row
+	 * 
+	 * @param operationDetails
+	 * @throws ExcelException
+	 */
+	private void addCell(HashMap<String, String> operationDetails) throws ExcelException {
+		String sheetName = "";
+		int rowIndex = 0;
+		int colIndex = 0;
+		if (operationDetails.containsKey("SHEET_NAME")) {
+			sheetName = operationDetails.get("SHEET_NAME");
+		} else
+			throw new ExcelException("Sheet name to be modified not found for the cell");
+		String fileName = discoverFileName(sheetName);
+		if (operationDetails.containsKey("ROW_INDEX")) {
+			String rowIndexString = operationDetails.get("ROW_INDEX");
+			rowIndex = Integer.parseInt(rowIndexString);
+		} else
+			throw new ExcelException("Row index to be modified not found for the cell");
+		if (operationDetails.containsKey("COL_INDEX")) {
+			String colIndexString = operationDetails.get("COL_INDEX");
+			colIndex = Integer.parseInt(colIndexString);
+		} else
+			throw new ExcelException("Column Index to be modified not found for the cell");
+
+		try {
+			File file = null;
+			if (null != fileName || !fileName.isEmpty()) {
+				file = new File(fileName);
+			} else
+				throw new ExcelException("File name can not be empty");
+
+			if (file.exists()) {
+				final InputStream is = new FileInputStream(file);
+				XSSFWorkbook workbook = new XSSFWorkbook(is);
+				XSSFSheet sheetToEdit = workbook.getSheet(sheetName);
+				Cell cell = null;
+				if (sheetToEdit.getRow(rowIndex) == null) {
+					System.out.println("Generating row automatically...");
+					sheetToEdit.createRow(rowIndex);
+				}
+				cell = sheetToEdit.getRow(rowIndex).createCell(colIndex);
+				if (operationDetails.containsKey("CELL_TEXT"))
+					cell.setCellValue(operationDetails.get("CELL_TEXT"));
+				if (operationDetails.containsKey("CELL_COLORS")) {
+					XSSFCellStyle style1 = workbook.createCellStyle();
+					Color rgb = hex2Rgb(operationDetails.get("CELL_COLORS"));
+					style1.setFillForegroundColor(new XSSFColor(rgb));
+					style1.setFillPattern(CellStyle.SOLID_FOREGROUND);
+					cell.setCellStyle(style1);
+				}
+				if (operationDetails.containsKey("CELL_COMMENTS")) {
+					createCellComment(cell, operationDetails.get("CELL_COMMENTS"), workbook);
+				}
+
+				FileOutputStream fileOutputStream = new FileOutputStream(file);
+				workbook.write(fileOutputStream);
+				fileOutputStream.close();
+
+			} else {
+				throw new ExcelException("FILE NOT FOUND..");
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -210,44 +283,56 @@ public class ExcelDelta {
 			newValue = operationDetails.get("NEW_VALUE");
 		} else
 			throw new ExcelException("New value to be inserted not found for the cell");
-
+		
+		XSSFWorkbook workbook = null;
+		
 		try {
 			File file = null;
-			if (null != fileName || !fileName.isEmpty()) {
+			if (null != fileName && !fileName.isEmpty()) {
 				file = new File(fileName);
 			} else
 				throw new ExcelException("File name can not be empty");
 
 			if (file.exists()) {
 				final InputStream is = new FileInputStream(file);
-				XSSFWorkbook workbook = new XSSFWorkbook(is);
+				workbook = new XSSFWorkbook(is);
 				XSSFSheet sheetToEdit = workbook.getSheet(sheetName);
-				Cell cellToEdit = sheetToEdit.getRow(rowIndex).getCell(colIndex);
-				switch (attributeName) {
-				case "text":
-					cellToEdit.setCellValue(newValue);
-					break;
+				if (sheetToEdit.getRow(rowIndex) != null) {
+					if (sheetToEdit.getRow(rowIndex).getCell(colIndex) != null) {
+						Cell cellToEdit = sheetToEdit.getRow(rowIndex).getCell(colIndex);
+						switch (attributeName) {
+						case "text":
+							cellToEdit.setCellValue(newValue);
+							break;
 
-				case "backgroundColor":
-					XSSFCellStyle style1 = workbook.createCellStyle();
-					Color rgb = hex2Rgb(newValue);
-					style1.setFillForegroundColor(new XSSFColor(rgb));
-					style1.setFillPattern(CellStyle.SOLID_FOREGROUND);
-					//sheetToEdit.getRow(rowIndex).getCell(colIndex).setCellStyle(style1);
-					cellToEdit.setCellStyle(style1);
-					break;
+						case "backgroundColor":
+							XSSFCellStyle style1 = workbook.createCellStyle();
+							Color rgb = hex2Rgb(newValue);
+							style1.setFillForegroundColor(new XSSFColor(rgb));
+							style1.setFillPattern(CellStyle.SOLID_FOREGROUND);
+							cellToEdit.setCellStyle(style1);
+							break;
 
-				case "cellComments":
-					createCellComment(cellToEdit, newValue, workbook);
-					break;
+						case "cellComments":
+							createCellComment(cellToEdit, newValue, workbook);
+							break;
 
-				default:
-					break;
+						default:
+							break;
+						}
+
+						FileOutputStream fileOutputStream = new FileOutputStream(file);
+						workbook.write(fileOutputStream);
+						fileOutputStream.close();
+					} else {
+						throw new ExcelException(
+								"Cell not found to edit. The cell must already exist in the file before editing...");
+					}
+				} else {
+					throw new ExcelException(
+							"Cell not found to edit. The cell must already exist in the file before editing...");
 				}
 
-				FileOutputStream fileOutputStream = new FileOutputStream(file);
-				workbook.write(fileOutputStream);
-				fileOutputStream.close();
 			} else {
 				throw new ExcelException("FILE NOT FOUND..");
 			}
@@ -258,23 +343,23 @@ public class ExcelDelta {
 
 	}
 
-
 	/**
 	 * Create Cell comments
+	 * 
 	 * @param cellToEdit
 	 * @param newValue
-	 * @param workbook 
+	 * @param workbook
 	 */
 	private void createCellComment(Cell cellToEdit, String newValue, XSSFWorkbook workbook) {
-		if(cellToEdit.getSheet() instanceof XSSFSheet) {
+		if (cellToEdit.getSheet() instanceof XSSFSheet) {
 			CreationHelper factory = workbook.getCreationHelper();
 			Drawing drawing = cellToEdit.getSheet().createDrawingPatriarch();
-			
+
 			ClientAnchor anchor = factory.createClientAnchor();
 			Comment comment = drawing.createCellComment(anchor);
 			RichTextString string = factory.createRichTextString(newValue);
 			comment.setString(string);
-			//comment.setAuthor("Srijani");
+			// comment.setAuthor("Srijani");
 			cellToEdit.setCellComment(comment);
 		}
 	}
@@ -284,15 +369,14 @@ public class ExcelDelta {
 	 * @param colorStr
 	 *            e.g. "#FFFFFF"
 	 * @return
-	 * @throws ExcelException 
+	 * @throws ExcelException
 	 */
 	public static Color hex2Rgb(String colorStr) throws ExcelException {
 		Color color = null;
 		try {
-		color= new Color(Integer.valueOf(colorStr.substring(1, 3), 16), Integer.valueOf(colorStr.substring(3, 5), 16),
-				Integer.valueOf(colorStr.substring(5, 7), 16));
-		}
-		catch(Exception e) {
+			color = new Color(Integer.valueOf(colorStr.substring(1, 3), 16),
+					Integer.valueOf(colorStr.substring(3, 5), 16), Integer.valueOf(colorStr.substring(5, 7), 16));
+		} catch (Exception e) {
 			throw new ExcelException("Color format is wrong. Please input #FF0000 for color:Red");
 		}
 		return color;
@@ -306,8 +390,6 @@ public class ExcelDelta {
 	 * @throws ExcelException
 	 */
 	private void rowOperation(String string, Object object) throws ExcelException {
-		// at this moment, there is nothing in the object.
-
 		switch (string) {
 		case "ADD_ROW":
 			addRow();
@@ -325,7 +407,9 @@ public class ExcelDelta {
 	/**
 	 * @throws ExcelException
 	 */
-	private void addRow() throws ExcelException {}
+	private void addRow() throws ExcelException {
+
+	}
 
 	/**
 	 * SHEET OPERATIONS, ADD_SHEET & DELETE_SHEET

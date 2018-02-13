@@ -167,7 +167,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			}
 		}
 
-		return excelOperationsBean;  
+		return excelOperationsBean;   
 	}
 
 	/**

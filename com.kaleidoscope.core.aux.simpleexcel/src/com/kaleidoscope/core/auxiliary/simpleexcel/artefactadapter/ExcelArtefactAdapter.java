@@ -211,7 +211,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		  SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
 	 
 
-		return opDelta;  
+		return opDelta;   
 	}
 
 	/**

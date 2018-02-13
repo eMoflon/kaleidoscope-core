@@ -5,6 +5,7 @@ package com.kaleidoscope.core.auxiliary.simpleexcel.artefactadapter;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 	// node
 	private List<Operation> cellNodeAddDeleteOperations = new ArrayList<Operation>();
-	
+
 	private List<Operation> sheetToCellEdgeAddAndDeleteOperations = new ArrayList<Operation>();
 
 	// row
@@ -55,11 +56,15 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	// row --> cell
 	private List<Operation> rowToCellEdgeAddAndDeleteOperations = new ArrayList<Operation>();
 
+	// col --> cell
+	private List<Operation> colToCellEdgeAddAndDeleteOperations = new ArrayList<Operation>();
+
 	private List<Operation> sheetChangeAttrOperation = new ArrayList<Operation>();
 	private List<Operation> cellChangeAttrOperation = new ArrayList<Operation>();
 
 	// sheet --> cols
 	private List<Operation> sheetToColEdgeAddAndDeleteOperations = new ArrayList<Operation>();
+	private List<Operation> colNodeAddDeleteOperations = new ArrayList<Operation>();
 
 	@Override
 	public ExcelDelta unparse(OperationalDelta od, Path path) {
@@ -166,6 +171,100 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	}
 
 	/**
+	 * 
+	 * @param changedCell
+	 * @return
+	 */
+	private Sheet getSheetFromCell(Cell changedCell) {
+		Sheet sheet = null;
+		if (changedCell.getRow() != null) {
+			if (changedCell.getRow().getSheet() != null)
+				return changedCell.getRow().getSheet();
+		}
+		Row row = getRowFromCell(changedCell);
+		sheet = getSheetFromRow(row);
+
+		return sheet;
+	}
+
+	/**
+	 * 
+	 * @param Row
+	 * @return
+	 */
+	private Sheet getSheetFromRow(Row row) {
+		if (row.getSheet() != null)
+			return row.getSheet();
+		Sheet sheet = null;
+		for (Operation operation : sheetToRowEdgeAddAndDeleteOperations) {
+			if (operation instanceof AddEdgeOp) {
+				if ((Row) (((AddEdgeOp) operation).getEdge().getTrg()) == row) {
+					sheet = (Sheet) ((AddEdgeOp) operation).getEdge().getSrc();
+				}
+			}
+		}
+
+		return sheet;
+	}
+
+	/**
+	 * 
+	 * @param Row
+	 * @return
+	 */
+	private Sheet getSheetFromCol(Column col) {
+		if (col.getSheet() != null)
+			return col.getSheet();
+		Sheet sheet = null;
+		for (Operation operation : sheetToColEdgeAddAndDeleteOperations) {
+			if (operation instanceof AddEdgeOp) {
+				if ((Column) (((AddEdgeOp) operation).getEdge().getTrg()) == col) {
+					sheet = (Sheet) ((AddEdgeOp) operation).getEdge().getSrc();
+				}
+			}
+		}
+
+		return sheet;
+	}
+
+	/**
+	 * 
+	 * @param changedCell
+	 * @return
+	 */
+	private Row getRowFromCell(Cell changedCell) {
+		Row row = null;
+		// iterate through edges to get the sheet
+		for (Operation operation : rowToCellEdgeAddAndDeleteOperations) {
+			if (operation instanceof AddEdgeOp) {
+				if ((Cell) (((AddEdgeOp) operation).getEdge().getTrg()) == changedCell) {
+					row = (Row) ((AddEdgeOp) operation).getEdge().getSrc();
+				}
+			}
+		}
+
+		return row;
+	}
+
+	/**
+	 * @param changedCell
+	 * @return
+	 */
+	private Column getColFromCell(Cell changedCell) {
+		Column col = null;
+		// iterate through edges to get the sheet
+		for (Operation operation : colToCellEdgeAddAndDeleteOperations) {
+			if (operation instanceof AddEdgeOp) {
+				if ((Cell) (((AddEdgeOp) operation).getEdge().getTrg()) == changedCell) {
+					col = (Column) ((AddEdgeOp) operation).getEdge().getSrc();
+				}
+			}
+		}
+
+		return col;
+	}
+
+	/**
 	 * Returns the index of a row or column based on the param. param can be either
 	 * 'ROW' or 'COL'
 	 * 
@@ -175,16 +274,17 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	 * @return
 	 */
 	private String identifyIndex(String param, Cell changedCell) {
-		Sheet sheet = changedCell.getRow().getSheet();
+		Sheet sheet = getSheetFromCell(changedCell);
 
 		if (param.equals("ROW")) {
+
 			Row firstRow = getFirstAndLastRows(sheet).get(0);
 			int rowIndex = 0;
 			if (firstRow != null) {
 				Row tempRow = firstRow;
 				int counter = 0;
 				while (tempRow != null) {
-					if (tempRow == changedCell.getRow()) {
+					if (tempRow == getRowFromCell(changedCell)) {
 						rowIndex = counter;
 						break;
 					}
@@ -203,7 +303,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 				Column tempCol = firstColumn;
 				int counter = 0;
 				while (tempCol != null) {
-					if (tempCol == changedCell.getColumn()) {
+					if (tempCol == getColFromCell(changedCell)) {
 						colIndex = counter;
 						break;
 					}
@@ -439,9 +539,20 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 
 		// ============== ADD ROW =================
 		if (((AddNodeOp) operation).getNode() instanceof Row) {
+			Row addNode = (Row) ((AddNodeOp) operation).getNode();
 			excelOperationsBean = new ExcelOperationsBean();
 			excelOperationsBean.setOperationName("ADD_ROW");
 			HashMap<String, String> innerMap = new HashMap<String, String>();
+			innerMap.put("ROW_COLOR", addNode.getRowBackgroundColor());
+			// iterate edges
+			for (Operation op : sheetToRowEdgeAddAndDeleteOperations) {
+				if (op instanceof AddEdgeOp) {
+					if ((Row) (((AddEdgeOp) op).getEdge().getTrg()) == addNode) {
+						innerMap.put("SHEET_NAME", ((Sheet) ((AddEdgeOp) op).getEdge().getSrc()).getSheetName());
+					}
+				}
+			}
+
 			excelOperationsBean.setOperationDetails(innerMap);
 		}
 		// ============== ADD CELL =================
@@ -462,7 +573,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 				innerMap.put("CELL_COLORS", changedCell.getBackgroundColor());
 			innerMap.put("ROW_INDEX", rowIndex);
 			innerMap.put("COL_INDEX", colIndex);
-			innerMap.put("SHEET_NAME", changedCell.getRow().getSheet().getSheetName());
+			innerMap.put("SHEET_NAME", getSheetFromCell(changedCell).getSheetName());
 			excelOperationsBean.setOperationDetails(innerMap);
 		}
 
@@ -487,9 +598,14 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		sortedOperationsExcelPOI.addAll(rowNodeAddDeleteOperations);
 		sortedOperationsExcelPOI.addAll(sheetToRowEdgeAddAndDeleteOperations);
 
+		// create columns
+		sortedOperationsExcelPOI.addAll(colNodeAddDeleteOperations);
+		sortedOperationsExcelPOI.addAll(sheetToColEdgeAddAndDeleteOperations);
+
 		// create cells
 		sortedOperationsExcelPOI.addAll(cellNodeAddDeleteOperations);
 		sortedOperationsExcelPOI.addAll(rowToCellEdgeAddAndDeleteOperations);
+		sortedOperationsExcelPOI.addAll(colToCellEdgeAddAndDeleteOperations);
 		sortedOperationsExcelPOI.addAll(cellChangeAttrOperation);
 
 		printOperationsFromList(sortedOperationsExcelPOI, "Sorted operations for EXCEL");
@@ -539,6 +655,9 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		sortedOperationsEMF.addAll(rowNodeAddDeleteOperations);
 		sortedOperationsEMF.addAll(sheetToRowEdgeAddAndDeleteOperations);
 		sortedOperationsEMF.addAll(rowToCellEdgeAddAndDeleteOperations);
+		sortedOperationsEMF.addAll(colNodeAddDeleteOperations);
+		sortedOperationsEMF.addAll(sheetToColEdgeAddAndDeleteOperations);
+		sortedOperationsEMF.addAll(colToCellEdgeAddAndDeleteOperations);
 	}
 
 	/**
@@ -585,6 +704,18 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 				&& ((DeleteEdgeOp) operation).getEdge().getTrg() instanceof Cell) {
 			rowToCellEdgeAddAndDeleteOperations.add(operation);
 		}
+		// ==============SHEET->COL EDGE=================
+		// Delete edge
+		if (((DeleteEdgeOp) operation).getEdge().getSrc() instanceof Sheet
+				&& ((DeleteEdgeOp) operation).getEdge().getTrg() instanceof Column) {
+			sheetToColEdgeAddAndDeleteOperations.add(operation);
+		}
+		// ==============COL->CELL EDGE=================
+		// Delete edge
+		if (((DeleteEdgeOp) operation).getEdge().getSrc() instanceof Column
+				&& ((DeleteEdgeOp) operation).getEdge().getTrg() instanceof Cell) {
+			colToCellEdgeAddAndDeleteOperations.add(operation);
+		}
 	}
 
 	/**
@@ -612,6 +743,11 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		// delete node - row
 		if (((DeleteNodeOp) operation).getNode() instanceof Row) {
 			rowNodeAddDeleteOperations.add(operation);
+		}
+		// ==============COL=================
+		// delete node - col
+		if (((DeleteNodeOp) operation).getNode() instanceof Column) {
+			colNodeAddDeleteOperations.add(operation);
 		}
 	}
 
@@ -645,6 +781,18 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 				&& ((AddEdgeOp) operation).getEdge().getTrg() instanceof Cell) {
 			rowToCellEdgeAddAndDeleteOperations.add(operation);
 		}
+		// ==============SHEET->COL EDGE=================
+		// add edge sheet--> col
+		if (((AddEdgeOp) operation).getEdge().getSrc() instanceof Sheet
+				&& ((AddEdgeOp) operation).getEdge().getTrg() instanceof Column) {
+			sheetToColEdgeAddAndDeleteOperations.add(operation);
+		}
+		// ==============COL->CELL EDGE=================
+		// add edge row-->cell
+		if (((AddEdgeOp) operation).getEdge().getSrc() instanceof Column
+				&& ((AddEdgeOp) operation).getEdge().getTrg() instanceof Cell) {
+			colToCellEdgeAddAndDeleteOperations.add(operation);
+		}
 	}
 
 	/**
@@ -672,6 +820,11 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		// add node - row
 		if (((AddNodeOp) operation).getNode() instanceof Row) {
 			rowNodeAddDeleteOperations.add(operation);
+		}
+		// ==============COL=================
+		// add node - col
+		if (((AddNodeOp) operation).getNode() instanceof Column) {
+			colNodeAddDeleteOperations.add(operation);
 		}
 	}
 

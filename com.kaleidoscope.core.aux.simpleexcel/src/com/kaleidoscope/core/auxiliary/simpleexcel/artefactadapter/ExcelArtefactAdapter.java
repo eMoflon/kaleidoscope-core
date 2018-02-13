@@ -89,12 +89,29 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 						break;
 					}
 				}
-
+				
+				//append a new row - with color
+				Row rowToAdd = SimpleexcelFactory.eINSTANCE.createRow();
+				rowToAdd.setRowBackgroundColor("#FF0000");
+				int rowIndex = 1;
+				Row tempRow = startRow;
+				opDelta.addNodeOp(rowToAdd);
+				opDelta.addEdgeOp(new JavaBasedEdge(sheet, rowToAdd, SimpleexcelPackage.eINSTANCE.getSheet_Rowobject()));
+				while(tempRow!=null) {
+					if(tempRow.getNextRow()==null) {
+						tempRow.setNextRow(rowToAdd);
+						break;
+					}
+					tempRow = tempRow.getNextRow();
+					rowIndex++;
+				}
+				
+				
 				// edit a cell (1,1)
 				int cellRowIndex = 1;
 				int cellColIndex = 1;
-				Row tempRow = startRow;
-				int rowIndex = 0;
+				tempRow = startRow;
+				rowIndex = 0;
 				while (tempRow != null) {
 					Column tempCol = startColumn;
 					int colIndex = 0;
@@ -110,11 +127,13 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 						}
 						tempCol = tempCol.getNextColumn();
 						colIndex++;
-						
+
 					}
 					tempRow = tempRow.getNextRow();
 					rowIndex++;
 				}
+				
+				
 
 				// add a cell (6,3) to existing row
 				cellRowIndex = 6;
@@ -129,8 +148,8 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 							Cell addCell = SimpleexcelFactory.eINSTANCE.createCell();
 							addCell.setText("Added cell to existing row");
 							opDelta.addNodeOp(addCell);
-							tempRow.getCell().add(addCell);
-							tempCol.getCell().add(addCell);
+							opDelta.addEdgeOp(new JavaBasedEdge(tempRow, addCell, SimpleexcelPackage.eINSTANCE.getRow_Cell()));
+							opDelta.addEdgeOp(new JavaBasedEdge(tempCol, addCell, SimpleexcelPackage.eINSTANCE.getColumn_Cell()));
 						}
 						tempCol = tempCol.getNextColumn();
 						colIndex++;
@@ -154,14 +173,15 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 							addCell.setText("Added cell to new row");
 							addCell.setBackgroundColor("#FF0000");
 							opDelta.addNodeOp(addCell);
-							tempRow.getCell().add(addCell);
-							tempCol.getCell().add(addCell);
+							opDelta.addEdgeOp(new JavaBasedEdge(tempRow, addCell, SimpleexcelPackage.eINSTANCE.getRow_Cell()));
+							opDelta.addEdgeOp(new JavaBasedEdge(tempCol, addCell, SimpleexcelPackage.eINSTANCE.getColumn_Cell()));
 							break;
 						}
 						if (tempCol.getNextColumn() == null && colIndex < cellColIndex) {
 							Column col = SimpleexcelFactory.eINSTANCE.createColumn();
 							col.setPrevColumn(tempCol);
-							sheet.getColobject().add(tempCol);
+							opDelta.addNodeOp(col);
+							opDelta.addEdgeOp(new JavaBasedEdge(sheet, col, SimpleexcelPackage.eINSTANCE.getSheet_Colobject()));
 							System.out.println("ADDED ONE COL");
 						}
 						tempCol = tempCol.getNextColumn();
@@ -170,7 +190,8 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 					if (tempRow.getNextRow() == null && rowIndex < cellRowIndex) {
 						Row row = SimpleexcelFactory.eINSTANCE.createRow();
 						row.setPrevRow(tempRow);
-						sheet.getRowobject().add(row);
+						opDelta.addNodeOp(row);
+						opDelta.addEdgeOp(new JavaBasedEdge(sheet, row, SimpleexcelPackage.eINSTANCE.getSheet_Rowobject()));
 						System.out.println("ADDED ONE ROW");
 					}
 					tempRow = tempRow.getNextRow();
@@ -183,12 +204,12 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		}
 
 		// add new Sheet Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
-		/*
-		 * Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
-		 * newSheet.setSheetName("Sheet to Add"); opDelta.addNodeOp(newSheet);
-		 * opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet,
-		 * SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
-		 */
+		
+		  Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
+		  newSheet.setSheetName("Sheet to Add"); opDelta.addNodeOp(newSheet);
+		  opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet,
+		  SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
+	 
 
 		return opDelta;
 	}

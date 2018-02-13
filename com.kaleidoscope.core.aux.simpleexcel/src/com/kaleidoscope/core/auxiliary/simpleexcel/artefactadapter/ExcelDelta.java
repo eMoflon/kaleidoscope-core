@@ -76,7 +76,7 @@ public class ExcelDelta {
 				this.filePath = null;
 			}
 		}
-		splitOperations(); 
+		splitOperations();
 	}
 
 	/**
@@ -230,6 +230,7 @@ public class ExcelDelta {
 					style1.setFillForegroundColor(new XSSFColor(rgb));
 					style1.setFillPattern(CellStyle.SOLID_FOREGROUND);
 					cell.setCellStyle(style1);
+					// cell.getRow().setRowStyle(style1);
 				}
 				if (operationDetails.containsKey("CELL_COMMENTS")) {
 					createCellComment(cell, operationDetails.get("CELL_COMMENTS"), workbook);
@@ -283,9 +284,9 @@ public class ExcelDelta {
 			newValue = operationDetails.get("NEW_VALUE");
 		} else
 			throw new ExcelException("New value to be inserted not found for the cell");
-		
+
 		XSSFWorkbook workbook = null;
-		
+
 		try {
 			File file = null;
 			if (null != fileName && !fileName.isEmpty()) {
@@ -392,23 +393,70 @@ public class ExcelDelta {
 	private void rowOperation(String string, Object object) throws ExcelException {
 		switch (string) {
 		case "ADD_ROW":
-			addRow();
-			break;
-
-		case "DELETE_ROW":
-
+			if (object instanceof HashMap<?, ?>)
+				addRow((HashMap<String, String>) object);
+			else
+				throw new ExcelException("Exception!");
 			break;
 
 		default:
-			break;
+			throw new ExcelException("This operation is not supported..");
 		}
 	}
 
 	/**
+	 * Adds a row to a sheet
+	 * 
+	 * @param object
 	 * @throws ExcelException
 	 */
-	private void addRow() throws ExcelException {
+	private void addRow(HashMap<String, String> object) throws ExcelException {
+		HashMap<String, String> rowDataMap = object;
+		String color = "";
+		if (rowDataMap != null) {
+			if (rowDataMap.containsKey("ROW_COLOR")) {
+				color = rowDataMap.get("ROW_COLOR");
+			}
+		}
+		String sheetName = "";
+		if (object.containsKey("SHEET_NAME")) {
+			sheetName = object.get("SHEET_NAME");
+		} else
+			throw new ExcelException("Sheet name to be modified not found for the cell");
 
+		String fileName = discoverFileName(sheetName);
+		try {
+			File file = null;
+			if (null != fileName || !fileName.isEmpty()) {
+				file = new File(fileName);
+			} else
+				throw new ExcelException("File name can not be empty");
+
+			if (file.exists()) {
+				final InputStream is = new FileInputStream(file);
+				XSSFWorkbook workbook = new XSSFWorkbook(is);
+				XSSFSheet sheetToEdit = workbook.getSheet(sheetName);
+
+				Row newRow = sheetToEdit.createRow(sheetToEdit.getLastRowNum() + 1);
+				XSSFCellStyle style1 = workbook.createCellStyle();
+				if (color != null) {
+					Color rgb = hex2Rgb(color);
+					style1.setFillForegroundColor(new XSSFColor(rgb));
+					style1.setFillPattern(CellStyle.SOLID_FOREGROUND);
+					newRow.setRowStyle(style1);
+				}
+
+				FileOutputStream fileOutputStream = new FileOutputStream(file);
+				workbook.write(fileOutputStream);
+				fileOutputStream.close();
+
+			} else {
+				throw new ExcelException("FILE NOT FOUND..");
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

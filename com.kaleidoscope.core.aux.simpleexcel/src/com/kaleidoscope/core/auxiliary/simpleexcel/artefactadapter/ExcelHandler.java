@@ -3,6 +3,7 @@
  */
 package com.kaleidoscope.core.auxiliary.simpleexcel.artefactadapter;
 
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -37,7 +39,7 @@ public class ExcelHandler {
 
 	public ExcelHandler(Path path) {
 		this.path = path;
-		
+
 	}
 
 	/**
@@ -224,10 +226,21 @@ public class ExcelHandler {
 			Simpleexcel.Sheet currentSimpleSheet, List<Row> rowList) {
 
 		// create rows
-		// for (int rowIndex = 0; rowIndex <
-		// currentExcelSheet.getPhysicalNumberOfRows(); rowIndex++) {
+
 		for (int rowIndex = 0; rowIndex <= currentExcelSheet.getLastRowNum(); rowIndex++) {
+			XSSFColor color;
+			String colorString = "";
+			if(currentExcelSheet.getRow(rowIndex) != null) {
+				CellStyle style = currentExcelSheet.getRow(rowIndex).getRowStyle();
+				if(style!=null) {
+					color = (XSSFColor)style.getFillForegroundColorColor();
+					colorString = "#"+color.getARGBHex().substring(2);
+				}
+			}
+			
+			
 			Simpleexcel.Row row = SimpleexcelFactory.eINSTANCE.createRow();
+			row.setRowBackgroundColor(colorString);
 			rowObjectList.add(row);
 			currentSimpleSheet.getRowobject().add(row);
 			row.setSheet(currentSimpleSheet);
@@ -266,11 +279,11 @@ public class ExcelHandler {
 			Column tempCol = firstColumn;
 			int colIndex = 0;
 			while (tempCol != null) {
-				//System.out.print(rowIndex + " , " + colIndex + " --> ");
+				// System.out.print(rowIndex + " , " + colIndex + " --> ");
 				if (currentExcelSheet.getRow(rowIndex) != null) {
 					Cell excelCell = currentExcelSheet.getRow(rowIndex).getCell(colIndex);
 					if (null != excelCell) {
-					//	System.out.println(excelCell.getStringCellValue());
+						// System.out.println(excelCell.getStringCellValue());
 						Simpleexcel.Cell simpleCell = SimpleexcelFactory.eINSTANCE.createCell();
 						// TODO : need to make this flexible to make it read every possible cell values
 						simpleCell.setText(excelCell.getStringCellValue());

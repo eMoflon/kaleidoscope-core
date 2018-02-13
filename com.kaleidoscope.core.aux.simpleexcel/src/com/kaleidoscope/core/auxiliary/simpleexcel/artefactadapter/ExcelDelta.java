@@ -436,7 +436,7 @@ public class ExcelDelta {
 				final InputStream is = new FileInputStream(file);
 				XSSFWorkbook workbook = new XSSFWorkbook(is);
 				XSSFSheet sheetToEdit = workbook.getSheet(sheetName);
-
+				
 				Row newRow = sheetToEdit.createRow(sheetToEdit.getLastRowNum() + 1);
 				XSSFCellStyle style1 = workbook.createCellStyle();
 				if (color != null) {

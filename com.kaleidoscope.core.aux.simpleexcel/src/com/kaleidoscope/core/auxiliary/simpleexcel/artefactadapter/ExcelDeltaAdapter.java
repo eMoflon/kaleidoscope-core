@@ -183,7 +183,6 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		}
 		Row row = getRowFromCell(changedCell);
 		sheet = getSheetFromRow(row);
-
 		return sheet;
 	}
 

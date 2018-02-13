@@ -103,7 +103,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 						break;
 					}
 					tempRow = tempRow.getNextRow();
-					rowIndex++;
+					rowIndex++; 
 				}
 				
 				

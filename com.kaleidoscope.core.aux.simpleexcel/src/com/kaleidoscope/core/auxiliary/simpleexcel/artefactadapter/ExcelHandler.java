@@ -30,7 +30,7 @@ import Simpleexcel.SimpleexcelFactory;
  *
  */
 public class ExcelHandler {
-	private static final Logger logger = Logger.getLogger(ExcelHandler.class); 
+	private static final Logger logger = Logger.getLogger(ExcelHandler.class);  
  
 	private Path path;
 	private Workbook workBook;

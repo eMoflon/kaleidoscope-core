@@ -613,7 +613,7 @@ public class ExcelDelta {
 					throw new ExcelException("FILE PATH NOT READBLE...");
 			}
 		}
-		switch (string) {
+		switch (string) { 
 		case "ADD_FILE":
 			createFile(fileName, filePath);
 			break;

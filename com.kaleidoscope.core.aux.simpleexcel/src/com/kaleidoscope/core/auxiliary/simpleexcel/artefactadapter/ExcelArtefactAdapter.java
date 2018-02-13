@@ -40,7 +40,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	}
 
 	@Override
-	public void unparse() {
+	public void unparse() { 
 		ExcelDeltaAdapter excelDeltaAdapter = new ExcelDeltaAdapter();
 		// ExcelDelta excelDelta =
 		// excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);

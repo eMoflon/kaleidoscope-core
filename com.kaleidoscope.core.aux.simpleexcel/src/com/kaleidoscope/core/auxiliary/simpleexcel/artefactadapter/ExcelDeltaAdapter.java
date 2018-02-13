@@ -536,7 +536,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			excelOperationsBean.setOperationDetails(innerMap);
 		}
 
-		// ============== ADD ROW =================
+		// ============== ADD ROW ================= 
 		if (((AddNodeOp) operation).getNode() instanceof Row) {
 			Row addNode = (Row) ((AddNodeOp) operation).getNode();
 			excelOperationsBean = new ExcelOperationsBean();

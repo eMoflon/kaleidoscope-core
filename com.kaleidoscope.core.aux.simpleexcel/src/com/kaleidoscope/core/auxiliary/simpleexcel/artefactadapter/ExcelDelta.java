@@ -76,7 +76,7 @@ public class ExcelDelta {
 				this.filePath = null;
 			}
 		}
-		splitOperations(); 
+		splitOperations();
 	}
 
 	/**
@@ -230,6 +230,7 @@ public class ExcelDelta {
 					style1.setFillForegroundColor(new XSSFColor(rgb));
 					style1.setFillPattern(CellStyle.SOLID_FOREGROUND);
 					cell.setCellStyle(style1);
+					// cell.getRow().setRowStyle(style1);
 				}
 				if (operationDetails.containsKey("CELL_COMMENTS")) {
 					createCellComment(cell, operationDetails.get("CELL_COMMENTS"), workbook);
@@ -283,9 +284,9 @@ public class ExcelDelta {
 			newValue = operationDetails.get("NEW_VALUE");
 		} else
 			throw new ExcelException("New value to be inserted not found for the cell");
-		
+
 		XSSFWorkbook workbook = null;
-		
+
 		try {
 			File file = null;
 			if (null != fileName && !fileName.isEmpty()) {
@@ -392,22 +393,23 @@ public class ExcelDelta {
 	private void rowOperation(String string, Object object) throws ExcelException {
 		switch (string) {
 		case "ADD_ROW":
-			addRow();
-			break;
-
-		case "DELETE_ROW":
-
+			if (object instanceof HashMap<?, ?>)
+				addRow((HashMap<String, String>) object);
+			else
+				throw new ExcelException("Exception!");
 			break;
 
 		default:
-			break;
+			throw new ExcelException("This operation is not supported..");
 		}
 	}
 
 	/**
+	 * Adds a row to a sheet
+	 * 
+	 * @param object
 	 * @throws ExcelException
 	 */
-<<<<<<< HEAD
 	private void addRow(HashMap<String, String> object) throws ExcelException {
 		HashMap<String, String> rowDataMap = object;
 		String color = "";
@@ -425,7 +427,7 @@ public class ExcelDelta {
 		String fileName = discoverFileName(sheetName);
 		try {
 			File file = null;
-			if (null != fileName || !fileName.isEmpty()) {   
+			if (null != fileName || !fileName.isEmpty()) { 
 				file = new File(fileName);
 			} else
 				throw new ExcelException("File name can not be empty");
@@ -455,10 +457,6 @@ public class ExcelDelta {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-=======
-	private void addRow() throws ExcelException {
-
->>>>>>> parent of 9ed7557... Committed changes for Add Row.
 	}
 
 	/**

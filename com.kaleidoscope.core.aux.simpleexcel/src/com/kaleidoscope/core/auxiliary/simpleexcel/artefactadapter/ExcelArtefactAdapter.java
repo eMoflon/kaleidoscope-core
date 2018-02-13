@@ -89,8 +89,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 						break;
 					}
 				}
-<<<<<<< HEAD
-				
+
 				//append a new row - with color
 				Row rowToAdd = SimpleexcelFactory.eINSTANCE.createRow();
 				rowToAdd.setRowBackgroundColor("#FF0000");
@@ -107,10 +106,6 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 					rowIndex++; 
 				}
 				
-				
-=======
-
->>>>>>> parent of 9ed7557... Committed changes for Add Row.
 				// edit a cell (1,1)
 				int cellRowIndex = 1;
 				int cellColIndex = 1;

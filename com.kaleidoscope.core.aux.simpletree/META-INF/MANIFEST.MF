@@ -14,9 +14,10 @@ Import-Package: com.kaleidoscope.core.framework.workflow.adapters,org.
  mf.ecore.xmi.impl,org.eclipse.xtend2.lib,org.eclipse.xtext.xbase.lib;
  version="2.12.0"
 Export-Package: 
- Simpletree.util,
  Simpletree,
- Simpletree.impl
+ Simpletree.impl,
+ Simpletree.util,
+ com.kaleidoscope.core.auxiliary.simpletree.artefactadapter.XML
 Bundle-Name: %pluginName
 Bundle-Version: 0.1.0.qualifier
 Bundle-ClassPath: .

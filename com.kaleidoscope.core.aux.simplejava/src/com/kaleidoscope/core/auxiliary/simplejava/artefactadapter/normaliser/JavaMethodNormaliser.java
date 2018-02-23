@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import SimpleJava.JavaMethod;
+import Simplejava.JavaMethod;
 
 
 public class JavaMethodNormaliser implements Comparator<JavaMethod> {

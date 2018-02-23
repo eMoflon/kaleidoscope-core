@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import SimpleJava.JavaVariableDeclaration;
+import Simplejava.JavaVariableDeclaration;
 
 public class JavaVariableDeclarationNormaliser implements Comparator<JavaVariableDeclaration> {
 	@Override

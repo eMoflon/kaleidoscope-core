@@ -2,7 +2,7 @@ package com.kaleidoscope.core.framework.workflow.controllers.statebased;
 
 import com.google.inject.Inject;
 import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
@@ -13,8 +13,8 @@ import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 public class StateBasedController <
 		SourceModel, SourceArtefact, 
 		TargetModel, TargetArtefact, 
-		ModelDelta extends Delta, UpdatePolicy, 
-		Failed extends Delta> 
+		ModelDelta extends IDelta, UpdatePolicy, 
+		Failed extends IDelta> 
 	implements StateBased<
 		SourceModel, SourceArtefact,TargetModel, TargetArtefact,
 		UpdatePolicy,Failed>

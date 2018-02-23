@@ -6,17 +6,17 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.operational.AttributeChangeOp;
 import com.kaleidoscope.core.delta.javabased.operational.MoveNodeOp;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 
-import KaleidoscopeDelta.AttributeChangeOP;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
-import KaleidoscopeDelta.MoveNodeOP;
+import Delta.AttributeChangeOP;
+import Delta.DeltaFactory;
+import Delta.MoveNodeOP;
 
-public class StructuralDelta implements Delta {
+public class StructuralDelta implements IDelta {
 	private Collection<EObject> addedNodes;
 	private Collection<EObject> deletedNodes;
 	private Collection<JavaBasedEdge> addedEdges;
@@ -97,8 +97,8 @@ public class StructuralDelta implements Delta {
 	
 	/* EMF-based Support for Persistence */
 	
-	public KaleidoscopeDelta.StructuralDelta toEMF(){
-		KaleidoscopeDelta.StructuralDelta structuralDelta = KaleidoscopeDeltaFactory.eINSTANCE.createStructuralDelta();
+	public Delta.StructuralDelta toEMF(){
+		Delta.StructuralDelta structuralDelta = DeltaFactory.eINSTANCE.createStructuralDelta();
 		
 		structuralDelta.getAddedNodes().addAll(addedNodes);
 		structuralDelta.getAddedEdges().addAll(addedEdges.stream()
@@ -120,7 +120,7 @@ public class StructuralDelta implements Delta {
 		return structuralDelta;
 	}
 	
-	public static StructuralDelta fromEMF(KaleidoscopeDelta.StructuralDelta structuralDelta) {
+	public static StructuralDelta fromEMF(Delta.StructuralDelta structuralDelta) {
 		StructuralDelta sdelta = new StructuralDelta();
 		
 		sdelta.addNodes(structuralDelta.getAddedNodes());
@@ -141,7 +141,7 @@ public class StructuralDelta implements Delta {
 		return sdelta;
 	}
 	
-	/* Normalise and pretty print for comparision or testing purposes */
+	/* Normalise and pretty print for comparison or testing purposes */
 	
 	@Override
 	public String toString() {

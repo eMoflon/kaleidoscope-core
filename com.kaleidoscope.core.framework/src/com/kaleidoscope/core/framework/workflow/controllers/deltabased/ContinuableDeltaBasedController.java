@@ -1,7 +1,7 @@
 package com.kaleidoscope.core.framework.workflow.controllers.deltabased;
 
 import com.google.inject.Inject;
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.ContinuableSynchroniser;
@@ -9,7 +9,7 @@ import com.kaleidoscope.core.framework.synchronisation.SynchronisationContinuati
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
-import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
+import com.kaleidoscope.core.framework.workflow.adapters.DeltaInputAdapter;
 
 public class ContinuableDeltaBasedController <
 											SourceModel, 
@@ -17,8 +17,8 @@ public class ContinuableDeltaBasedController <
 											TargetModel,
 											TargetArtefact,
 											UpdatePolicy,
-											ModelDelta extends Delta,
-											Failed extends Delta,
+											ModelDelta extends IDelta,
+											Failed extends IDelta,
 											SourceArtefactDelta,
 											TargetArtefactDelta>
 					extends DeltaBasedController<
@@ -45,8 +45,8 @@ public class ContinuableDeltaBasedController <
 	public ContinuableDeltaBasedController(@Src ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter,
 			@Trg ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
 			ContinuableSynchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> continuableSynchroniser,
-			@Src DeltaAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
-			@Trg DeltaAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter) {
+			@Src DeltaInputAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
+			@Trg DeltaInputAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter) {
 		
 		super(sourceArtefactAdapter, targetArtefactAdapter, continuableSynchroniser, sourceDeltaAdapter, targetDeltaAdapter);
 		this.continuableSynchroniser = continuableSynchroniser;

@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-import KaleidoscopeDelta.AddEdgeOP;
-import KaleidoscopeDelta.AddNodeOP;
-import KaleidoscopeDelta.AttributeChangeOP;
-import KaleidoscopeDelta.CompositeOP;
-import KaleidoscopeDelta.DeleteEdgeOP;
-import KaleidoscopeDelta.DeleteNodeOP;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
-import KaleidoscopeDelta.MoveNodeOP;
+import Delta.AddEdgeOP;
+import Delta.AddNodeOP;
+import Delta.AttributeChangeOP;
+import Delta.CompositeOP;
+import Delta.DeleteEdgeOP;
+import Delta.DeleteNodeOP;
+import Delta.DeltaFactory;
+import Delta.MoveNodeOP;
 
 public class CompositeOp extends Operation{
 
@@ -22,7 +22,7 @@ public class CompositeOp extends Operation{
 	}
 	public CompositeOp(CompositeOP compositeOP) {
 		
-		for (KaleidoscopeDelta.Operation operation : compositeOP.getOperations()) {
+		for (Delta.Operation operation : compositeOP.getOperations()) {
 			 if(operation instanceof AddEdgeOP){
 				   operations.add(new AddEdgeOp((AddEdgeOP)operation));
 			   }
@@ -48,8 +48,8 @@ public class CompositeOp extends Operation{
 	}
 
 	@Override
-	public KaleidoscopeDelta.Operation toOperationalEMF() {
-		 KaleidoscopeDelta.CompositeOP compositeOperation = KaleidoscopeDeltaFactory.eINSTANCE.createCompositeOP();      
+	public Delta.Operation toOperationalEMF() {
+		 Delta.CompositeOP compositeOperation = DeltaFactory.eINSTANCE.createCompositeOP();      
 		 operations.forEach(o -> compositeOperation.getOperations().add(o.toOperationalEMF()));
 		       
 	     return compositeOperation;

@@ -1,30 +1,30 @@
 package com.kaleidoscope.core.framework.workflow.controllers.deltabased;
 
 import com.google.inject.Inject;
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.synchronisation.Synchroniser;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
-import com.kaleidoscope.core.framework.workflow.adapters.DeltaAdapter;
+import com.kaleidoscope.core.framework.workflow.adapters.DeltaInputAdapter;
 
-public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, ModelDelta extends Delta, Failed extends Delta, SourceArtefactDelta, TargetArtefactDelta>
+public class DeltaBasedController<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, ModelDelta extends IDelta, Failed extends IDelta, SourceArtefactDelta, TargetArtefactDelta>
 		implements
 		DeltaBased<SourceModel, SourceArtefact, TargetModel, TargetArtefact, SourceArtefactDelta, TargetArtefactDelta, UpdatePolicy, Failed> {
 	protected final ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter;
 	protected final ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter;
 	protected final Synchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> synchroniser;
-	protected final DeltaAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter;
-	protected final DeltaAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter;	
+	protected final DeltaInputAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter;
+	protected final DeltaInputAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter;	
 
 	@Inject
 	public DeltaBasedController(@Src ArtefactAdapter<SourceModel, SourceArtefact> sourceArtefactAdapter,
 			@Trg ArtefactAdapter<TargetModel, TargetArtefact> targetArtefactAdapter,
 			Synchroniser<SourceModel, TargetModel, UpdatePolicy, ModelDelta, Failed> synchroniser,
-			@Src DeltaAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
-			@Trg DeltaAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter) {
+			@Src DeltaInputAdapter<ModelDelta, SourceArtefactDelta, SourceModel> sourceDeltaAdapter,
+			@Trg DeltaInputAdapter<ModelDelta, TargetArtefactDelta, TargetModel> targetDeltaAdapter) {
 		this.sourceArtefactAdapter = sourceArtefactAdapter;
 		this.targetArtefactAdapter = targetArtefactAdapter;
 		this.synchroniser = synchroniser;

@@ -2,7 +2,7 @@ package com.kaleidoscope.core.framework.workflow.controllers.statebased;
 
 import com.google.inject.Inject;
 import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 import com.kaleidoscope.core.framework.annotations.Dest;
 import com.kaleidoscope.core.framework.annotations.Src;
 import com.kaleidoscope.core.framework.annotations.Trg;
@@ -17,8 +17,8 @@ public class PersistentStateBasedController<
 		TargetModel, 
 		TargetArtefact, 
 		UpdatePolicy, 
-		ModelDelta extends Delta, 
-		Failed extends Delta, 
+		ModelDelta extends IDelta, 
+		Failed extends IDelta, 
 		Destination
 	>
 	extends StateBasedController<

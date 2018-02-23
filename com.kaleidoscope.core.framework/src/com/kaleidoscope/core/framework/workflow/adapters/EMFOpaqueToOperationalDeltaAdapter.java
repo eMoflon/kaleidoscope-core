@@ -5,7 +5,7 @@ import com.kaleidoscope.core.delta.discovery.OnlineDeltaDiscoverer;
 import com.kaleidoscope.core.delta.javabased.opaque.OpaqueDelta;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 
-public class EMFOpaqueToOperationalDeltaAdapter<Model> implements DeltaAdapter<OperationalDelta, OpaqueDelta<Model>, Model> {
+public class EMFOpaqueToOperationalDeltaAdapter<Model> implements DeltaInputAdapter<OperationalDelta, OpaqueDelta<Model>, Model> {
 	
 	
 	@Override

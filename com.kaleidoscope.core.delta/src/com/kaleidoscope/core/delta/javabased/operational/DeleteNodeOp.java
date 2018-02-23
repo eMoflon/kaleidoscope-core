@@ -3,8 +3,8 @@ package com.kaleidoscope.core.delta.javabased.operational;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import KaleidoscopeDelta.DeleteNodeOP;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
+import Delta.DeleteNodeOP;
+import Delta.DeltaFactory;
 
 public class DeleteNodeOp extends Operation{
 	private EObject node;
@@ -12,7 +12,7 @@ public class DeleteNodeOp extends Operation{
 	public DeleteNodeOp(EObject node){
 		this.node = node;
 	}
-	public DeleteNodeOp(KaleidoscopeDelta.DeleteNodeOP deleteNodeOP){
+	public DeleteNodeOp(Delta.DeleteNodeOP deleteNodeOP){
 		this.node = deleteNodeOP.getNode();
 	}
 	
@@ -24,9 +24,9 @@ public class DeleteNodeOp extends Operation{
 		this.node = node;
 	}
 	
-	public KaleidoscopeDelta.Operation toOperationalEMF()
+	public Delta.Operation toOperationalEMF()
    {	      
-	  DeleteNodeOP deleteNodeOp = KaleidoscopeDeltaFactory.eINSTANCE.createDeleteNodeOP();      
+	  DeleteNodeOP deleteNodeOp = DeltaFactory.eINSTANCE.createDeleteNodeOP();      
 	  deleteNodeOp.setNode(node);
       
       return deleteNodeOp;

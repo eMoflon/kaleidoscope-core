@@ -7,8 +7,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import com.kaleidoscope.core.delta.javabased.JavaBasedEdge;
 import com.kaleidoscope.core.delta.javabased.operational.Operation;
 
-import KaleidoscopeDelta.AddEdgeOP;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
+import Delta.AddEdgeOP;
+import Delta.DeltaFactory;
 
 public class AddEdgeOp extends Operation {
 	private JavaBasedEdge edge;
@@ -16,7 +16,7 @@ public class AddEdgeOp extends Operation {
 	public AddEdgeOp(JavaBasedEdge edge){
 		this.edge = edge;
 	}
-	public AddEdgeOp(KaleidoscopeDelta.AddEdgeOP addEdgeOp){
+	public AddEdgeOp(Delta.AddEdgeOP addEdgeOp){
 		   this.edge = new JavaBasedEdge(addEdgeOp.getEdge());	   
 	}
 	
@@ -24,9 +24,9 @@ public class AddEdgeOp extends Operation {
 		return edge;
 	}
 	
-   public KaleidoscopeDelta.Operation toOperationalEMF()
+   public Delta.Operation toOperationalEMF()
    {	      
-	  AddEdgeOP addEdgeOp = KaleidoscopeDeltaFactory.eINSTANCE.createAddEdgeOP();      
+	  AddEdgeOP addEdgeOp = DeltaFactory.eINSTANCE.createAddEdgeOP();      
 	  addEdgeOp.setEdge(edge.toEMF());      
       return addEdgeOp;
    }

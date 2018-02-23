@@ -1,11 +1,11 @@
 package com.kaleidoscope.core.framework.workflow.controllers.statebased;
 
-import com.kaleidoscope.core.delta.javabased.Delta;
+import com.kaleidoscope.core.delta.javabased.IDelta;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationFailedException;
 import com.kaleidoscope.core.framework.synchronisation.SynchronisationResult;
 import com.kaleidoscope.core.framework.workflow.controllers.Controller;
 
-public interface StateBased<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, Failed extends Delta> extends 
+public interface StateBased<SourceModel, SourceArtefact, TargetModel, TargetArtefact, UpdatePolicy, Failed extends IDelta> extends 
 			     Controller<SourceArtefact, TargetArtefact, UpdatePolicy> {
 	
 	

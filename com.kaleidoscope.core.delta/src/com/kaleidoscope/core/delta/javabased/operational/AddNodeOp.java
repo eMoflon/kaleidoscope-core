@@ -5,8 +5,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import com.kaleidoscope.core.delta.javabased.operational.Operation;
 
-import KaleidoscopeDelta.AddNodeOP;
-import KaleidoscopeDelta.KaleidoscopeDeltaFactory;
+import Delta.AddNodeOP;
+import Delta.DeltaFactory;
 
 
 public class AddNodeOp extends Operation{
@@ -16,7 +16,7 @@ public class AddNodeOp extends Operation{
 		this.node = node;
 	}
 	
-	public AddNodeOp(KaleidoscopeDelta.AddNodeOP addNodeOP){
+	public AddNodeOp(Delta.AddNodeOP addNodeOP){
 		this.node = addNodeOP.getNode();
 	}
 	
@@ -24,9 +24,9 @@ public class AddNodeOp extends Operation{
 		return node;
 	}
 	
-	public KaleidoscopeDelta.Operation toOperationalEMF()
+	public Delta.Operation toOperationalEMF()
    {	      
-	  AddNodeOP addNodeOp = KaleidoscopeDeltaFactory.eINSTANCE.createAddNodeOP(); 
+	  AddNodeOP addNodeOp = DeltaFactory.eINSTANCE.createAddNodeOP(); 
 	  addNodeOp.setNode(node);
       return addNodeOp;
    }

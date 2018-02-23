@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import SimpleJava.JavaCompilationUnit;
+import Simplejava.JavaCompilationUnit;
 
 
 public class JavaCompilationUnitNormaliser implements Comparator<JavaCompilationUnit> {

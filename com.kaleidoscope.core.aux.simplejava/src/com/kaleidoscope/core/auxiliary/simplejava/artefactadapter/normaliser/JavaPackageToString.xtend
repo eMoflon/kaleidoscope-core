@@ -1,26 +1,22 @@
 package com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser
 
-import SimpleJava.JavaArrayInit
-import SimpleJava.JavaAssignment
-import SimpleJava.JavaCompilationUnit
-import SimpleJava.JavaExpression
-import SimpleJava.JavaImport
-import SimpleJava.JavaLiteral
-import SimpleJava.JavaMethod
-import SimpleJava.JavaMethodInvocation
-import SimpleJava.JavaName
-import SimpleJava.JavaOpaqueMethod
-import SimpleJava.JavaPackage
-import SimpleJava.JavaStatement
-import SimpleJava.JavaUnknownStatement
-import SimpleJava.JavaVariableDeclaration
-import SimpleJava.JavaWorkflowMethod
+import Simplejava.JavaArrayInit
+import Simplejava.JavaAssignment
+import Simplejava.JavaCompilationUnit
+import Simplejava.JavaExpression
+import Simplejava.JavaImport
+import Simplejava.JavaLiteral
+import Simplejava.JavaMethod
+import Simplejava.JavaMethodInvocation
+import Simplejava.JavaName
+import Simplejava.JavaOpaqueMethod
+import Simplejava.JavaPackage
+import Simplejava.JavaStatement
+import Simplejava.JavaUnknownStatement
+import Simplejava.JavaVariableDeclaration
+import Simplejava.JavaWorkflowMethod
 import java.util.ArrayList
 import java.util.List
-import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaImportNormaliser
-import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaExpressionNormaliser
-import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaCompilationUnitNormaliser
-import com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser.JavaMethodNormaliser
 
 class JavaPackageToString {
 	private boolean sortMethods;

@@ -1,10 +1,12 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: com.kaleidoscope.core.aux.simplejava;singleton:=true
-Export-Package: SimpleJava,
- SimpleJava.impl,
- SimpleJava.util,
+Bundle-SymbolicName: com.kaleidoscope.core.aux.simplejava;singleton:=t
+ rue
+Export-Package: 
  com.kaleidoscope.core.auxiliary.simplejava.artefactadapter,
- com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser
+ com.kaleidoscope.core.auxiliary.simplejava.artefactadapter.normaliser,
+ Simplejava.util,
+ Simplejava,
+ Simplejava.impl
 Bundle-Name: com.kaleidoscope.core.aux.simplejava
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.emf.ecore,
@@ -22,4 +24,3 @@ Require-Bundle: org.eclipse.emf.ecore,
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-

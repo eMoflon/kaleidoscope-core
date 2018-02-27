@@ -283,7 +283,7 @@ Export-Package:
  schemasMicrosoftComVml,
  schemasMicrosoftComVml.impl
 Bundle-Name: com.kaleidoscope.core.aux.simpleexcel
-Bundle-Version: 1.0
+Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
  org.moflon.core.utilities,

@@ -212,7 +212,7 @@ public class ExcelDelta {
 		
 		try {
 			File file = null;
-			if (null != fileName || !fileName.isEmpty()) {
+			if (null != fileName && !fileName.isEmpty()) {
 				file = new File(fileName);
 			} else
 				throw new ExcelException("File name can not be empty");
@@ -435,7 +435,7 @@ public class ExcelDelta {
 		String fileName = discoverFileName(sheetName);
 		try {
 			File file = null;
-			if (null != fileName || !fileName.isEmpty()) { 
+			if (null != fileName && !fileName.isEmpty()) { 
 				file = new File(fileName);
 			} else
 				throw new ExcelException("File name can not be empty");

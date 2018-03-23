@@ -36,7 +36,6 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 	
 	// Location of corresponding artefact
 	private Path path;
-	private Path pathTest;
 	
 	// Header for (un)parsed XML file
 	private String header;

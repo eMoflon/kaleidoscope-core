@@ -27,6 +27,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="row" eType="#//Row" eOpposite="#//Row/cell"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="column" eType="#//Column"
         eOpposite="#//Column/cell"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cellType" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ExcelElement" abstract="true"/>
   <eClassifiers xsi:type="ecore:EClass" name="Row">

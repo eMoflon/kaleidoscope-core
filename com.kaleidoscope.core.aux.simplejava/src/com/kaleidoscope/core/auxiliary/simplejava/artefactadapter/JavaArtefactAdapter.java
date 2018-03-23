@@ -106,7 +106,7 @@ public class JavaArtefactAdapter implements ArtefactAdapter<JavaPackage, Path> {
 			scanner.close();
 		}
 		
-		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		ASTParser parser = ASTParser.newParser(AST.JLS9);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setResolveBindings(false);
 		parser.setBindingsRecovery(false);

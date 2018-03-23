@@ -18,19 +18,20 @@ import com.google.common.io.Files;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
 import Simpletree.Node;
+import Simpletree.TreeElement;
 
 /**
  * @author Srijani
  *
  */
-public class XMLArtefactAdapter implements ArtefactAdapter<Node, Path> {
+public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 
 	private final static Logger logger = Logger.getLogger(XMLArtefactAdapter.class);
 
 	public static final String DEFAULT_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n <?eclipse version=\"3.0\"?>\r\n";
 	
 	// Simple tree model in memory
-	private Optional<Node> model;
+	private Optional<TreeElement> model;
 	
 	// Location of corresponding artefact
 	private Path path;
@@ -73,15 +74,19 @@ public class XMLArtefactAdapter implements ArtefactAdapter<Node, Path> {
 
 		try {
 			final File file = path.toFile();
-			Node toUnparse = model.orElseThrow(() -> new IllegalStateException("There is no model to unparse!  Please set a model first."));
-			Files.write(generateXML.generate(toUnparse, header), file, Charsets.UTF_8);
+			TreeElement toUnparse = model.orElseThrow(() -> new IllegalStateException("There is no model to unparse!  Please set a model first."));
+			if(toUnparse instanceof Simpletree.File) {
+				Files.write(generateXML.generate((Node) ((Simpletree.File)toUnparse).getRootNode(), header), file, Charsets.UTF_8);
+			} else {
+				throw new IllegalArgumentException("The model to unparsed must be a Simpletree.File with a root node.");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void setModel(Node m) {
+	public void setModel(TreeElement m) {
 		model = Optional.of(m);
 	}
 
@@ -91,7 +96,7 @@ public class XMLArtefactAdapter implements ArtefactAdapter<Node, Path> {
 	}
 
 	@Override
-	public Optional<Node> getModel() {
+	public Optional<TreeElement> getModel() {
 		return model;
 	}
 

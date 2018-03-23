@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -28,16 +29,17 @@ import Simpleexcel.SimpleexcelFactory;
  *
  */
 public class ExcelHandler {
-	private static final Logger logger = Logger.getLogger(ExcelHandler.class);   
- 
+	private static final Logger logger = Logger.getLogger(ExcelHandler.class);
+
 	private Path path;
 	private Workbook workBook;
 
+	@SuppressWarnings("unused")
 	private int cellId = ExcelConstants.INIT_CELL;
 
 	public ExcelHandler(Path path) {
 		this.path = path;
-		
+
 	}
 
 	/**
@@ -90,8 +92,10 @@ public class ExcelHandler {
 		List<Simpleexcel.Row> rowObjectList = new ArrayList<Simpleexcel.Row>();
 
 		Simpleexcel.Row firstRow = null;
+		@SuppressWarnings("unused")
 		Simpleexcel.Row lastRow = null;
 		Column firstColumn = null;
+		@SuppressWarnings("unused")
 		Column lastColumn = null;
 
 		System.out.println("Reading from Sheet :" + this.workBook.getSheetName(sheetIndex));
@@ -224,8 +228,6 @@ public class ExcelHandler {
 			Simpleexcel.Sheet currentSimpleSheet, List<Row> rowList) {
 
 		// create rows
-		// for (int rowIndex = 0; rowIndex <
-		// currentExcelSheet.getPhysicalNumberOfRows(); rowIndex++) {
 		for (int rowIndex = 0; rowIndex <= currentExcelSheet.getLastRowNum(); rowIndex++) {
 			Simpleexcel.Row row = SimpleexcelFactory.eINSTANCE.createRow();
 			rowObjectList.add(row);
@@ -266,14 +268,29 @@ public class ExcelHandler {
 			Column tempCol = firstColumn;
 			int colIndex = 0;
 			while (tempCol != null) {
-				//System.out.print(rowIndex + " , " + colIndex + " --> ");
+				// System.out.print(rowIndex + " , " + colIndex + " --> ");
 				if (currentExcelSheet.getRow(rowIndex) != null) {
 					Cell excelCell = currentExcelSheet.getRow(rowIndex).getCell(colIndex);
 					if (null != excelCell) {
-					//	System.out.println(excelCell.getStringCellValue());
+						// System.out.println(excelCell.getStringCellValue());
 						Simpleexcel.Cell simpleCell = SimpleexcelFactory.eINSTANCE.createCell();
+
 						// TODO : need to make this flexible to make it read every possible cell values
-						simpleCell.setText(excelCell.getStringCellValue());
+						@SuppressWarnings("deprecation")
+						CellType cellType = excelCell.getCellTypeEnum();
+
+						// String cell
+						if (cellType == CellType.STRING) {
+							simpleCell.setCellType("STRING");
+							simpleCell.setText(excelCell.getStringCellValue());
+						} else {
+							// Numeric Cell
+							if (cellType == CellType.NUMERIC) {
+								simpleCell.setCellType("NUMERIC");
+								simpleCell.setText(Math.round(excelCell.getNumericCellValue())+"");
+							}
+						}
+
 						String comment = excelCell.getCellComment() != null
 								? excelCell.getCellComment().getString().toString()
 								: "";

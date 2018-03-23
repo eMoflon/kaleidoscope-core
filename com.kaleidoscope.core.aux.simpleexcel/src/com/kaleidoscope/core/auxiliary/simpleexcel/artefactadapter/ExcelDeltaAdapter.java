@@ -5,7 +5,6 @@ package com.kaleidoscope.core.auxiliary.simpleexcel.artefactadapter;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -211,6 +210,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	 * @param Row
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private Sheet getSheetFromCol(Column col) {
 		if (col.getSheet() != null)
 			return col.getSheet();
@@ -466,8 +466,8 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			excelOperationsBean = new ExcelOperationsBean();
 			excelOperationsBean.setOperationName("ADD_ROW_CELL_EDGE");
 			HashMap<String, String> innerMap = new HashMap<String, String>();
+			
 			excelOperationsBean.setOperationDetails(innerMap);
-
 		}
 
 		return excelOperationsBean;

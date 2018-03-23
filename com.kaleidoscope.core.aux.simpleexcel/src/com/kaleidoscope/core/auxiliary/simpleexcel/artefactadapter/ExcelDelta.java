@@ -15,14 +15,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.antlr.grammar.v3.ANTLRParser.throwsSpec_return;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -66,14 +64,14 @@ public class ExcelDelta {
 
 				if (fileName != null && !fileName.equals("")) {
 					if (filePath != null && !filePath.equals("")) {
-						this.filePath = Paths.get(filePath + "\\" + fileName);
+						this.setFilePath(Paths.get(filePath + "\\" + fileName));
 					} else {
-						this.filePath = Paths.get(fileName);
+						this.setFilePath(Paths.get(fileName));
 					}
 				}
 
 			} else {
-				this.filePath = null;
+				this.setFilePath(null);
 			}
 		}
 		splitOperations();
@@ -148,6 +146,10 @@ public class ExcelDelta {
 				cellOperation("CHANGE_ATTR_CELL", excelOperationsBean.getOperationDetails());
 				break;
 
+			case "ADD_ROW_CELL_EDGE":
+				cellOperation("ADD_ROW_CELL_EDGE", excelOperationsBean.getOperationDetails());
+				break;
+				
 			default:
 				System.out.println("OPERATION NOT FOUND IN EXCEL API");
 				break;
@@ -174,7 +176,7 @@ public class ExcelDelta {
 			break;
 
 		default:
-			throw new ExcelException("This operation is not supported...");
+			//throw new ExcelException("This operation is not supported...");
 			// break;
 		}
 	}
@@ -185,6 +187,7 @@ public class ExcelDelta {
 	 * @param operationDetails
 	 * @throws ExcelException
 	 */
+	@SuppressWarnings("deprecation")
 	private void addCell(HashMap<String, String> operationDetails) throws ExcelException {
 		String sheetName = "";
 		int rowIndex = 0;
@@ -205,6 +208,8 @@ public class ExcelDelta {
 		} else
 			throw new ExcelException("Column Index to be modified not found for the cell");
 
+		System.out.println("Adding cell at: Row : "+ rowIndex + " , ColIndex : "+ colIndex);
+		
 		try {
 			File file = null;
 			if (null != fileName || !fileName.isEmpty()) {
@@ -255,6 +260,7 @@ public class ExcelDelta {
 	 * @param operationDetails
 	 * @throws ExcelException
 	 */
+	@SuppressWarnings("deprecation")
 	private void changeAttributeCell(HashMap<String, String> operationDetails) throws ExcelException {
 		String attributeName = "";
 		int rowIndex = 0;
@@ -390,6 +396,7 @@ public class ExcelDelta {
 	 * @param object
 	 * @throws ExcelException
 	 */
+	@SuppressWarnings("unchecked")
 	private void rowOperation(String string, Object object) throws ExcelException {
 		switch (string) {
 		case "ADD_ROW":
@@ -410,6 +417,7 @@ public class ExcelDelta {
 	 * @param object
 	 * @throws ExcelException
 	 */
+	@SuppressWarnings("deprecation")
 	private void addRow(HashMap<String, String> object) throws ExcelException {
 		HashMap<String, String> rowDataMap = object;
 		String color = "";
@@ -449,7 +457,7 @@ public class ExcelDelta {
 				FileOutputStream fileOutputStream = new FileOutputStream(file);
 				workbook.write(fileOutputStream);
 				fileOutputStream.close();
-
+				workbook.close();
 			} else {
 				throw new ExcelException("FILE NOT FOUND..");
 			}
@@ -522,6 +530,7 @@ public class ExcelDelta {
 				FileOutputStream fileOutputStream = new FileOutputStream(file);
 				workbook.write(fileOutputStream);
 				fileOutputStream.close();
+				workbook.close();
 			} else {
 				throw new ExcelException("FILE NOT FOUND..");
 			}
@@ -556,6 +565,7 @@ public class ExcelDelta {
 				FileOutputStream fileOutputStream = new FileOutputStream(file);
 				workbook.write(fileOutputStream);
 				fileOutputStream.close();
+				workbook.close();
 			} else {
 				throw new ExcelException("FILE NOT FOUND..");
 			}
@@ -595,8 +605,11 @@ public class ExcelDelta {
 	 * @param object
 	 * @throws ExcelException
 	 */
+	@SuppressWarnings("unchecked")
 	private void fileOperation(String string, Object object) throws ExcelException {
-		HashMap<String, Object> fileDataMap = (HashMap<String, Object>) object;
+		HashMap<String, Object> fileDataMap = null;
+		if(object instanceof HashMap<?, ?>)
+			fileDataMap = (HashMap<String, Object>) object;
 		String fileName = "";
 		String filePath = "";
 		if (null != fileDataMap) {
@@ -645,10 +658,19 @@ public class ExcelDelta {
 				FileOutputStream fileOutputStream = new FileOutputStream(file);
 				xssfWorkbook.write(fileOutputStream);
 				fileOutputStream.close();
+				xssfWorkbook.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 		}
+	}
+
+	public Path getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(Path filePath) {
+		this.filePath = filePath;
 	}
 }

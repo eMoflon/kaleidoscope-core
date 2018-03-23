@@ -6,6 +6,7 @@ package com.kaleidoscope.core.auxiliary.simpletree.artefactadapter.XML;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.xml.parsers.SAXParser;
@@ -28,13 +29,14 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 
 	private final static Logger logger = Logger.getLogger(XMLArtefactAdapter.class);
 
-	public static final String DEFAULT_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n <?eclipse version=\"3.0\"?>\r\n";
+	public static final String DEFAULT_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n<?eclipse version=\"3.0\"?>\r\n";
 	
 	// Simple tree model in memory
 	private Optional<TreeElement> model;
 	
 	// Location of corresponding artefact
 	private Path path;
+	private Path pathTest;
 	
 	// Header for (un)parsed XML file
 	private String header;
@@ -58,9 +60,11 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 			saxParser = factory.newSAXParser();
 			XMLHandler handler = new XMLHandler();
 			saxParser.parse(path.toAbsolutePath().toString(), handler);
-			Node root = handler.getRoot();
-			if (null != root)
-				setModel(root);
+			Node rootNode = handler.getRoot();
+			Simpletree.File rootFile = SimpletreeFactory.eINSTANCE.createFile();
+			rootFile.setName(path.toAbsolutePath().toString());
+			rootFile.setRootNode(rootNode);
+			setModel(rootFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

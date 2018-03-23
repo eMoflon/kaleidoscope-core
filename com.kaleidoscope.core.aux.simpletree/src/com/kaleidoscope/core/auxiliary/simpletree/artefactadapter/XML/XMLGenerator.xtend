@@ -1,6 +1,7 @@
 package com.kaleidoscope.core.auxiliary.simpletree.artefactadapter.XML;
 
 import Simpletree.Node
+import Simpletree.Text
 
 class XMLGenerator {
 
@@ -9,10 +10,13 @@ class XMLGenerator {
 	}
 
 	def String generate(Node node) '''
-		<«node.name»«generateAttributes(node)»«IF (node.children.size==0)» "/>"
-		«ELSE»
+		<«node.name»«generateAttributes(node)»«IF (node.children.size==0)» />«ELSE»>
 			«FOR child : node.children»
-				«generate(child as Node)»
+				«IF (child instanceof Node)»«generate(child as Node)»
+				«ELSE»«FOR childInner : node.children»
+			«IF (child instanceof Text)»«childInner.name»«ENDIF»
+				«ENDFOR»
+				«ENDIF»
 			«ENDFOR»
 		</«node.getName()»>
 		«ENDIF»

@@ -46,7 +46,7 @@ public class XMLHandler extends DefaultHandler {
 		// LabelledGraphlanguage.Attribute
 		for (int i = 0; i < attributes.getLength(); i++) {
 			Simpletree.Attribute attribute = SimpletreeFactory.eINSTANCE.createAttribute();
-			attribute.setName(attributes.getLocalName(i));
+			attribute.setName(attributes.getQName(i));
 			attribute.setValue(attributes.getValue(i));
 			attribute.setIndex(node.getAttribute().size());
 			node.getAttribute().add(attribute);

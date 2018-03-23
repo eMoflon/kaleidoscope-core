@@ -6,6 +6,7 @@ package com.kaleidoscope.core.auxiliary.simpletree.artefactadapter.XML;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.xml.parsers.SAXParser;
@@ -18,22 +19,25 @@ import com.google.common.io.Files;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
 import Simpletree.Node;
+import Simpletree.SimpletreeFactory;
+import Simpletree.TreeElement;
 
 /**
  * @author Srijani
  *
  */
-public class XMLArtefactAdapter implements ArtefactAdapter<Node, Path> {
+public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 
 	private final static Logger logger = Logger.getLogger(XMLArtefactAdapter.class);
 
-	public static final String DEFAULT_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n <?eclipse version=\"3.0\"?>\r\n";
+	public static final String DEFAULT_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n<?eclipse version=\"3.0\"?>\r\n";
 	
 	// Simple tree model in memory
-	private Optional<Node> model;
+	private Optional<TreeElement> model;
 	
 	// Location of corresponding artefact
 	private Path path;
+	private Path pathTest;
 	
 	// Header for (un)parsed XML file
 	private String header;
@@ -57,9 +61,11 @@ public class XMLArtefactAdapter implements ArtefactAdapter<Node, Path> {
 			saxParser = factory.newSAXParser();
 			XMLHandler handler = new XMLHandler();
 			saxParser.parse(path.toAbsolutePath().toString(), handler);
-			Node root = handler.getRoot();
-			if (null != root)
-				setModel(root);
+			Node rootNode = handler.getRoot();
+			Simpletree.File rootFile = SimpletreeFactory.eINSTANCE.createFile();
+			rootFile.setName(path.toAbsolutePath().toString());
+			rootFile.setRootNode(rootNode);
+			setModel(rootFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -72,16 +78,17 @@ public class XMLArtefactAdapter implements ArtefactAdapter<Node, Path> {
 		XMLGenerator generateXML = new XMLGenerator();
 
 		try {
-			final File file = path.toFile();
-			Node toUnparse = model.orElseThrow(() -> new IllegalStateException("There is no model to unparse!  Please set a model first."));
-			Files.write(generateXML.generate(toUnparse, header), file, Charsets.UTF_8);
+			pathTest = Paths.get("C:\\Users\\Srijani\\Desktop\\TestXMLDocResult.xml");
+			final File file = pathTest.toFile();
+			TreeElement toUnparse = model.orElseThrow(() -> new IllegalStateException("There is no model to unparse!  Please set a model first."));
+			Files.write(generateXML.generate((Node) ((Simpletree.File)toUnparse).getRootNode(), header), file, Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void setModel(Node m) {
+	public void setModel(TreeElement m) {
 		model = Optional.of(m);
 	}
 
@@ -91,7 +98,7 @@ public class XMLArtefactAdapter implements ArtefactAdapter<Node, Path> {
 	}
 
 	@Override
-	public Optional<Node> getModel() {
+	public Optional<TreeElement> getModel() {
 		return model;
 	}
 

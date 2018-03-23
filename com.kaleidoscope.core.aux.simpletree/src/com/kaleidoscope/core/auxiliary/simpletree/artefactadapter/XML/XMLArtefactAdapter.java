@@ -6,7 +6,6 @@ package com.kaleidoscope.core.auxiliary.simpletree.artefactadapter.XML;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.xml.parsers.SAXParser;
@@ -19,6 +18,7 @@ import com.google.common.io.Files;
 import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
 import Simpletree.Node;
+import Simpletree.SimpletreeFactory;
 import Simpletree.TreeElement;
 
 /**

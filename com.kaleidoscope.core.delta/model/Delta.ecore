@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="Delta" nsURI="platform:/plugin/com.kaleidoscope.core.delta/model/Delta.ecore"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="Delta" nsURI="platform:/resource/com.kaleidoscope.core.delta/model/Delta.ecore"
     nsPrefix="Delta">
   <eClassifiers xsi:type="ecore:EClass" name="Edge">
     <eStructuralFeatures xsi:type="ecore:EReference" name="src" lowerBound="1" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>

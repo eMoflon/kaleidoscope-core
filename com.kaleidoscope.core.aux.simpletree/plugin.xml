@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?><plugin>
   <extension point="org.eclipse.emf.ecore.generated_package">
-    <package class="Simpletree.SimpletreePackage" genModel="model/Simpletree.genmodel" uri="platform:/plugin/com.kaleidoscope.core.aux.simpletree/model/Simpletree.ecore"/>
+    <package class="Simpletree.SimpletreePackage" genModel="model/Simpletree.genmodel" uri="platform:/resource/com.kaleidoscope.core.aux.simpletree/model/Simpletree.ecore"/>
   </extension>
 </plugin>

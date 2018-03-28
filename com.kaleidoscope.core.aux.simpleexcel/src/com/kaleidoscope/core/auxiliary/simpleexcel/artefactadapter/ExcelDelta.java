@@ -64,7 +64,7 @@ public class ExcelDelta {
 
 				if (fileName != null && !fileName.equals("")) {
 					if (filePath != null && !filePath.equals("")) {
-						this.setFilePath(Paths.get(filePath + "\\" + fileName));
+						this.setFilePath(Paths.get(filePath + "/" + fileName));
 					} else {
 						this.setFilePath(Paths.get(fileName));
 					}
@@ -646,11 +646,11 @@ public class ExcelDelta {
 	 * @throws ExcelException
 	 */
 	private void createFile(String fileName, String filePath) throws ExcelException {
-		File file = new File(filePath + "\\" + fileName);
+		File file = new File(filePath + "/" + fileName);
 		if (file.exists()) {
 			throw new ExcelException("File already exists!");
 		} else {
-			this.file = filePath + "\\" + fileName;
+			this.file = filePath + "/" + fileName;
 			System.out.println("Creating new file...");
 			XSSFWorkbook xssfWorkbook = new XSSFWorkbook();
 

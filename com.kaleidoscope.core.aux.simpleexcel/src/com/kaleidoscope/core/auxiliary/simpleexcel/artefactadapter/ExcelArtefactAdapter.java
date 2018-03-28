@@ -16,7 +16,6 @@ import Simpleexcel.Column;
 import Simpleexcel.File;
 import Simpleexcel.Row;
 import Simpleexcel.Sheet;
-import Simpleexcel.SimpleexcelFactory;
 import Simpleexcel.SimpleexcelPackage;
 
 /**
@@ -51,172 +50,6 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	}
 
 	/**
-	 * Test method: alternate input for operational delta with existing file
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unused")
-	private OperationalDelta generateOperationalDeltaForFile1() {
-		// OperationalDelta initialize
-		OperationalDelta opDelta = new OperationalDelta();
-
-		// get File name
-		Optional<File> m = getModel();
-		File file = m.get();
-
-		// iterate through all the sheets in a file
-		for (int sheetCount = 0; sheetCount < file.getSheet().size(); sheetCount++) {
-			Sheet sheet = m.get().getSheet().get(sheetCount);
-			opDelta.addEdgeOp(new JavaBasedEdge(file, sheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
-
-			// edit an existing cell in sheet- Sheet to edit
-			if (sheet.getSheetName().equals("Sheet to edit")) {
-				// identify starting row
-				Row startRow = null;
-				for (int rowCounter = 0; rowCounter < sheet.getRowobject().size(); rowCounter++) {
-					if (sheet.getRowobject().get(rowCounter).getPrevRow() == null) {
-						startRow = sheet.getRowobject().get(rowCounter);
-						break;
-					}
-				}
-
-				// identify starting column
-				Column startColumn = null;
-				for (int colCounter = 0; colCounter < sheet.getRowobject().size(); colCounter++) {
-					if (sheet.getColobject().get(colCounter).getPrevColumn() == null) {
-						startColumn = sheet.getColobject().get(colCounter);
-						break;
-					}
-				}
-
-				// append a new row - with color and 2 cells in thet row (in col 1 and col4)
-				Row rowToAdd = SimpleexcelFactory.eINSTANCE.createRow();
-				rowToAdd.setBackgroundColor("#FF0000");
-				int rowIndex = 1;
-				Row tempRow = startRow;
-				opDelta.addNodeOp(rowToAdd);
-				opDelta.addEdgeOp(
-						new JavaBasedEdge(sheet, rowToAdd, SimpleexcelPackage.eINSTANCE.getSheet_Rowobject()));
-				while (tempRow != null) {
-					if (tempRow.getNextRow() == null) {
-						tempRow.setNextRow(rowToAdd);
-						break;
-					}
-					tempRow = tempRow.getNextRow();
-					rowIndex++;
-				}
-
-				// edit a cell (1,1)
-				int cellRowIndex = 1;
-				int cellColIndex = 1;
-				tempRow = startRow;
-				rowIndex = 0;
-				while (tempRow != null) {
-					Column tempCol = startColumn;
-					int colIndex = 0;
-					while (tempCol != null) {
-						if (rowIndex == cellRowIndex && colIndex == cellColIndex) {
-							Simpleexcel.Cell cellToEdit = tempRow.getCell().get(colIndex);
-							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_Text(), "Edited cell",
-									cellToEdit, "Cell to edit");
-							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_BackgroundColor(), "#00FF00",
-									cellToEdit);
-							opDelta.changeAttributeOp(SimpleexcelPackage.eINSTANCE.getCell_CellComments(),
-									"This is a test comment", cellToEdit);
-						}
-						tempCol = tempCol.getNextColumn();
-						colIndex++;
-
-					}
-					tempRow = tempRow.getNextRow();
-					rowIndex++;
-				}
-
-				// add a cell (6,3) to existing row
-				cellRowIndex = 6;
-				cellColIndex = 3;
-				tempRow = startRow;
-				rowIndex = 0;
-				while (tempRow != null) {
-					Column tempCol = startColumn;
-					int colIndex = 0;
-					while (tempCol != null) {
-						if (rowIndex == cellRowIndex && colIndex == cellColIndex) {
-							Cell addCell = SimpleexcelFactory.eINSTANCE.createCell();
-							addCell.setText("Added cell to existing row");
-							opDelta.addNodeOp(addCell);
-							opDelta.addEdgeOp(
-									new JavaBasedEdge(tempRow, addCell, SimpleexcelPackage.eINSTANCE.getRow_Cell()));
-							opDelta.addEdgeOp(
-									new JavaBasedEdge(tempCol, addCell, SimpleexcelPackage.eINSTANCE.getColumn_Cell()));
-						}
-						tempCol = tempCol.getNextColumn();
-						colIndex++;
-					}
-					tempRow = tempRow.getNextRow();
-					rowIndex++;
-				}
-
-				// add a cell (10,6) to new row
-				cellRowIndex = 10;
-				cellColIndex = 6;
-
-				tempRow = startRow;
-				rowIndex = 0;
-				while (tempRow != null) {
-					Column tempCol = startColumn;
-					int colIndex = 0;
-					while (tempCol != null) {
-						if (rowIndex == cellRowIndex && colIndex == cellColIndex) {
-							Cell addCell = SimpleexcelFactory.eINSTANCE.createCell();
-							addCell.setText("Added cell to new row");
-							addCell.setBackgroundColor("#FF0000");
-							opDelta.addNodeOp(addCell);
-							opDelta.addEdgeOp(
-									new JavaBasedEdge(tempRow, addCell, SimpleexcelPackage.eINSTANCE.getRow_Cell()));
-							opDelta.addEdgeOp(
-									new JavaBasedEdge(tempCol, addCell, SimpleexcelPackage.eINSTANCE.getColumn_Cell()));
-							break;
-						}
-						if (tempCol.getNextColumn() == null && colIndex < cellColIndex) {
-							Column col = SimpleexcelFactory.eINSTANCE.createColumn();
-							col.setPrevColumn(tempCol);
-							opDelta.addNodeOp(col);
-							opDelta.addEdgeOp(
-									new JavaBasedEdge(sheet, col, SimpleexcelPackage.eINSTANCE.getSheet_Colobject()));
-							System.out.println("ADDED ONE COL");
-						}
-						tempCol = tempCol.getNextColumn();
-						colIndex++;
-					}
-					if (tempRow.getNextRow() == null && rowIndex < cellRowIndex) {
-						Row row = SimpleexcelFactory.eINSTANCE.createRow();
-						row.setPrevRow(tempRow);
-						opDelta.addNodeOp(row);
-						opDelta.addEdgeOp(
-								new JavaBasedEdge(sheet, row, SimpleexcelPackage.eINSTANCE.getSheet_Rowobject()));
-						System.out.println("ADDED ONE ROW");
-					}
-					tempRow = tempRow.getNextRow();
-					rowIndex++;
-				}
-
-				System.out.println();
-
-			}
-		}
-
-		// add new Sheet Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
-
-		Sheet newSheet = SimpleexcelFactory.eINSTANCE.createSheet();
-		newSheet.setSheetName("Sheet to Add");
-		opDelta.addNodeOp(newSheet);
-		opDelta.addEdgeOp(new JavaBasedEdge(file, newSheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
-
-		return opDelta;
-	}
-
-	/**
 	 * Generate operational delta for new file
 	 * 
 	 * @return
@@ -232,8 +65,9 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 
 		// add file node
 		File file = m.get();
-		file.setFileName("TestExcelDocResult.xlsx");
-		file.setPath("C:\\Users\\Srijani\\Desktop\\");
+		file.setPath(path.subpath(0, path.getNameCount() - 1).toString());
+		file.setFileName(path.getFileName().toString());
+		
 		opDelta.addNodeOp(file);
 
 		// iterate through all the sheets in a file

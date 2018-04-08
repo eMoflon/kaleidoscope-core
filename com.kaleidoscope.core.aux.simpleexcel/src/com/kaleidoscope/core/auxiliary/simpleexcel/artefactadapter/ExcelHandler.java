@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -280,14 +282,14 @@ public class ExcelHandler {
 						if (cellType == CellType.STRING) {
 							simpleCell.setCellType("STRING");
 							simpleCell.setText(excelCell.getStringCellValue());
-							System.out.print(rowIndex + " , " + colIndex + " --> " + excelCell.getStringCellValue());
+							System.out.println(rowIndex + " , " + colIndex + " --> " + excelCell.getStringCellValue());
 						} else {
 							// Numeric Cell
 							if (cellType == CellType.NUMERIC) {
 								simpleCell.setCellType("NUMERIC");
 								simpleCell.setText(Math.round(excelCell.getNumericCellValue()) + "");
 								System.out
-										.print(rowIndex + " , " + colIndex + " --> " + excelCell.getNumericCellValue());
+										.println(rowIndex + " , " + colIndex + " --> " + excelCell.getNumericCellValue());
 							}
 						}
 
@@ -301,9 +303,8 @@ public class ExcelHandler {
 						XSSFColor xssfColor = (XSSFColor) excelCell.getCellStyle().getFillForegroundColorColor();
 						if (xssfColor != null) {
 							String argbHex = xssfColor.getARGBHex();
-							// System.out.println("row:" + rowIndex + ",col:" + colIndex + " color: " +
-							// argbHex);
-							simpleCell.setBackgroundColor(argbHex);
+							 System.out.println("|| row:" + rowIndex + ",col:" + colIndex + " color: " + getrgbFromArgbHex(argbHex));
+							simpleCell.setBackgroundColor(getrgbFromArgbHex(argbHex));
 						}
 						
 
@@ -325,7 +326,7 @@ public class ExcelHandler {
 
 				tempCol = tempCol.getNextColumn();
 				colIndex++;
-				System.out.println();
+				//System.out.println();
 
 			}
 			tempRow = tempRow.getNextRow();
@@ -333,6 +334,11 @@ public class ExcelHandler {
 		}
 
 		return currentSimpleSheet;
+	}
+
+	private String getrgbFromArgbHex(String argbHex) {
+		String rgb = argbHex.substring(2);
+		return "#"+rgb;
 	}
 
 }

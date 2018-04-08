@@ -618,7 +618,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		// printOperationsFromList(operations, "Original List");
 
 		for (Operation operation : operations) {
-			System.out.println(operation);
+			//System.out.println(operation);
 
 			if (operation instanceof AddNodeOp)
 				classifyAddNodeOps(operation);
@@ -834,23 +834,23 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	 * @param string
 	 */
 	private void printOperationsFromList(List<Operation> operations2, String string) {
-		System.out.println("Printing list : " + string);
+		//System.out.println("Printing list : " + string);
 
 		for (Operation operation : operations2) {
 
 			if (operation instanceof AddNodeOp) {
-				System.out.println("--> Add Node --> " + ((AddNodeOp) operation).getNode());
+				//System.out.println("--> Add Node --> " + ((AddNodeOp) operation).getNode());
 			} else {
 				if (operation instanceof AddEdgeOp) {
-					System.out.println("--> Add Edge --> " + ((AddEdgeOp) operation).getEdge().getSrc() + " => "
-							+ ((AddEdgeOp) operation).getEdge().getTrg());
+					//System.out.println("--> Add Edge --> " + ((AddEdgeOp) operation).getEdge().getSrc() + " => "
+						//	+ ((AddEdgeOp) operation).getEdge().getTrg());
 				} else {
 					if (operation instanceof DeleteNodeOp) {
-						System.out.println("--> Delete Node --> " + ((DeleteNodeOp) operation).getNode());
+						//System.out.println("--> Delete Node --> " + ((DeleteNodeOp) operation).getNode());
 					} else {
 						if (operation instanceof DeleteEdgeOp) {
-							System.out.println("--> Delete Node --> " + ((DeleteEdgeOp) operation).getEdge().getSrc()
-									+ " => " + ((DeleteEdgeOp) operation).getEdge().getTrg());
+							//System.out.println("--> Delete Node --> " + ((DeleteEdgeOp) operation).getEdge().getSrc()
+								//	+ " => " + ((DeleteEdgeOp) operation).getEdge().getTrg());
 						}
 					}
 				}

@@ -83,7 +83,7 @@ public class ExcelDelta {
 	private void splitOperations() {
 		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
 			String opName = excelOperationsBean.getOperationName();
-			System.out.println(opName);
+			//System.out.println(opName);
 			// ADD EDGE
 			if (opName.startsWith("ADD_") && opName.endsWith("_EDGE")) {
 				excelOperationsAddEdges.add(excelOperationsBean);
@@ -120,7 +120,7 @@ public class ExcelDelta {
 	public void execute() throws ExcelException {
 		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
 			String operationName = excelOperationsBean.getOperationName();
-			System.out.println(operationName);
+			//System.out.println(operationName);
 			switch (operationName) {
 			case "ADD_FILE":
 				fileOperation("ADD_FILE", excelOperationsBean.getOperationDetails());
@@ -151,7 +151,7 @@ public class ExcelDelta {
 				break;
 				
 			default:
-				System.out.println("OPERATION NOT FOUND IN EXCEL API");
+				System.out.println(operationName +" : OPERATION NOT FOUND IN EXCEL API");
 				break;
 			}
 		}
@@ -208,7 +208,7 @@ public class ExcelDelta {
 		} else
 			throw new ExcelException("Column Index to be modified not found for the cell");
 
-		System.out.println("Adding cell at: Row : "+ rowIndex + " , ColIndex : "+ colIndex);
+		//System.out.println("Adding cell at: Row : "+ rowIndex + " , ColIndex : "+ colIndex);
 		
 		try {
 			File file = null;
@@ -651,10 +651,12 @@ public class ExcelDelta {
 			System.out.println("File Already Exists.. \n Removing the old file and creating a new one");
 			file.delete();
 		}
-		
+		else {
+			System.out.println("Creating new file...");
+		}
 
 		this.file = filePath + "/" + fileName;
-		System.out.println("Creating new file...");
+		
 		XSSFWorkbook xssfWorkbook = new XSSFWorkbook();
 
 		try {

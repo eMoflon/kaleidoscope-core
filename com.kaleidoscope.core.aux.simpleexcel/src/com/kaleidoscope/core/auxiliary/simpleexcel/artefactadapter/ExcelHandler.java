@@ -268,14 +268,11 @@ public class ExcelHandler {
 			Column tempCol = firstColumn;
 			int colIndex = 0;
 			while (tempCol != null) {
-				// System.out.print(rowIndex + " , " + colIndex + " --> ");
+
 				if (currentExcelSheet.getRow(rowIndex) != null) {
 					Cell excelCell = currentExcelSheet.getRow(rowIndex).getCell(colIndex);
+					Simpleexcel.Cell simpleCell = SimpleexcelFactory.eINSTANCE.createCell();
 					if (null != excelCell) {
-						// System.out.println(excelCell.getStringCellValue());
-						Simpleexcel.Cell simpleCell = SimpleexcelFactory.eINSTANCE.createCell();
-
-						// TODO : need to make this flexible to make it read every possible cell values
 						@SuppressWarnings("deprecation")
 						CellType cellType = excelCell.getCellTypeEnum();
 
@@ -283,11 +280,14 @@ public class ExcelHandler {
 						if (cellType == CellType.STRING) {
 							simpleCell.setCellType("STRING");
 							simpleCell.setText(excelCell.getStringCellValue());
+							System.out.print(rowIndex + " , " + colIndex + " --> " + excelCell.getStringCellValue());
 						} else {
 							// Numeric Cell
 							if (cellType == CellType.NUMERIC) {
 								simpleCell.setCellType("NUMERIC");
-								simpleCell.setText(Math.round(excelCell.getNumericCellValue())+"");
+								simpleCell.setText(Math.round(excelCell.getNumericCellValue()) + "");
+								System.out
+										.print(rowIndex + " , " + colIndex + " --> " + excelCell.getNumericCellValue());
 							}
 						}
 
@@ -301,19 +301,25 @@ public class ExcelHandler {
 						XSSFColor xssfColor = (XSSFColor) excelCell.getCellStyle().getFillForegroundColorColor();
 						if (xssfColor != null) {
 							String argbHex = xssfColor.getARGBHex();
-							System.out.println("row:" + rowIndex + ",col:" + colIndex + " color: " + argbHex);
+							// System.out.println("row:" + rowIndex + ",col:" + colIndex + " color: " +
+							// argbHex);
 							simpleCell.setBackgroundColor(argbHex);
 						}
-						// add to row
-						tempRow.getCell().add(simpleCell);
-						simpleCell.setRow(tempRow);
-						// add to col
-						tempCol.getCell().add(simpleCell);
-						simpleCell.setColumn(tempCol);
-						// add to sheet
-						currentSimpleSheet.getCell().add(simpleCell);
+						
 
+					} else if (colIndex <= currentSimpleSheet.getColobject().size()
+							&& rowIndex <= currentSimpleSheet.getRowobject().size()) {
+						simpleCell.setCellType("BLANK");
 					}
+					
+					// add to row
+					tempRow.getCell().add(simpleCell);
+					simpleCell.setRow(tempRow);
+					// add to col
+					tempCol.getCell().add(simpleCell);
+					simpleCell.setColumn(tempCol);
+					// add to sheet
+					currentSimpleSheet.getCell().add(simpleCell);
 
 				}
 

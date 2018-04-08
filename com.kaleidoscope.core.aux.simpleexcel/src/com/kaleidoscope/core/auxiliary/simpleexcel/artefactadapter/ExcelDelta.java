@@ -648,22 +648,25 @@ public class ExcelDelta {
 	private void createFile(String fileName, String filePath) throws ExcelException {
 		File file = new File(filePath + "/" + fileName);
 		if (file.exists()) {
-			throw new ExcelException("File already exists!");
-		} else {
-			this.file = filePath + "/" + fileName;
-			System.out.println("Creating new file...");
-			XSSFWorkbook xssfWorkbook = new XSSFWorkbook();
-
-			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(file);
-				xssfWorkbook.write(fileOutputStream);
-				fileOutputStream.close();
-				xssfWorkbook.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+			System.out.println("File Already Exists.. \n Removing the old file and creating a new one");
+			file.delete();
 		}
+		
+
+		this.file = filePath + "/" + fileName;
+		System.out.println("Creating new file...");
+		XSSFWorkbook xssfWorkbook = new XSSFWorkbook();
+
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(file);
+			xssfWorkbook.write(fileOutputStream);
+			fileOutputStream.close();
+			xssfWorkbook.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	
 	}
 
 	public Path getFilePath() {

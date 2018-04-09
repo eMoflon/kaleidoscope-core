@@ -166,7 +166,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			}
 		}
 
-		return excelOperationsBean; 
+		return excelOperationsBean;
 	}
 
 	/**
@@ -466,7 +466,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			excelOperationsBean = new ExcelOperationsBean();
 			excelOperationsBean.setOperationName("ADD_ROW_CELL_EDGE");
 			HashMap<String, String> innerMap = new HashMap<String, String>();
-			
+
 			excelOperationsBean.setOperationDetails(innerMap);
 		}
 
@@ -536,7 +536,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 			excelOperationsBean.setOperationDetails(innerMap);
 		}
 
-		// ============== ADD ROW ================= 
+		// ============== ADD ROW =================
 		if (((AddNodeOp) operation).getNode() instanceof Row) {
 			Row addNode = (Row) ((AddNodeOp) operation).getNode();
 			excelOperationsBean = new ExcelOperationsBean();
@@ -570,6 +570,14 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 				innerMap.put("CELL_COMMENTS", changedCell.getCellComments());
 			if (changedCell.getBackgroundColor() != null)
 				innerMap.put("CELL_COLORS", changedCell.getBackgroundColor());
+			if (changedCell.getFontSize() != 0)
+				innerMap.put("CELL_FONT_SIZE", changedCell.getFontSize() + "");
+			if(changedCell.getFontColor() !=null)
+				innerMap.put("CELL_FONT_COLOR", changedCell.getFontColor());
+			if(changedCell.getFontStyle() !=null)
+				innerMap.put("CELL_FONT_STYLE", changedCell.getFontStyle());
+			if(changedCell.getFontFamily() !=null)
+				innerMap.put("CELL_FONT_FAMILY", changedCell.getFontFamily());
 			innerMap.put("ROW_INDEX", rowIndex);
 			innerMap.put("COL_INDEX", colIndex);
 			innerMap.put("SHEET_NAME", getSheetFromCell(changedCell).getSheetName());
@@ -618,7 +626,7 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 		// printOperationsFromList(operations, "Original List");
 
 		for (Operation operation : operations) {
-			//System.out.println(operation);
+			// System.out.println(operation);
 
 			if (operation instanceof AddNodeOp)
 				classifyAddNodeOps(operation);
@@ -834,23 +842,26 @@ public class ExcelDeltaAdapter implements DeltaOutputAdapter<OperationalDelta, E
 	 * @param string
 	 */
 	private void printOperationsFromList(List<Operation> operations2, String string) {
-		//System.out.println("Printing list : " + string);
+		// System.out.println("Printing list : " + string);
 
 		for (Operation operation : operations2) {
 
 			if (operation instanceof AddNodeOp) {
-				//System.out.println("--> Add Node --> " + ((AddNodeOp) operation).getNode());
+				// System.out.println("--> Add Node --> " + ((AddNodeOp) operation).getNode());
 			} else {
 				if (operation instanceof AddEdgeOp) {
-					//System.out.println("--> Add Edge --> " + ((AddEdgeOp) operation).getEdge().getSrc() + " => "
-						//	+ ((AddEdgeOp) operation).getEdge().getTrg());
+					// System.out.println("--> Add Edge --> " + ((AddEdgeOp)
+					// operation).getEdge().getSrc() + " => "
+					// + ((AddEdgeOp) operation).getEdge().getTrg());
 				} else {
 					if (operation instanceof DeleteNodeOp) {
-						//System.out.println("--> Delete Node --> " + ((DeleteNodeOp) operation).getNode());
+						// System.out.println("--> Delete Node --> " + ((DeleteNodeOp)
+						// operation).getNode());
 					} else {
 						if (operation instanceof DeleteEdgeOp) {
-							//System.out.println("--> Delete Node --> " + ((DeleteEdgeOp) operation).getEdge().getSrc()
-								//	+ " => " + ((DeleteEdgeOp) operation).getEdge().getTrg());
+							// System.out.println("--> Delete Node --> " + ((DeleteEdgeOp)
+							// operation).getEdge().getSrc()
+							// + " => " + ((DeleteEdgeOp) operation).getEdge().getTrg());
 						}
 					}
 				}

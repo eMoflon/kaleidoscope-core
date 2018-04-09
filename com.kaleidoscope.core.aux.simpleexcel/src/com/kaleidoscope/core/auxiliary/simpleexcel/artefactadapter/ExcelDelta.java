@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -25,6 +26,7 @@ import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -83,7 +85,7 @@ public class ExcelDelta {
 	private void splitOperations() {
 		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
 			String opName = excelOperationsBean.getOperationName();
-			//System.out.println(opName);
+			// System.out.println(opName);
 			// ADD EDGE
 			if (opName.startsWith("ADD_") && opName.endsWith("_EDGE")) {
 				excelOperationsAddEdges.add(excelOperationsBean);
@@ -120,7 +122,7 @@ public class ExcelDelta {
 	public void execute() throws ExcelException {
 		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
 			String operationName = excelOperationsBean.getOperationName();
-			//System.out.println(operationName);
+			// System.out.println(operationName);
 			switch (operationName) {
 			case "ADD_FILE":
 				fileOperation("ADD_FILE", excelOperationsBean.getOperationDetails());
@@ -149,9 +151,9 @@ public class ExcelDelta {
 			case "ADD_ROW_CELL_EDGE":
 				cellOperation("ADD_ROW_CELL_EDGE", excelOperationsBean.getOperationDetails());
 				break;
-				
+
 			default:
-				System.out.println(operationName +" : OPERATION NOT FOUND IN EXCEL API");
+				System.out.println(operationName + " : OPERATION NOT FOUND IN EXCEL API");
 				break;
 			}
 		}
@@ -176,7 +178,7 @@ public class ExcelDelta {
 			break;
 
 		default:
-			//throw new ExcelException("This operation is not supported...");
+			// throw new ExcelException("This operation is not supported...");
 			// break;
 		}
 	}
@@ -208,8 +210,6 @@ public class ExcelDelta {
 		} else
 			throw new ExcelException("Column Index to be modified not found for the cell");
 
-		//System.out.println("Adding cell at: Row : "+ rowIndex + " , ColIndex : "+ colIndex);
-		
 		try {
 			File file = null;
 			if (null != fileName && !fileName.isEmpty()) {
@@ -229,17 +229,43 @@ public class ExcelDelta {
 				cell = sheetToEdit.getRow(rowIndex).createCell(colIndex);
 				if (operationDetails.containsKey("CELL_TEXT"))
 					cell.setCellValue(operationDetails.get("CELL_TEXT"));
-				if (operationDetails.containsKey("CELL_COLORS")) {
-					XSSFCellStyle style1 = workbook.createCellStyle();
-					Color rgb = hex2Rgb(operationDetails.get("CELL_COLORS"));
-					style1.setFillForegroundColor(new XSSFColor(rgb));
-					style1.setFillPattern(CellStyle.SOLID_FOREGROUND);
-					cell.setCellStyle(style1);
-					// cell.getRow().setRowStyle(style1);
-				}
+				
 				if (operationDetails.containsKey("CELL_COMMENTS")) {
 					createCellComment(cell, operationDetails.get("CELL_COMMENTS"), workbook);
 				}
+
+				XSSFCellStyle cellStyle = workbook.createCellStyle();
+				XSSFFont font = workbook.createFont();
+
+				if (operationDetails.containsKey("CELL_FONT_SIZE")) {
+					font.setFontHeightInPoints(Short.parseShort(operationDetails.get("CELL_FONT_SIZE")));
+				}
+				if (operationDetails.containsKey("CELL_FONT_FAMILY")) {
+					String fontName = operationDetails.get("CELL_FONT_FAMILY");
+					if(fontName!=null && !fontName.equals(""))
+						font.setFontName(operationDetails.get("CELL_FONT_FAMILY"));
+					
+				}
+				if (operationDetails.containsKey("CELL_FONT_STYLE")) {
+					if(operationDetails.get("CELL_FONT_STYLE").equalsIgnoreCase("bold"))
+						font.setBold(true);
+					if(operationDetails.get("CELL_FONT_STYLE").equalsIgnoreCase("italic"))
+						font.setItalic(true);
+				}
+				if (operationDetails.containsKey("CELL_FONT_COLOR")) {
+					System.out.println("Font color: "+ operationDetails.get("CELL_FONT_COLOR"));
+					Color rgb = hex2Rgb(operationDetails.get("CELL_FONT_COLOR"));
+					font.setColor(new XSSFColor(rgb));
+				}
+				cellStyle.setFont(font);
+				
+				if (operationDetails.containsKey("CELL_COLORS")) {
+					Color rgb = hex2Rgb(operationDetails.get("CELL_COLORS"));
+					cellStyle.setFillForegroundColor(new XSSFColor(rgb));
+					cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+				}
+				
+				cell.setCellStyle(cellStyle);
 
 				FileOutputStream fileOutputStream = new FileOutputStream(file);
 				workbook.write(fileOutputStream);
@@ -435,7 +461,7 @@ public class ExcelDelta {
 		String fileName = discoverFileName(sheetName);
 		try {
 			File file = null;
-			if (null != fileName && !fileName.isEmpty()) { 
+			if (null != fileName && !fileName.isEmpty()) {
 				file = new File(fileName);
 			} else
 				throw new ExcelException("File name can not be empty");
@@ -444,7 +470,7 @@ public class ExcelDelta {
 				final InputStream is = new FileInputStream(file);
 				XSSFWorkbook workbook = new XSSFWorkbook(is);
 				XSSFSheet sheetToEdit = workbook.getSheet(sheetName);
-				
+
 				Row newRow = sheetToEdit.createRow(sheetToEdit.getLastRowNum() + 1);
 				XSSFCellStyle style1 = workbook.createCellStyle();
 				if (color != null) {
@@ -608,7 +634,7 @@ public class ExcelDelta {
 	@SuppressWarnings("unchecked")
 	private void fileOperation(String string, Object object) throws ExcelException {
 		HashMap<String, Object> fileDataMap = null;
-		if(object instanceof HashMap<?, ?>)
+		if (object instanceof HashMap<?, ?>)
 			fileDataMap = (HashMap<String, Object>) object;
 		String fileName = "";
 		String filePath = "";
@@ -626,7 +652,7 @@ public class ExcelDelta {
 					throw new ExcelException("FILE PATH NOT READBLE...");
 			}
 		}
-		switch (string) { 
+		switch (string) {
 		case "ADD_FILE":
 			createFile(fileName, filePath);
 			break;
@@ -650,13 +676,12 @@ public class ExcelDelta {
 		if (file.exists()) {
 			System.out.println("File Already Exists.. \n Removing the old file and creating a new one");
 			file.delete();
-		}
-		else {
+		} else {
 			System.out.println("Creating new file...");
 		}
 
 		this.file = filePath + "/" + fileName;
-		
+
 		XSSFWorkbook xssfWorkbook = new XSSFWorkbook();
 
 		try {
@@ -668,7 +693,6 @@ public class ExcelDelta {
 			e.printStackTrace();
 		}
 
-	
 	}
 
 	public Path getFilePath() {

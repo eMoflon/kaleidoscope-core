@@ -15,10 +15,13 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FontFamily;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelConstants;
@@ -288,31 +291,47 @@ public class ExcelHandler {
 							if (cellType == CellType.NUMERIC) {
 								simpleCell.setCellType("NUMERIC");
 								simpleCell.setText(Math.round(excelCell.getNumericCellValue()) + "");
-								System.out
-										.println(rowIndex + " , " + colIndex + " --> " + excelCell.getNumericCellValue());
+								System.out.println(
+										rowIndex + " , " + colIndex + " --> " + excelCell.getNumericCellValue());
 							}
 						}
 
+						// add attributes to the cellObject
+						// comments
 						String comment = excelCell.getCellComment() != null
 								? excelCell.getCellComment().getString().toString()
 								: "";
-						// add attributes to the cellObject
 						if (!comment.equals("")) // ignore empty comments
 							simpleCell.setCellComments(comment);
+
+						// get cell font style
+						XSSFCellStyle cs = (XSSFCellStyle) excelCell.getCellStyle();
+						XSSFFont font = cs.getFont();
+						if (font.getXSSFColor() != null) {
+							simpleCell.setFontColor(getrgbFromArgbHex(font.getXSSFColor().getARGBHex()));
+							simpleCell.setFontFamily(font.getFontName());
+							simpleCell.setFontSize(font.getFontHeightInPoints());
+							if (font.getBold())
+								simpleCell.setFontStyle("bold");
+							if (font.getItalic())
+								simpleCell.setFontStyle("italic");
+
+						}
+							
 						// get cell colors
 						XSSFColor xssfColor = (XSSFColor) excelCell.getCellStyle().getFillForegroundColorColor();
 						if (xssfColor != null) {
 							String argbHex = xssfColor.getARGBHex();
-							 System.out.println("|| row:" + rowIndex + ",col:" + colIndex + " color: " + getrgbFromArgbHex(argbHex));
+							// System.out.println("|| row:" + rowIndex + ",col:" + colIndex + " color: " +
+							// getrgbFromArgbHex(argbHex));
 							simpleCell.setBackgroundColor(getrgbFromArgbHex(argbHex));
 						}
-						
 
 					} else if (colIndex <= currentSimpleSheet.getColobject().size()
 							&& rowIndex <= currentSimpleSheet.getRowobject().size()) {
 						simpleCell.setCellType("BLANK");
 					}
-					
+
 					// add to row
 					tempRow.getCell().add(simpleCell);
 					simpleCell.setRow(tempRow);
@@ -326,7 +345,7 @@ public class ExcelHandler {
 
 				tempCol = tempCol.getNextColumn();
 				colIndex++;
-				//System.out.println();
+				// System.out.println();
 
 			}
 			tempRow = tempRow.getNextRow();
@@ -338,7 +357,7 @@ public class ExcelHandler {
 
 	private String getrgbFromArgbHex(String argbHex) {
 		String rgb = argbHex.substring(2);
-		return "#"+rgb;
+		return "#" + rgb;
 	}
 
 }

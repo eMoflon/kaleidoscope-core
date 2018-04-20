@@ -65,7 +65,15 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 
 		// add file node
 		File file = m.get();
-		file.setPath(path.subpath(0, path.getNameCount() - 1).toString());
+		
+		// for windows
+		if(System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("windows")) {
+			file.setPath(path.toString().substring(0, path.toString().lastIndexOf("\\")));
+		}
+		//for other OS
+		else {
+			file.setPath(path.subpath(0, path.getNameCount() - 1).toString());
+		}
 		file.setFileName(path.getFileName().toString());
 		
 		opDelta.addNodeOp(file);

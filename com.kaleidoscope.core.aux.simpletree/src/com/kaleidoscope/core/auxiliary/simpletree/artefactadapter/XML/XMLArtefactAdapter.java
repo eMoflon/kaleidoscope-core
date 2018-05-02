@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -46,6 +47,12 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 	// Header for (un)parsed XML file
 	private String header;
 
+	// map for plugins
+	private HashMap<String, String> mapForPlugins = new HashMap<String, String>();
+
+	// list for plugins
+	private List<String> pluginList = new ArrayList<String>();
+
 	public XMLArtefactAdapter(Path path, String header) {
 		this.path = path;
 		this.model = Optional.empty();
@@ -67,7 +74,7 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 			String stringPath = path.toAbsolutePath().toString();
 			System.out.println(stringPath);
 
-			// check if the patha exists
+			// check if the path exists
 			if (java.nio.file.Files.exists(path)) {
 				// check if folder or file
 				// if folder
@@ -93,50 +100,138 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 	 * @param handler
 	 */
 	private void readXMLFileFromFolder(SAXParser saxParser, File folder) {
-		// create folder structure
-		String[] folderNameArray = folder.getAbsolutePath().split("\\\\");
+
+		List<String> filePaths = new ArrayList<String>();
+		iterateDirectoryContents(folder, filePaths);
 		List<Folder> folderStructure = new ArrayList<Folder>();
-		String fileName = folderNameArray[folderNameArray.length - 1];
-		for (int i = 0; i < folderNameArray.length; i++) {
-			String folderName = folderNameArray[i];
 
-			if (checkLegalDriveOrFolderName(folderName)) {
-				Simpletree.Folder simpleTreeFolder = SimpletreeFactory.eINSTANCE.createFolder();
-				simpleTreeFolder.setName(folderNameArray[i]);
-				folderStructure.add(simpleTreeFolder);
-				if (i != 0) { // the folder is not the root folder
-					Folder parentFolder = folderStructure.get(folderStructure.size() - 2);
-					simpleTreeFolder.setParentFolder(parentFolder);
+		// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		// create model for all the files in the list
+
+		for (int k = 0; k < filePaths.size(); k++) {
+			String filePath = filePaths.get(k);
+			System.out.println("checking folder");
+
+			String[] folderNameArray = filePath.split("\\\\");
+			// create folder structure for the first file
+			if (folderStructure.size() == 0) { // for the first plugin.xml
+				System.out.println("Inserting first plugin xml data");
+				for (int i = 0; i < folderNameArray.length; i++) {
+
+					if (i == folderNameArray.length - 1) {
+						// generating xml file
+						System.out.println("Reading file: " + folderNameArray[i]);
+						// use SAX parser for XML file
+						parseXMLFile(saxParser, filePaths, folderStructure, k);
+					} else {
+						String folderName = folderNameArray[i];
+
+						if (checkLegalDriveOrFolderName(folderName)) {
+							Simpletree.Folder simpleTreeFolder = SimpletreeFactory.eINSTANCE.createFolder();
+							simpleTreeFolder.setName(folderNameArray[i]);
+							folderStructure.add(simpleTreeFolder);
+							if (i != 0) { // the folder is not the root folder
+								Folder parentFolder = folderStructure.get(folderStructure.size() - 2);
+								simpleTreeFolder.setParentFolder(parentFolder);
+							}
+						}
+					}
+				}
+			} else {
+				for (int j = 0; j < folderNameArray.length; j++) {
+					System.out.println(folderNameArray[j]);
+					if (folderStructure.size() > 0 && j < folderStructure.size()) {
+
+						// name not same
+						if (!folderStructure.get(j).getName().equals(folderNameArray[j])) {
+							Simpletree.Folder simpleTreeFolder = SimpletreeFactory.eINSTANCE.createFolder();
+							simpleTreeFolder.setName(folderNameArray[j]);
+							Folder parentFolder = folderStructure.get(j).getParentFolder();
+							simpleTreeFolder.setParentFolder(parentFolder);
+							folderStructure.set(j, simpleTreeFolder);
+						} else {
+							// name same, but parent different
+							if (j > 0) {
+								Folder parentFolder1 = folderStructure.get(j - 1);
+								String parentFolder2 = folderNameArray[j - 1];
+								if (!parentFolder1.getName().equals(parentFolder2)) {
+									Simpletree.Folder simpleTreeFolder = SimpletreeFactory.eINSTANCE.createFolder();
+									simpleTreeFolder.setName(folderNameArray[j]);
+									Folder parentFolder = folderStructure.get(j).getParentFolder();
+									simpleTreeFolder.setParentFolder(parentFolder);
+									folderStructure.set(j, simpleTreeFolder);
+								}
+							}
+
+						}
+
+					} else {
+						if (folderStructure.size() > 0) {
+							if (j == folderNameArray.length - 1) {
+								// generating xml file
+								System.out.println("Reading file: " + folderNameArray[j]);
+								// use SAX parser for XML file
+								parseXMLFile(saxParser, filePaths, folderStructure, k);
+							}
+						}
+					}
 				}
 			}
 
+			System.out.println("Hello");
 		}
 
-		for (final File fileEntry : folder.listFiles()) {
-			// read only .xml files
-			if (getFileExtension(fileEntry.getName()).equalsIgnoreCase("xml")) {
-				System.out.println(fileEntry.getName());
-				System.out.println("Reading file: " + fileEntry.getName());
-
-				try {
-					XMLHandler handler = new XMLHandler();
-					saxParser.parse(fileEntry, handler);
-					Node rootNode = handler.getRoot();
-					Simpletree.File rootFile = SimpletreeFactory.eINSTANCE.createFile();
-					rootFile.setName(fileEntry.getName());
-					rootFile.setFolder(folderStructure.get(folderStructure.size() - 1));
-					rootFile.setRootNode(rootNode);
-					
-				} catch (SAXException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
 		setModel(folderStructure.get(0));
+	}
 
+	/**
+	 * use SAX parser to create model for XML file
+	 * 
+	 * @param filePaths
+	 * @param saxParser
+	 * @param folderStructure
+	 */
+	private void parseXMLFile(SAXParser saxParser, List<String> filePaths, List<Folder> folderStructure, int index) {
+		try {
+			XMLHandler handler = new XMLHandler();
+			File fileEntry = new File(filePaths.get(index));
+			saxParser.parse(fileEntry, handler);
+			Node rootNode = handler.getRoot();
+			Simpletree.File rootFile = SimpletreeFactory.eINSTANCE.createFile();
+			rootFile.setName(fileEntry.getName());
+			rootFile.setFolder(folderStructure.get(folderStructure.size() - 1));
+			rootFile.setRootNode(rootNode);
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param dir
+	 * @param filePaths2
+	 */
+	public List<String> iterateDirectoryContents(File dir, List<String> filePaths) {
+		try {
+			File[] files = dir.listFiles();
+			for (File file : files) {
+				if (file.isDirectory()) {
+					// System.out.println("directory:" + file.getCanonicalPath());
+					iterateDirectoryContents(file, filePaths);
+				} else {
+					if (getFileExtension(file.getName()).equalsIgnoreCase("xml")) {
+						filePaths.add(file.getCanonicalPath());
+						System.out.println("file:" + file.getCanonicalPath());
+					}
+
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return filePaths;
 	}
 
 	/**

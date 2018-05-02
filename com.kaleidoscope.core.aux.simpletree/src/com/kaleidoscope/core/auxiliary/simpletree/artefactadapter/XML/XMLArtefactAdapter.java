@@ -105,22 +105,18 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		iterateDirectoryContents(folder, filePaths);
 		List<Folder> folderStructure = new ArrayList<Folder>();
 
-		// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		// create model for all the files in the list
-
 		for (int k = 0; k < filePaths.size(); k++) {
 			String filePath = filePaths.get(k);
-			System.out.println("checking folder");
+			// System.out.println("checking folder");
 
 			String[] folderNameArray = filePath.split("\\\\");
 			// create folder structure for the first file
 			if (folderStructure.size() == 0) { // for the first plugin.xml
-				System.out.println("Inserting first plugin xml data");
+				// System.out.println("Inserting first plugin xml data");
 				for (int i = 0; i < folderNameArray.length; i++) {
 
 					if (i == folderNameArray.length - 1) {
-						// generating xml file
-						System.out.println("Reading file: " + folderNameArray[i]);
 						// use SAX parser for XML file
 						parseXMLFile(saxParser, filePaths, folderStructure, k);
 					} else {
@@ -139,7 +135,7 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 				}
 			} else {
 				for (int j = 0; j < folderNameArray.length; j++) {
-					System.out.println(folderNameArray[j]);
+					// System.out.println(folderNameArray[j]);
 					if (folderStructure.size() > 0 && j < folderStructure.size()) {
 
 						// name not same
@@ -169,7 +165,7 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 						if (folderStructure.size() > 0) {
 							if (j == folderNameArray.length - 1) {
 								// generating xml file
-								System.out.println("Reading file: " + folderNameArray[j]);
+								// System.out.println("Reading file: " + folderNameArray[j]);
 								// use SAX parser for XML file
 								parseXMLFile(saxParser, filePaths, folderStructure, k);
 							}
@@ -217,7 +213,6 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 			File[] files = dir.listFiles();
 			for (File file : files) {
 				if (file.isDirectory()) {
-					// System.out.println("directory:" + file.getCanonicalPath());
 					iterateDirectoryContents(file, filePaths);
 				} else {
 					if (getFileExtension(file.getName()).equalsIgnoreCase("xml")) {

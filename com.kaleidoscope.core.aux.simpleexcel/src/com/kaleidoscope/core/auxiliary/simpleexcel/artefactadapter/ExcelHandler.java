@@ -11,11 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.FontFamily;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -236,6 +233,7 @@ public class ExcelHandler {
 		for (int rowIndex = 0; rowIndex <= currentExcelSheet.getLastRowNum(); rowIndex++) {
 			Simpleexcel.Row row = SimpleexcelFactory.eINSTANCE.createRow();
 			rowObjectList.add(row);
+			//TODO: Check this statement if needed.
 			currentSimpleSheet.getRowobject().add(row);
 			row.setSheet(currentSimpleSheet);
 		}

@@ -173,8 +173,6 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 					}
 				}
 			}
-
-			System.out.println("Hello");
 		}
 
 		setModel(folderStructure.get(0));

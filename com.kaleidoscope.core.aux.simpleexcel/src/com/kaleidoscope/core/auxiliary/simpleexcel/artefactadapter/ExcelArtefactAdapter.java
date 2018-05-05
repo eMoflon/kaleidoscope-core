@@ -41,7 +41,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	@Override
 	public void unparse() {
 		ExcelDeltaAdapter excelDeltaAdapter = new ExcelDeltaAdapter();
-		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(), path);
+		ExcelDelta excelDelta = excelDeltaAdapter.unparse(generateOperationalDeltaForFile(getModel()), path);
 		try {
 			excelDelta.execute();
 		} catch (ExcelException e) {
@@ -54,14 +54,14 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	 * 
 	 * @return
 	 */
-	private OperationalDelta generateOperationalDeltaForFile() {
+	private OperationalDelta generateOperationalDeltaForFile(Optional<File> m) {
 		// OperationalDelta initialize
 		OperationalDelta opDelta = new OperationalDelta();
 
 		// iterate through model
 
 		// get File name
-		Optional<File> m = getModel();
+		//Optional<File> m = getModel();
 
 		// add file node
 		File file = m.get();

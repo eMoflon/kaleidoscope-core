@@ -309,8 +309,9 @@ public class ExcelHandler {
 						// get cell font style
 						XSSFCellStyle cs = (XSSFCellStyle) excelCell.getCellStyle();
 						XSSFFont font = cs.getFont();
-						if (font.getXSSFColor() != null) {
-							simpleCell.setFontColor(getrgbFromArgbHex(font.getXSSFColor().getARGBHex()));
+						if (font != null) {
+							if (font.getXSSFColor() != null)
+								simpleCell.setFontColor(getrgbFromArgbHex(font.getXSSFColor().getARGBHex()));
 							simpleCell.setFontFamily(font.getFontName());
 							simpleCell.setFontSize(font.getFontHeightInPoints());
 							if (font.getBold())

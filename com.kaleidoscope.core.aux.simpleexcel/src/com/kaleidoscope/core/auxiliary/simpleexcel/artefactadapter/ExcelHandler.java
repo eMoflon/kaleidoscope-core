@@ -63,8 +63,10 @@ public class ExcelHandler {
 			if (absoluteFileName.contains("\\.\\")) {
 				absoluteFileName = absoluteFileName.replace("\\.\\", "\\");
 			}
-			simpleFile.setFileName(absoluteFileName);
-			simpleFile.setPath(absoluteFileName);
+			String fileName = absoluteFileName.substring(absoluteFileName.lastIndexOf("\\")+1);
+			simpleFile.setFileName(fileName);
+			String filePath = absoluteFileName.substring(0, absoluteFileName.lastIndexOf("\\"));
+			simpleFile.setPath(filePath);
 
 			// iterate through all the sheets
 			for (int sheetCount = 0; sheetCount < workBook.getNumberOfSheets(); sheetCount++) {
@@ -126,7 +128,6 @@ public class ExcelHandler {
 
 		currentSimpleSheet = readCellData(firstRow, firstColumn, currentExcelSheet, currentSimpleSheet);
 
-		System.out.println();
 	}
 
 	/**
@@ -233,7 +234,7 @@ public class ExcelHandler {
 		for (int rowIndex = 0; rowIndex <= currentExcelSheet.getLastRowNum(); rowIndex++) {
 			Simpleexcel.Row row = SimpleexcelFactory.eINSTANCE.createRow();
 			rowObjectList.add(row);
-			//TODO: Check this statement if needed.
+			// TODO: Check this statement if needed.
 			currentSimpleSheet.getRowobject().add(row);
 			row.setSheet(currentSimpleSheet);
 		}
@@ -265,8 +266,8 @@ public class ExcelHandler {
 
 		int rowIndex = 0;
 
-		System.out.println("all rows: " + currentSimpleSheet.getRowobject().size());
-		System.out.println("all cols: " + currentSimpleSheet.getColobject().size());
+		// System.out.println("all rows: " + currentSimpleSheet.getRowobject().size());
+		// System.out.println("all cols: " + currentSimpleSheet.getColobject().size());
 		while (tempRow != null) {
 			Column tempCol = firstColumn;
 			int colIndex = 0;
@@ -283,14 +284,17 @@ public class ExcelHandler {
 						if (cellType == CellType.STRING) {
 							simpleCell.setCellType("STRING");
 							simpleCell.setText(excelCell.getStringCellValue());
-							System.out.println(rowIndex + " , " + colIndex + " --> " + excelCell.getStringCellValue());
+							// System.out.println(rowIndex + " , " + colIndex + " --> " +
+							// excelCell.getStringCellValue());
 						} else {
 							// Numeric Cell
 							if (cellType == CellType.NUMERIC) {
 								simpleCell.setCellType("NUMERIC");
 								simpleCell.setText(Math.round(excelCell.getNumericCellValue()) + "");
-								System.out.println(
-										rowIndex + " , " + colIndex + " --> " + excelCell.getNumericCellValue());
+								/*
+								 * System.out.println( rowIndex + " , " + colIndex + " --> " +
+								 * excelCell.getNumericCellValue());
+								 */
 							}
 						}
 
@@ -315,7 +319,7 @@ public class ExcelHandler {
 								simpleCell.setFontStyle("italic");
 
 						}
-							
+
 						// get cell colors
 						XSSFColor xssfColor = (XSSFColor) excelCell.getCellStyle().getFillForegroundColorColor();
 						if (xssfColor != null) {

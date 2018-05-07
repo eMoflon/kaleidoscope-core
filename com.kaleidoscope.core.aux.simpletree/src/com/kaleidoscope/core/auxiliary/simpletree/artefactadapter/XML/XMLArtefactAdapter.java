@@ -6,9 +6,11 @@ package com.kaleidoscope.core.auxiliary.simpletree.artefactadapter.XML;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +29,8 @@ import Simpletree.Folder;
 import Simpletree.Node;
 import Simpletree.SimpletreeFactory;
 import Simpletree.TreeElement;
+import Simpletree.impl.FileImpl;
+import Simpletree.impl.FolderImpl;
 
 /**
  * @author Srijani
@@ -47,14 +51,18 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 	// Header for (un)parsed XML file
 	private String header;
 
-	// map for plugins
-	private HashMap<String, String> mapForPlugins = new HashMap<String, String>();
-
-	// list for plugins
+	// list for plugin-files with full path
 	private List<String> pluginList = new ArrayList<String>();
+	private HashMap<String, Simpletree.File> pluginMap = new HashMap<String, Simpletree.File>();
+	private String tempString = "";
 
 	public XMLArtefactAdapter(Path path, String header) {
 		this.path = path;
+		this.model = Optional.empty();
+		this.header = header;
+	}
+
+	public XMLArtefactAdapter(String header) {
 		this.model = Optional.empty();
 		this.header = header;
 	}
@@ -74,23 +82,39 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 			String stringPath = path.toAbsolutePath().toString();
 			System.out.println(stringPath);
 
-			// check if the path exists
-			if (java.nio.file.Files.exists(path)) {
-				// check if folder or file
-				// if folder
-				if (java.nio.file.Files.isDirectory(path)) {
-					File folder = new File(stringPath);
-					readXMLFileFromFolder(saxParser, folder);
-				}
-				// if file
-				if (java.nio.file.Files.isRegularFile(path)) {
-					readXMLFile(stringPath, saxParser, handler);
-				}
+			// check if file or folder
+			boolean file = checkFileOrFolder(path);
+			if (!file) { // if folder
+				File folder = new File(stringPath);
+				readXMLFileFromFolder(saxParser, folder);
+			} else {
+				readXMLFile(stringPath, saxParser, handler);
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Check if a path represents a file or folder
+	 * 
+	 * @param path
+	 */
+	private boolean checkFileOrFolder(Path path) {
+		// check if the path exists
+		if (java.nio.file.Files.exists(path)) {
+			// check if folder or file
+			// if folder
+			if (java.nio.file.Files.isDirectory(path)) {
+				return false;
+			}
+			// if file
+			if (java.nio.file.Files.isRegularFile(path)) {
+				return true;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -276,17 +300,117 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		XMLGenerator generateXML = new XMLGenerator();
 
 		try {
-			final File file = path.toFile();
-			TreeElement toUnparse = model.orElseThrow(
-					() -> new IllegalStateException("There is no model to unparse!  Please set a model first."));
-			if (toUnparse instanceof Simpletree.File) {
-				Files.write(generateXML.generate((Node) ((Simpletree.File) toUnparse).getRootNode(), header), file,
-						Charsets.UTF_8);
-			} else {
-				throw new IllegalArgumentException("The model to unparsed must be a Simpletree.File with a root node.");
+			System.out.println(getModel().get() instanceof FolderImpl);
+
+			if (getModel().get() instanceof FolderImpl) { // instance of FolderImpl
+
+				Folder rootFolder = (Folder) getModel().get();
+				System.out.println("Root : " + rootFolder);
+
+				// get all xml files from model
+				getAllXmlFilesFromModel(rootFolder);
+
+				// iterate pluginMap to generate folders
+				for (Map.Entry<String, Simpletree.File> entry : pluginMap.entrySet()) {
+					String path = entry.getKey();
+					String pathForFolder = path.substring(0, path.lastIndexOf("\\"));
+					generateFolderForPath(pathForFolder);
+					String fileName = path.substring(path.lastIndexOf("\\")+1);
+					Simpletree.File file = entry.getValue();
+					
+					File xmlFile = new File(path);
+					Files.write(generateXML.generate((Node) (file).getRootNode(), header),
+							xmlFile, Charsets.UTF_8);
+				}
+
+			} else if (getModel().get() instanceof FileImpl) { // instance of FileImpl
+				if (path != null && !path.toString().equalsIgnoreCase("")) {
+					// check if the path is file or folder
+					boolean file = checkFileOrFolder(path);
+					if (!file) {
+						throw new IllegalArgumentException(
+								"Model has root node file, but path given to generate from the model is folder");
+					} else {
+						final File xmlFile = path.toFile();
+						TreeElement toUnparse = model.orElseThrow(() -> new IllegalStateException(
+								"There is no model to unparse!  Please set a model first."));
+						Files.write(generateXML.generate((Node) ((Simpletree.File) toUnparse).getRootNode(), header),
+								xmlFile, Charsets.UTF_8);
+					}
+				} else {
+					throw new IllegalArgumentException("Path variable is not set to save the unparsed XML file");
+				}
+			} else { // incorrect instance
+				throw new IllegalArgumentException(
+						"The model to unparsed must be a Simpletree.File or SimpleTree.Folder");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Iterates through model and returns a list of all the xml files
+	 * 
+	 * @param rootFolder
+	 */
+	private List<TreeElement> getAllXmlFilesFromModel(Folder parentFolder) {
+		if (parentFolder.getSubFolder().size() > 0) {
+			for (Folder subFolder : parentFolder.getSubFolder()) {
+				getAllXmlFilesFromModel(subFolder);
+				if (subFolder.getFile().size() > 0) {
+					for (Simpletree.File file : subFolder.getFile()) {
+						System.out.println(file.getName());
+						if (file.getFolder() != null) {
+							String filePath = getFullyQualifiedNameForFolder(file.getFolder())
+									+ file.getFolder().getName() + "\\" + file.getName();
+							// pluginList.add(filePath);
+							pluginMap.put(filePath, file);
+							tempString = "";
+						} else
+							throw new IllegalArgumentException("File must have some parent folder");
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param folder
+	 * @param tempString
+	 * @return
+	 */
+	private String getFullyQualifiedNameForFolder(Folder folder) {
+		if (folder.getParentFolder() != null) {
+			Folder parentFolder = folder.getParentFolder();
+			tempString = parentFolder.getName() + "\\" + tempString;
+			System.out.println(tempString);
+			getFullyQualifiedNameForFolder(parentFolder);
+
+		}
+		return tempString;
+	}
+
+	/**
+	 * This method takes the folder path string, checks if those folders exist, if
+	 * not, generates them
+	 * 
+	 * @param folderPath
+	 */
+	private void generateFolderForPath(String folderPath) {
+		if (java.nio.file.Files.exists(Paths.get(folderPath))) {
+			System.out.println("This path exists..");
+		} else {
+			// create that path
+			Path createFolder = Paths.get(folderPath);
+			try {
+				java.nio.file.Files.createDirectories(createFolder);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

@@ -56,6 +56,8 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 	private HashMap<String, Simpletree.File> pluginMap = new HashMap<String, Simpletree.File>();
 	private String tempString = "";
 
+	private String workspaceLocation = "";
+
 	public XMLArtefactAdapter(Path path, String header) {
 		this.path = path;
 		this.model = Optional.empty();
@@ -80,13 +82,40 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 			saxParser = factory.newSAXParser();
 			XMLHandler handler = new XMLHandler();
 			String stringPath = path.toAbsolutePath().toString();
-			System.out.println(stringPath);
 
 			// check if file or folder
 			boolean file = checkFileOrFolder(path);
 			if (!file) { // if folder
 				File folder = new File(stringPath);
-				readXMLFileFromFolder(saxParser, folder);
+				List<Folder> folderStructure = readXMLFileFromFolder(saxParser, folder);
+
+				// extract the model for workspace and remove the folder hierarchy
+				TreeElement folderRoot = folderStructure.get(0);
+
+				if (folderRoot instanceof FolderImpl) {
+					Folder workspaceRoot = null;
+					this.workspaceLocation += folderRoot.getName();
+					Folder rootFoler = (Folder) folderRoot;
+					int childrenFolderCount = rootFoler.getSubFolder().size();
+					int childrenFileCount = rootFoler.getFile().size();
+					while (childrenFileCount == 0 && childrenFolderCount > 0) {
+						if (childrenFolderCount == 1) {
+							this.workspaceLocation += "\\" + rootFoler.getSubFolder().get(0).getName();
+						} else {
+							workspaceRoot = trimSimpleTreeModel(rootFoler);
+						}
+						rootFoler = rootFoler.getSubFolder().get(0);
+						childrenFolderCount = rootFoler.getSubFolder().size();
+						childrenFileCount = rootFoler.getFile().size();
+					}
+
+					// set to Model
+					setModel(workspaceRoot);
+
+				} else {
+					throw new Exception("Invalid model to read ...");
+				}
+
 			} else {
 				readXMLFile(stringPath, saxParser, handler);
 			}
@@ -94,6 +123,17 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @param simpleTreeOptionalModel
+	 * @param rootFoler
+	 * @param treeElement
+	 * @return
+	 * @return
+	 */
+	private Folder trimSimpleTreeModel(Folder workspaceFolder) {
+		return workspaceFolder;
 	}
 
 	/**
@@ -122,8 +162,9 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 	 * 
 	 * @param saxParser
 	 * @param handler
+	 * @return
 	 */
-	private void readXMLFileFromFolder(SAXParser saxParser, File folder) {
+	private List<Folder> readXMLFileFromFolder(SAXParser saxParser, File folder) {
 
 		List<String> filePaths = new ArrayList<String>();
 		iterateDirectoryContents(folder, filePaths);
@@ -132,12 +173,10 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		// create model for all the files in the list
 		for (int k = 0; k < filePaths.size(); k++) {
 			String filePath = filePaths.get(k);
-			// System.out.println("checking folder");
 
 			String[] folderNameArray = filePath.split("\\\\");
 			// create folder structure for the first file
 			if (folderStructure.size() == 0) { // for the first plugin.xml
-				// System.out.println("Inserting first plugin xml data");
 				for (int i = 0; i < folderNameArray.length; i++) {
 
 					if (i == folderNameArray.length - 1) {
@@ -159,7 +198,6 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 				}
 			} else {
 				for (int j = 0; j < folderNameArray.length; j++) {
-					// System.out.println(folderNameArray[j]);
 					if (folderStructure.size() > 0 && j < folderStructure.size()) {
 
 						// name not same
@@ -189,7 +227,6 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 						if (folderStructure.size() > 0) {
 							if (j == folderNameArray.length - 1) {
 								// generating xml file
-								// System.out.println("Reading file: " + folderNameArray[j]);
 								// use SAX parser for XML file
 								parseXMLFile(saxParser, filePaths, folderStructure, k);
 							}
@@ -199,7 +236,8 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 			}
 		}
 
-		setModel(folderStructure.get(0));
+		// setModel(folderStructure.get(0));
+		return folderStructure;
 	}
 
 	/**
@@ -228,7 +266,7 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 
 	/**
 	 * @param dir
-	 * @param filePaths2
+	 * @param filePaths
 	 */
 	public List<String> iterateDirectoryContents(File dir, List<String> filePaths) {
 		try {
@@ -239,7 +277,7 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 				} else {
 					if (getFileExtension(file.getName()).equalsIgnoreCase("xml")) {
 						filePaths.add(file.getCanonicalPath());
-						System.out.println("file:" + file.getCanonicalPath());
+						logger.debug("file:" + file.getCanonicalPath());
 					}
 
 				}
@@ -259,7 +297,7 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 	 * @param handler
 	 */
 	private void readXMLFile(String stringPath, SAXParser saxParser, XMLHandler handler) {
-		System.out.println("Reading file: " + stringPath);
+		logger.trace("Reading file: " + stringPath);
 		try {
 			saxParser.parse(stringPath, handler);
 			Node rootNode = handler.getRoot();
@@ -300,12 +338,10 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		XMLGenerator generateXML = new XMLGenerator();
 
 		try {
-			System.out.println(getModel().get() instanceof FolderImpl);
 
 			if (getModel().get() instanceof FolderImpl) { // instance of FolderImpl
 
 				Folder rootFolder = (Folder) getModel().get();
-				System.out.println("Root : " + rootFolder);
 
 				// get all xml files from model
 				getAllXmlFilesFromModel(rootFolder);
@@ -315,12 +351,11 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 					String path = entry.getKey();
 					String pathForFolder = path.substring(0, path.lastIndexOf("\\"));
 					generateFolderForPath(pathForFolder);
-					String fileName = path.substring(path.lastIndexOf("\\")+1);
+					String fileName = path.substring(path.lastIndexOf("\\") + 1);
 					Simpletree.File file = entry.getValue();
-					
+
 					File xmlFile = new File(path);
-					Files.write(generateXML.generate((Node) (file).getRootNode(), header),
-							xmlFile, Charsets.UTF_8);
+					Files.write(generateXML.generate((Node) (file).getRootNode(), header), xmlFile, Charsets.UTF_8);
 				}
 
 			} else if (getModel().get() instanceof FileImpl) { // instance of FileImpl
@@ -360,7 +395,6 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 				getAllXmlFilesFromModel(subFolder);
 				if (subFolder.getFile().size() > 0) {
 					for (Simpletree.File file : subFolder.getFile()) {
-						System.out.println(file.getName());
 						if (file.getFolder() != null) {
 							String filePath = getFullyQualifiedNameForFolder(file.getFolder())
 									+ file.getFolder().getName() + "\\" + file.getName();
@@ -387,7 +421,6 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		if (folder.getParentFolder() != null) {
 			Folder parentFolder = folder.getParentFolder();
 			tempString = parentFolder.getName() + "\\" + tempString;
-			System.out.println(tempString);
 			getFullyQualifiedNameForFolder(parentFolder);
 
 		}
@@ -402,7 +435,7 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 	 */
 	private void generateFolderForPath(String folderPath) {
 		if (java.nio.file.Files.exists(Paths.get(folderPath))) {
-			System.out.println("This path exists..");
+			logger.trace("This path already exists..");
 		} else {
 			// create that path
 			Path createFolder = Paths.get(folderPath);

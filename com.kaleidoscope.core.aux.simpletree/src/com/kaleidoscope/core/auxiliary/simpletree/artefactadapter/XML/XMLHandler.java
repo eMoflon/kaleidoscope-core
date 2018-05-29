@@ -7,6 +7,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import org.apache.log4j.Logger;
+
 import Simpletree.Node;
 import Simpletree.SimpletreeFactory;
 import Simpletree.Text;
@@ -19,6 +21,9 @@ import Simpletree.Text;
  * @version $Revision$ $Date$
  */
 public class XMLHandler extends DefaultHandler {
+	
+	private final static Logger logger = Logger.getLogger(XMLHandler.class);
+	
 	// Root node of the LabelledGraph
 	private Node root;
 
@@ -113,12 +118,12 @@ public class XMLHandler extends DefaultHandler {
 
 	// invoked when document-parsing is started:
 	public void startDocument() throws SAXException {
-		System.out.println("Document processing started");
+		logger.debug("Document processing started");
 	}
 
 	// notifies about finish of parsing:
 	public void endDocument() throws SAXException {
-		System.out.println("Document processing finished");
+		logger.debug("Document processing finished");
 	}
 
 }

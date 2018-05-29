@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -39,6 +39,8 @@ import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelException;
  */
 public class ExcelDelta {
 
+	private final static Logger logger = Logger.getLogger(ExcelDelta.class);
+	
 	private Path filePath;
 	private String file;
 
@@ -85,7 +87,6 @@ public class ExcelDelta {
 	private void splitOperations() {
 		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
 			String opName = excelOperationsBean.getOperationName();
-			// System.out.println(opName);
 			// ADD EDGE
 			if (opName.startsWith("ADD_") && opName.endsWith("_EDGE")) {
 				excelOperationsAddEdges.add(excelOperationsBean);
@@ -122,7 +123,6 @@ public class ExcelDelta {
 	public void execute() throws ExcelException {
 		for (ExcelOperationsBean excelOperationsBean : excelOperations) {
 			String operationName = excelOperationsBean.getOperationName();
-			// System.out.println(operationName);
 			switch (operationName) {
 			case "ADD_FILE":
 				fileOperation("ADD_FILE", excelOperationsBean.getOperationDetails());
@@ -153,7 +153,6 @@ public class ExcelDelta {
 				break;
 
 			default:
-				System.out.println(operationName + " : OPERATION NOT FOUND IN EXCEL API");
 				break;
 			}
 		}
@@ -223,7 +222,6 @@ public class ExcelDelta {
 				XSSFSheet sheetToEdit = workbook.getSheet(sheetName);
 				Cell cell = null;
 				if (sheetToEdit.getRow(rowIndex) == null) {
-					System.out.println("Generating row automatically...");
 					sheetToEdit.createRow(rowIndex);
 				}
 				cell = sheetToEdit.getRow(rowIndex).createCell(colIndex);
@@ -253,7 +251,6 @@ public class ExcelDelta {
 						font.setItalic(true);
 				}
 				if (operationDetails.containsKey("CELL_FONT_COLOR")) {
-					System.out.println("Font color: "+ operationDetails.get("CELL_FONT_COLOR"));
 					Color rgb = hex2Rgb(operationDetails.get("CELL_FONT_COLOR"));
 					font.setColor(new XSSFColor(rgb));
 				}
@@ -674,10 +671,10 @@ public class ExcelDelta {
 	private void createFile(String fileName, String filePath) throws ExcelException {
 		File file = new File(filePath + "/" + fileName);
 		if (file.exists()) {
-			System.out.println("File Already Exists.. \n Removing the old file and creating a new one");
+			logger.trace("File Already Exists.. \\n Removing the old file and creating a new one");
 			file.delete();
 		} else {
-			System.out.println("Creating new file...");
+			logger.trace("Creating new file...");
 		}
 
 		this.file = filePath + "/" + fileName;

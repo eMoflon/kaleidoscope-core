@@ -102,8 +102,8 @@ public class ExcelHandler {
 		@SuppressWarnings("unused")
 		Column lastColumn = null;
 
-		System.out.println("Reading from Sheet :" + this.workBook.getSheetName(sheetIndex));
-
+		logger.trace("\"Reading from Sheet :\" + this.workBook.getSheetName(sheetIndex)");
+		
 		currentSimpleSheet.setSheetName(currentExcelSheet.getSheetName());
 
 		// read the rows of whole sheet
@@ -266,8 +266,6 @@ public class ExcelHandler {
 
 		int rowIndex = 0;
 
-		// System.out.println("all rows: " + currentSimpleSheet.getRowobject().size());
-		// System.out.println("all cols: " + currentSimpleSheet.getColobject().size());
 		while (tempRow != null) {
 			Column tempCol = firstColumn;
 			int colIndex = 0;
@@ -284,17 +282,11 @@ public class ExcelHandler {
 						if (cellType == CellType.STRING) {
 							simpleCell.setCellType("STRING");
 							simpleCell.setText(excelCell.getStringCellValue());
-							// System.out.println(rowIndex + " , " + colIndex + " --> " +
-							// excelCell.getStringCellValue());
 						} else {
 							// Numeric Cell
 							if (cellType == CellType.NUMERIC) {
 								simpleCell.setCellType("NUMERIC");
 								simpleCell.setText(Math.round(excelCell.getNumericCellValue()) + "");
-								/*
-								 * System.out.println( rowIndex + " , " + colIndex + " --> " +
-								 * excelCell.getNumericCellValue());
-								 */
 							}
 						}
 
@@ -325,8 +317,6 @@ public class ExcelHandler {
 						XSSFColor xssfColor = (XSSFColor) excelCell.getCellStyle().getFillForegroundColorColor();
 						if (xssfColor != null) {
 							String argbHex = xssfColor.getARGBHex();
-							// System.out.println("|| row:" + rowIndex + ",col:" + colIndex + " color: " +
-							// getrgbFromArgbHex(argbHex));
 							simpleCell.setBackgroundColor(getrgbFromArgbHex(argbHex));
 						}
 
@@ -348,7 +338,6 @@ public class ExcelHandler {
 
 				tempCol = tempCol.getNextColumn();
 				colIndex++;
-				// System.out.println();
 
 			}
 			tempRow = tempRow.getNextRow();

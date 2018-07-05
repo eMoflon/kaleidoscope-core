@@ -51,7 +51,7 @@ public class ExcelHandler {
 	 * @return
 	 */
 	public Optional<ExcelElement> parseExcelFile() {
-		Optional<ExcelElement> result = Optional.empty();
+		Optional<ExcelElement> result = Optional.empty(); 
 
 		try {
 			logger.debug("Starting reading...");

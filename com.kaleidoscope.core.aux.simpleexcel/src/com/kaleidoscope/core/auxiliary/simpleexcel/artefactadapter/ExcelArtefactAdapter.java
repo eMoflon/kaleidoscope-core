@@ -175,7 +175,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<ExcelElement, Path>
 
 	@Override
 	public Optional<ExcelElement> getModel() {
-		return model;
+		return model; 
 	}
 
 	@Override

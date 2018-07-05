@@ -13,6 +13,7 @@ import com.kaleidoscope.core.framework.workflow.adapters.ArtefactAdapter;
 
 import Simpleexcel.Cell;
 import Simpleexcel.Column;
+import Simpleexcel.ExcelElement;
 import Simpleexcel.File;
 import Simpleexcel.Row;
 import Simpleexcel.Sheet;
@@ -22,9 +23,9 @@ import Simpleexcel.SimpleexcelPackage;
  * @author Srijani
  *
  */
-public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, Path> {
+public class ExcelArtefactAdapter implements ArtefactAdapter<ExcelElement, Path> {
 
-	private Optional<Simpleexcel.File> model;
+	private Optional<ExcelElement> model;
 	private Path path;
 
 	public ExcelArtefactAdapter(Path path) {
@@ -54,7 +55,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	 * 
 	 * @return
 	 */
-	private OperationalDelta generateOperationalDeltaForFile(Optional<File> m) {
+	private OperationalDelta generateOperationalDeltaForFile(Optional<ExcelElement> m) {
 		// OperationalDelta initialize
 		OperationalDelta opDelta = new OperationalDelta();
 
@@ -64,7 +65,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		//Optional<File> m = getModel();
 
 		// add file node
-		File file = m.get();
+		File file = (File)m.get();
 		
 		// for windows
 		if(System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("windows")) {
@@ -80,7 +81,7 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 
 		// iterate through all the sheets in a file
 		for (int sheetCount = 0; sheetCount < file.getSheet().size(); sheetCount++) {
-			Sheet sheet = m.get().getSheet().get(sheetCount);
+			Sheet sheet = file.getSheet().get(sheetCount);
 			opDelta.addNodeOp(sheet);
 			opDelta.addEdgeOp(new JavaBasedEdge(file, sheet, SimpleexcelPackage.eINSTANCE.getFile_Sheet()));
 
@@ -166,10 +167,6 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 		return returnCol;
 	}
 
-	@Override
-	public void setModel(Simpleexcel.File m) {
-		model = Optional.of(m);
-	}
 
 	@Override
 	public void setArtefact(Path a) {
@@ -177,13 +174,19 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<Simpleexcel.File, P
 	}
 
 	@Override
-	public Optional<Simpleexcel.File> getModel() {
+	public Optional<ExcelElement> getModel() {
 		return model;
 	}
 
 	@Override
 	public Optional<Path> getArtefact() {
 		return Optional.of(path);
+	}
+
+	@Override
+	public void setModel(ExcelElement m) {
+		model = Optional.of(m);
+		
 	}
 
 }

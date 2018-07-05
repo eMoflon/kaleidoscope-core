@@ -24,6 +24,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.kaleidoscope.core.auxiliary.simpleexcel.utils.ExcelConstants;
 
 import Simpleexcel.Column;
+import Simpleexcel.ExcelElement;
 import Simpleexcel.SimpleexcelFactory;
 
 /**
@@ -49,8 +50,8 @@ public class ExcelHandler {
 	 * 
 	 * @return
 	 */
-	public Optional<Simpleexcel.File> parseExcelFile() {
-		Optional<Simpleexcel.File> result = Optional.empty();
+	public Optional<ExcelElement> parseExcelFile() {
+		Optional<ExcelElement> result = Optional.empty();
 
 		try {
 			logger.debug("Starting reading...");

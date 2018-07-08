@@ -2,6 +2,10 @@ package com.kaleidoscope.core.delta.javabased.structural;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
@@ -143,8 +147,62 @@ public class StructuralDelta implements Delta {
 	
 	/* Normalise and pretty print for comparision or testing purposes */
 	
-	@Override
-	public String toString() {
-		return StructuralDeltaPrinter.print(StructuralDeltaNormaliser.normaliseAttributeChanges(changedAttributes));
+	public String print(Set<Entry<EObject, EObject>> before) {
+		return StructuralDeltaPrinter.print(before,
+				StructuralDeltaNormaliser.normaliseAttributeChanges(changedAttributes, before), 
+				StructuralDeltaNormaliser.normaliseAddedNodes(addedNodes),
+				StructuralDeltaNormaliser.normaliseDeletedNodes(deletedNodes, before), 
+				StructuralDeltaNormaliser.normaliseMovedNodes(movedNodes), 
+				StructuralDeltaNormaliser.normaliseAddedEdges(addedEdges, before),
+				StructuralDeltaNormaliser.normaliseDeletedEdges(deletedEdges, before));
+	}
+	
+	//To get before model giving the after model
+	
+	public static EObject getValueForKey(Set<Entry<EObject, EObject>> beforeModel, EObject op) {
+		EObject beforeModelObject = null;
+		for(Map.Entry<EObject, EObject> keyValue : beforeModel) { 
+			if (keyValue.getValue().equals(op) || keyValue.getKey().equals(op)) {
+				beforeModelObject = keyValue.getKey();
+			}
+		}
+		return beforeModelObject;
+	}
+	
+	public static EObject getValueForKeyDeleteNodes(Set<Entry<EObject, EObject>> beforeModel, EObject op) {
+		EObject beforeModelObject = null;
+		for(Map.Entry<EObject, EObject> keyValue : beforeModel) { 
+			if (keyValue.getValue().equals(op) || keyValue.getKey().equals(op)) {
+				beforeModelObject = keyValue.getKey();
+			}
+		}
+		return beforeModelObject;
+	}
+	
+	public static EObject getValueForKeyForAttributeChanges(Set<Entry<EObject, EObject>> beforeModel, AttributeChangeOp op) {
+		EObject beforeModelObject = null;
+		for(Map.Entry<EObject, EObject> keyValue : beforeModel) { 
+			if (keyValue.getValue().equals(op.getAffectedNode())) {
+				beforeModelObject = keyValue.getKey();
+			}
+		}
+		return beforeModelObject;
+	}
+	
+	public static List<EObject> getValueForKeyDeleteEdges(Set<Entry<EObject, EObject>> beforeModel, JavaBasedEdge op) {
+		EObject beforeObjectSrc = null;
+		EObject beforeObjectTrg = null;
+		List<EObject> beforeModelObjects = new ArrayList<EObject>();
+		for(Map.Entry<EObject, EObject> keyValue : beforeModel) { 
+			if (keyValue.getKey().equals(op.getSrc()) || keyValue.getValue().equals(op.getSrc())) {
+				beforeObjectSrc = keyValue.getKey();
+				beforeModelObjects.add(beforeObjectSrc);
+			}
+			if (keyValue.getKey().equals(op.getTrg()) || keyValue.getValue().equals(op.getTrg())){
+				beforeObjectTrg = keyValue.getKey();
+				beforeModelObjects.add(beforeObjectTrg);
+			}
+		}
+		return beforeModelObjects;
 	}
 }

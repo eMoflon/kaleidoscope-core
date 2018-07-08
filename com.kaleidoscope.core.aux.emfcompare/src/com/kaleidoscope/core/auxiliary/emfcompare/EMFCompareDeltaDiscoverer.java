@@ -3,6 +3,7 @@ package com.kaleidoscope.core.auxiliary.emfcompare;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.compare.Comparison;
 import org.eclipse.emf.compare.Diff;
 import org.eclipse.emf.compare.DifferenceKind;
@@ -16,6 +17,7 @@ import org.eclipse.emf.compare.scope.DefaultComparisonScope;
 import org.eclipse.emf.compare.scope.IComparisonScope;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 
 import com.google.common.collect.Lists;
 import com.kaleidoscope.core.delta.discovery.OfflineDeltaDiscoverer;
@@ -25,6 +27,7 @@ import com.kaleidoscope.core.delta.javabased.operational.AddNodeOp;
 import com.kaleidoscope.core.delta.javabased.operational.AttributeChangeOp;
 import com.kaleidoscope.core.delta.javabased.operational.DeleteEdgeOp;
 import com.kaleidoscope.core.delta.javabased.operational.DeleteNodeOp;
+import com.kaleidoscope.core.delta.javabased.operational.MoveNodeOp;
 import com.kaleidoscope.core.delta.javabased.operational.OperationalDelta;
 
 /**
@@ -53,7 +56,6 @@ public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDelt
 		
 		Comparison comparison = compareModels(oldModel, newModel);
 		List<Diff> differences = comparison.getDifferences();
-
 		OperationalDelta operationalDelta = new OperationalDelta();
 
 		logger.debug("------------------ Performing Comparison of Models --------------------");
@@ -64,53 +66,67 @@ public class EMFCompareDeltaDiscoverer<M extends EObject> implements OfflineDelt
 					EAttribute affectedAttribute = ((AttributeChangeImpl) diff).getAttribute();
 					Object newValue = ((AttributeChangeImpl) diff).getValue();
 					Match match = diff.getMatch();
-
 					AttributeChangeOp attributeDelta = new AttributeChangeOp(affectedAttribute, newValue, match.getRight() );
 					operationalDelta.addOperation(attributeDelta);
 				}
 			} else if (diff instanceof ReferenceChangeImpl) {
 				if (diff.getKind() == DifferenceKind.ADD) {
 					ReferenceChangeImpl refChgSpec = (ReferenceChangeImpl) diff;
-			
-
-					JavaBasedEdge edge = new JavaBasedEdge(refChgSpec.getMatch().getRight(), refChgSpec.getValue(), refChgSpec.getReference()); 
+					JavaBasedEdge edge = new JavaBasedEdge(extractSrcOfEdge(refChgSpec), refChgSpec.getValue(), refChgSpec.getReference()); 
 					AddEdgeOp addEdgeOp = new AddEdgeOp(edge);
-					AddNodeOp addNodeOp = new AddNodeOp(((ReferenceChangeImpl) diff).getValue());
-
-					operationalDelta.addOperation(addEdgeOp);
-					operationalDelta.addOperation(addNodeOp);					
-				} else if (diff.getKind().equals(DifferenceKind.DELETE)) {
+					AddNodeOp addNodeOp = new AddNodeOp(refChgSpec.getValue());
 					
+					operationalDelta.addOperation(addEdgeOp);
+					operationalDelta.addOperation(addNodeOp);
+				} else if (diff.getKind().equals(DifferenceKind.DELETE)) {
 					JavaBasedEdge edge = new JavaBasedEdge(((ReferenceChangeImpl) diff).getValue().eContainer(), ((ReferenceChangeImpl) diff).getValue(), ((ReferenceChangeImpl) diff).getReference()); 
 					DeleteEdgeOp removeEdgeOp = new DeleteEdgeOp(edge);
 					DeleteNodeOp removeNodeOp = new DeleteNodeOp(((ReferenceChangeImpl) diff).getValue());
-
+					
 					operationalDelta.addOperation(removeEdgeOp);
 					operationalDelta.addOperation(removeNodeOp);
-					
 				} else if (diff.getKind().equals(DifferenceKind.MOVE)) {
-					//FIXME[Dusko] Handle move operation detected by EMFCompare
+					ReferenceChangeImpl refChgSpec = (ReferenceChangeImpl) diff;
+					EObject movedNode = refChgSpec.getValue();
+					EObject container = movedNode.eContainer();
+					EStructuralFeature containmentFeature = movedNode.eContainmentFeature();
+					MoveNodeOp moveNodeOp = null;
+					if(containmentFeature != null) {
+			    		  Object children = container.eGet(containmentFeature);
+			    		  if(children instanceof EList){
+			    			  @SuppressWarnings("unchecked")
+							EList<EObject> listOfChildren = (EList<EObject>) children;
+			    			  moveNodeOp = new MoveNodeOp(movedNode, listOfChildren.indexOf(movedNode));
+			    			  operationalDelta.addOperation(moveNodeOp);
+			    		  }
+					}					
+					
 				}
 			}
-
 			logger.debug("d.toString():" + diff);
 			logger.debug("d.getKind(): " + diff.getKind());
 			logger.debug("d.getMatch(): " + diff.getMatch());
 
 			logger.debug("=========================================================");
 		}
-		
 		logger.debug("------------------ Comparison Complete --------------------");
 		
 		return operationalDelta;
 	}
 
-	private Comparison compareModels(M model1, M model2) {
-		IComparisonScope scope = new DefaultComparisonScope(model1, model2, null);
+	private EObject extractSrcOfEdge(ReferenceChangeImpl refChgSpec) {
+		EObject oldObject = refChgSpec.getMatch().getRight();
+		EObject newObject = refChgSpec.getMatch().getLeft();
+		
+		// Handle case where old object is null, i.e., the source of the edge is itself newly created
+		return oldObject != null? oldObject : newObject;
+	}
+
+	private Comparison compareModels(M oldModel, M newModel) {
+		IComparisonScope scope = new DefaultComparisonScope(newModel, oldModel, null);
 		IDiffEngine diffEngine = new DefaultDiffEngine();
 		EMFCompare comparator = EMFCompare.builder().setDiffEngine(diffEngine).build();
 		Comparison comparison = comparator.compare(scope);
 		return comparison;
 	}
-	
 }

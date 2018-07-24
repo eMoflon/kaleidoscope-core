@@ -24,9 +24,10 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="cellComments" unique="false"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="cellId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="row" eType="#//Row" eOpposite="#//Row/cell"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="column" eType="#//Column"
-        eOpposite="#//Column/cell"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="row" lowerBound="1" eType="#//Row"
+        eOpposite="#//Row/cell"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="column" lowerBound="1"
+        eType="#//Column" eOpposite="#//Column/cell"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="cellType" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fontSize" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fontFamily" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
@@ -35,25 +36,25 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fontStyle" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ExcelElement" abstract="true"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Row">
+  <eClassifiers xsi:type="ecore:EClass" name="Row" eSuperTypes="#//ExcelElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="cell" lowerBound="1" upperBound="-1"
         eType="#//Cell" eOpposite="#//Cell/row"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="nextRow" eType="#//Row"
         eOpposite="#//Row/prevRow"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="prevRow" eType="#//Row"
         eOpposite="#//Row/nextRow"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sheet" eType="#//Sheet"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sheet" lowerBound="1" eType="#//Sheet"
         eOpposite="#//Sheet/rowobject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="backgroundColor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Column">
+  <eClassifiers xsi:type="ecore:EClass" name="Column" eSuperTypes="#//ExcelElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="cell" lowerBound="1" upperBound="-1"
         eType="#//Cell" eOpposite="#//Cell/column"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="nextColumn" eType="#//Column"
         eOpposite="#//Column/prevColumn"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="prevColumn" eType="#//Column"
         eOpposite="#//Column/nextColumn"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sheet" eType="#//Sheet"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sheet" lowerBound="1" eType="#//Sheet"
         eOpposite="#//Sheet/colobject"/>
   </eClassifiers>
 </ecore:EPackage>

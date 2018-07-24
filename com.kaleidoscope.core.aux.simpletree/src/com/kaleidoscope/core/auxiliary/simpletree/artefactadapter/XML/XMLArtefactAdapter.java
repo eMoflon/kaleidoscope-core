@@ -95,23 +95,23 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 				if (folderRoot instanceof FolderImpl) {
 					Folder workspaceRoot = null;
 					this.workspaceLocation += folderRoot.getName();
-					Folder rootFoler = (Folder) folderRoot;
-					int childrenFolderCount = rootFoler.getSubFolder().size();
-					int childrenFileCount = rootFoler.getFile().size();
+					Folder rootFolder = (Folder) folderRoot;
+					int childrenFolderCount = rootFolder.getSubFolder().size();
+					int childrenFileCount = rootFolder.getFile().size();
 					while (childrenFileCount == 0 && childrenFolderCount > 0) {
 						if (childrenFolderCount == 1) {
-							this.workspaceLocation += "\\" + rootFoler.getSubFolder().get(0).getName();
+							this.workspaceLocation += "\\" + rootFolder.getSubFolder().get(0).getName();
 						} else {
-							workspaceRoot = trimSimpleTreeModel(rootFoler);
+							workspaceRoot = rootFolder;
+							workspaceRoot.setName(workspaceLocation);
 						}
-						rootFoler = rootFoler.getSubFolder().get(0);
-						childrenFolderCount = rootFoler.getSubFolder().size();
-						childrenFileCount = rootFoler.getFile().size();
+						rootFolder = rootFolder.getSubFolder().get(0);
+						childrenFolderCount = rootFolder.getSubFolder().size();
+						childrenFileCount = rootFolder.getFile().size();
 					}
 
 					// set to Model
 					setModel(workspaceRoot);
-
 				} else {
 					throw new Exception("Invalid model to read ...");
 				}
@@ -123,17 +123,6 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * @param simpleTreeOptionalModel
-	 * @param rootFoler
-	 * @param treeElement
-	 * @return
-	 * @return
-	 */
-	private Folder trimSimpleTreeModel(Folder workspaceFolder) {
-		return workspaceFolder;
 	}
 
 	/**

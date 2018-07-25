@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,11 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Charsets;
@@ -44,6 +50,8 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 
 	// Simple tree model in memory
 	private Optional<TreeElement> model;
+	
+	//TreeElement folderRoot = null;
 
 	// Location of corresponding artefact
 	private Path path;
@@ -64,10 +72,10 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		this.header = header;
 	}
 
-	public XMLArtefactAdapter(String header) {
-		this.model = Optional.empty();
-		this.header = header;
-	}
+	/*
+	 * public XMLArtefactAdapter(String header) { this.model = Optional.empty();
+	 * this.header = header; }
+	 */
 
 	public XMLArtefactAdapter(Path path) {
 		this(path, DEFAULT_HEADER);
@@ -86,35 +94,15 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 			// check if file or folder
 			boolean file = checkFileOrFolder(path);
 			if (!file) { // if folder
-				File folder = new File(stringPath);
+				File folder = new File(stringPath); // get plugin root folder
 				List<Folder> folderStructure = readXMLFileFromFolder(saxParser, folder);
 
 				// extract the model for workspace and remove the folder hierarchy
 				TreeElement folderRoot = folderStructure.get(0);
+				List<String> pathList = Arrays.asList(stringPath.split("\\\\"));
 
-				if (folderRoot instanceof FolderImpl) {
-					Folder workspaceRoot = null;
-					this.workspaceLocation += folderRoot.getName();
-					Folder rootFolder = (Folder) folderRoot;
-					int childrenFolderCount = rootFolder.getSubFolder().size();
-					int childrenFileCount = rootFolder.getFile().size();
-					while (childrenFileCount == 0 && childrenFolderCount > 0) {
-						if (childrenFolderCount == 1) {
-							this.workspaceLocation += "\\" + rootFolder.getSubFolder().get(0).getName();
-						} else {
-							workspaceRoot = rootFolder;
-							workspaceRoot.setName(workspaceLocation);
-						}
-						rootFolder = rootFolder.getSubFolder().get(0);
-						childrenFolderCount = rootFolder.getSubFolder().size();
-						childrenFileCount = rootFolder.getFile().size();
-					}
-
-					// set to Model
-					setModel(workspaceRoot);
-				} else {
-					throw new Exception("Invalid model to read ...");
-				}
+				TreeElement root = getPluginRoot(pathList, folderRoot);
+				setModel(root);
 
 			} else {
 				readXMLFile(stringPath, saxParser, handler);
@@ -123,6 +111,17 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private TreeElement getPluginRoot(List<String> pathList, TreeElement folderRoot) {
+		if (folderRoot instanceof FolderImpl) {
+			if (pathList.get(0).equalsIgnoreCase(folderRoot.getName())) {
+				List<String> tempPathList = pathList.subList(1, pathList.size());
+				if (!tempPathList.isEmpty())
+					return getPluginRoot(tempPathList, ((FolderImpl) folderRoot).getSubFolder().get(0));
+			}
+		}
+		return folderRoot;
 	}
 
 	/**
@@ -468,6 +467,24 @@ public class XMLArtefactAdapter implements ArtefactAdapter<TreeElement, Path> {
 		} catch (Exception e) {
 			return "";
 		}
+	}
+
+	/**
+	 * reads xmi for SimpleTree and stores in model
+	 * 
+	 * @return
+	 */
+	public TreeElement readSimpleTreeXMIModel(String path) {
+		ResourceSet rs = new ResourceSetImpl();
+		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+		Resource resource = rs.getResource(URI.createURI(path), true);
+		try {
+			TreeElement obj = (TreeElement) resource.getContents().get(0);
+			return obj;
+		} catch (Exception e) {
+			logger.error("ERROR :: " + e);
+		}
+		return null;
 	}
 
 }

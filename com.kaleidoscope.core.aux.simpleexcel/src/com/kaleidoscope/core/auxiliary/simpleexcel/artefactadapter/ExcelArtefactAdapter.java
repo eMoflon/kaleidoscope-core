@@ -32,6 +32,11 @@ public class ExcelArtefactAdapter implements ArtefactAdapter<ExcelElement, Path>
 		this.path = path;
 		this.model = Optional.empty();
 	}
+	
+	public ExcelArtefactAdapter(Path path, Optional<ExcelElement> m) {
+		this.path = path;
+		this.model = m;
+	}
 
 	@Override
 	public void parse() {
